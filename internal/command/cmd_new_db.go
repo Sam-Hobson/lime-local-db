@@ -19,11 +19,13 @@ func (ps *newDbCmd) error() error {
 	return ps.err
 }
 
-func (ps *newDbCmd) onFinish() {
+func (ps *newDbCmd) onFinish() Executor {
 	if ps.argNum != newDbCmdnumArgs {
 		slog.Error("The new-db keyword takes 1 argument.", "Usage", newDbCmdUsage)
 		ps.err = errors.Errorf("The new-db keyword takes 1 argument.\n Usage: %s", newDbCmdUsage)
 	}
+
+    return nil
 }
 
 func (ps *newDbCmd) process(key string) (Executor, argProcessor) {

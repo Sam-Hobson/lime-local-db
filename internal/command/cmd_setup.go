@@ -22,7 +22,13 @@ func (ps *setupCmd) error() error {
 	return ps.err
 }
 
-func (ps *setupCmd) onFinish() {
+func (ps *setupCmd) onFinish() Executor {
+	if ps.argNum == 0 {
+		return &setupExecutor{
+			baseDir: ps.baseDir,
+		}
+	}
+    return nil
 }
 
 func (ps *setupCmd) process(key string) (Executor, argProcessor) {
@@ -64,19 +70,19 @@ func (e *setupExecutor) Execute(state *ExecutionState) (*ExecutionState, error) 
 
 	home := os.Getenv("HOME")
 
-    var err error
+	var err error
 
-    if e.baseDir == "" {
-        err = config.CreateDefaultConfig(home, filepath.Join(home, config.LimeDir))
-    } else {
-        err = config.CreateDefaultConfig(home, e.baseDir)
-    }
+	if e.baseDir == "" {
+		err = config.CreateDefaultConfig(home, filepath.Join(home, config.LimeDir))
+	} else {
+		err = config.CreateDefaultConfig(home, e.baseDir)
+	}
 
-    if err != nil {
-        return state, err
-    }
+	if err != nil {
+		return state, err
+	}
 
-    state.Config, err = config.ParseConfig(home)
+	state.Config, err = config.ParseConfig(home)
 
 	return state, err
 }

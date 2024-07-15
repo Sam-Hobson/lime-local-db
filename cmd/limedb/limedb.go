@@ -12,28 +12,26 @@ import (
 )
 
 func main() {
-    home := os.Getenv("HOME")
+	home := os.Getenv("HOME")
+	args := os.Args[1:]
+
 	config, err := ParseConfig(home)
+	state := &ExecutionState{Config: config}
 
-    args := os.Args[1:]
-
-    state := &ExecutionState{Config: config}
-
-	if err != nil {
-        if args[0] != "setup" {
-            panicErr(err)
-        }
-
-        executors, err := ProcessArgs(args)
+	if err != nil && args[0] != "setup" {
 		panicErr(err)
-
-        for _, exec := range executors {
-            slog.Info("Executing executor.", "Priority", exec.Priority())
-
-            state, err = exec.Execute(state)
-            panicErr(err)
-        }
 	}
+
+	executors, err := ProcessArgs(args)
+	panicErr(err)
+
+	for _, exec := range executors {
+		slog.Info("Executing executor.", "Priority", exec.Priority())
+
+		state, err = exec.Execute(state)
+		panicErr(err)
+	}
+
 }
 
 func panicErr(err error) {

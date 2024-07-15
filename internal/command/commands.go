@@ -10,7 +10,7 @@ import (
 type argProcessor interface {
 	error() error
 	process(key string) (Executor, argProcessor)
-	onFinish()
+	onFinish() Executor
 }
 
 type Executor interface {
@@ -44,7 +44,11 @@ func ProcessArgs(args []string) ([]Executor, error) {
 		processor = new_processor
 	}
 
-	processor.onFinish()
+	executor := processor.onFinish()
+
+	if executor != nil {
+		executors = append(executors, executor)
+	}
 
 	if processor.error() != nil {
 		slog.Error("Something went wrong processing args.\n", "Args", args)
@@ -52,7 +56,7 @@ func ProcessArgs(args []string) ([]Executor, error) {
 	}
 
 	// Sort by priority
-	slices.SortFunc[[]Executor, Executor](executors, func(a Executor, b Executor) int {
+	slices.SortFunc(executors, func(a Executor, b Executor) int {
 		return a.Priority() - b.Priority()
 	})
 

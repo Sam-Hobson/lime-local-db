@@ -16,15 +16,18 @@ func (ps *limedbCmd) error() error {
 	return ps.err
 }
 
-func (ps *limedbCmd) onFinish() {
+func (ps *limedbCmd) onFinish() Executor {
 	slog.Error("The limedb command requires an operation.", "Usage", limedbCmdUsage)
 	ps.err = errors.Errorf("The limedb command requires an operation.\n Usage: %s", limedbCmdUsage)
+    return nil
 }
 
 func (ps *limedbCmd) process(key string) (Executor, argProcessor) {
 	switch key {
 	case "new-db":
 		return nil, newNewDbCmd()
+	case "setup":
+		return nil, newSetupCmd()
 	}
 
 	ps.err = errors.Errorf("Could not identify keyword.")
@@ -33,6 +36,6 @@ func (ps *limedbCmd) process(key string) (Executor, argProcessor) {
 
 func newLimedbCmd() *limedbCmd {
 	return &limedbCmd{
-        err: nil,
-    }
+		err: nil,
+	}
 }
