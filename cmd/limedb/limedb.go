@@ -11,9 +11,9 @@ import (
 
 func main() {
 	_, err := ParseConfig()
-    panicErr(err)
-    err = ProcessArgs(os.Args[1:])
-    panicErr(err)
+	panicErr(err)
+	err = ProcessArgs(os.Args[1:])
+	panicErr(err)
 }
 
 func panicErr(err error) {
