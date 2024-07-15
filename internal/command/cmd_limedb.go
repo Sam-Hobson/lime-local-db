@@ -16,21 +16,23 @@ func (ps *limedbCmd) error() error {
 	return ps.err
 }
 
-func (ps *limedbCmd) finished() {
+func (ps *limedbCmd) onFinish() {
 	slog.Error("The limedb command requires an operation.", "Usage", limedbCmdUsage)
 	ps.err = errors.Errorf("The limedb command requires an operation.\n Usage: %s", limedbCmdUsage)
 }
 
-func (ps *limedbCmd) process(key string) argProcessor {
+func (ps *limedbCmd) process(key string) (Executor, argProcessor) {
 	switch key {
 	case "new-db":
-		return newNewDbCmd()
+		return nil, newNewDbCmd()
 	}
 
 	ps.err = errors.Errorf("Could not identify keyword.")
-	return ps
+	return nil, ps
 }
 
 func newLimedbCmd() *limedbCmd {
-	return &limedbCmd{}
+	return &limedbCmd{
+        err: nil,
+    }
 }

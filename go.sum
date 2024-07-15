@@ -2,3 +2,5 @@ github.com/bigkevmcd/go-configparser v0.0.0-20240624060122-ccd05f93a9d2 h1:2qnRm
 github.com/bigkevmcd/go-configparser v0.0.0-20240624060122-ccd05f93a9d2/go.mod h1:vzEQfW+A1T+AMJmTIX+SXNLNECHOM7GEinHhw0IjykI=
 github.com/go-errors/errors v1.5.1 h1:ZwEMSLRCapFLflTpT7NKaAc7ukJ8ZPEjzlxt8rPN8bk=
 github.com/go-errors/errors v1.5.1/go.mod h1:sIVyrIiJhuEF+Pj9Ebtd6P/rEYROXFi3BopGUQ5a5Og=
+github.com/mattn/go-sqlite3 v1.14.22 h1:2gZY6PC6kBnID23Tichd1K+Z0oS6nE/XwU+Vz/5o4kU=
+github.com/mattn/go-sqlite3 v1.14.22/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=

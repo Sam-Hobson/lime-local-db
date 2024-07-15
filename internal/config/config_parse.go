@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	cp "github.com/bigkevmcd/go-configparser"
-	"github.com/go-errors/errors"
 )
 
 const (
@@ -15,25 +14,8 @@ const (
 	LimeDir    = ".limedb"
 )
 
-var home = os.Getenv("HOME")
-
-func ParseConfig() (*cp.ConfigParser, error) {
-	if home == "" {
-		slog.Error("Cannot create config file as $HOME is undefined")
-		return nil, errors.New("$HOME is undefined")
-	}
-
-	configPath := filepath.Join(home, ConfigName)
-
-	// If the config file hasn't yet been created...
-	if _, err := os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
-		err := createDefaultConfigFile(configPath)
-		if err != nil {
-			return nil, err
-		}
-	} else if err != nil {
-		return nil, err
-	}
+func ParseConfig(homeDir string) (*cp.ConfigParser, error) {
+	configPath := filepath.Join(homeDir, ConfigName)
 
 	parser, err := cp.NewConfigParserFromFile(configPath)
 
@@ -47,15 +29,15 @@ func ParseConfig() (*cp.ConfigParser, error) {
 	return parser, nil
 }
 
-func createDefaultConfigFile(configPath string) error {
-	var template = defaultTemplate
+func CreateDefaultConfig(homeDir string, rootDir string) error {
+	configPath := filepath.Join(homeDir, ConfigName)
 
-	// Yes, this is horribly inefficient but it will do for now
-	for k, v := range defaultMapping {
-		template = strings.ReplaceAll(template, k, v)
-	}
+	template := getDefaultTemplate(rootDir)
 
-	slog.Info("Creating default config.", "path", configPath)
+	slog.Info("Creating default config.",
+		"path", configPath,
+		"homeDir", homeDir,
+		"rootDir", rootDir)
 
 	file, err := os.OpenFile(configPath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	defer file.Close()
@@ -72,7 +54,19 @@ func createDefaultConfigFile(configPath string) error {
 		return err
 	}
 
-	slog.Info("Successfully created default config.\n", "path", configPath)
+	slog.Info("Successfully created default config.\n",
+		"path", configPath,
+		"homeDir", homeDir,
+		"rootDir", rootDir)
+
+	storeDir := filepath.Join(rootDir, "store")
+	err = os.MkdirAll(storeDir, os.ModePerm)
+
+	if err != nil {
+		slog.Error("Could not create root directory.\n", "rootDir", rootDir)
+		return err
+	}
+
 	return nil
 }
 
@@ -80,10 +74,21 @@ const defaultTemplate = `[DEBUG]
 log_location = {LOG_LOCATION}
 
 [STORE]
-store_location = {STORE_LOCATION}
+root_dir = {ROOT_DIR}
 `
 
-var defaultMapping = map[string]string{
-	"{LOG_LOCATION}":   "",
-	"{STORE_LOCATION}": filepath.Join(home, LimeDir, "store"),
+func getDefaultTemplate(rootDir string) string {
+	var template = defaultTemplate
+
+	defaultMap := map[string]string{
+		"{LOG_LOCATION}": "",
+		"{ROOT_DIR}":     rootDir,
+	}
+
+	// Yes, this is horribly inefficient but it will do for now
+	for k, v := range defaultMap {
+		template = strings.ReplaceAll(template, k, v)
+	}
+
+	return template
 }

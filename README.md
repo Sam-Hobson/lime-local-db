@@ -18,5 +18,8 @@ limedb new-db [DB_NAME]
     - alter
     - insert
     - delete
+    - with configuration
+- Command templates/aliases
+- Password authentication for sqlite db.
 - HTMX front end interface
 - lua scripts to execute on db hooks

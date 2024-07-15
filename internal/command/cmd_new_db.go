@@ -7,7 +7,7 @@ import (
 )
 
 const newDbCmdUsage = "limedb new-db [DB NAME]"
-const numArgs = 1
+const newDbCmdnumArgs = 1
 
 type newDbCmd struct {
 	argNum int
@@ -19,24 +19,24 @@ func (ps *newDbCmd) error() error {
 	return ps.err
 }
 
-func (ps *newDbCmd) finished() {
-	if ps.argNum != numArgs {
+func (ps *newDbCmd) onFinish() {
+	if ps.argNum != newDbCmdnumArgs {
 		slog.Error("The new-db keyword takes 1 argument.", "Usage", newDbCmdUsage)
 		ps.err = errors.Errorf("The new-db keyword takes 1 argument.\n Usage: %s", newDbCmdUsage)
 	}
 }
 
-func (ps *newDbCmd) process(key string) argProcessor {
+func (ps *newDbCmd) process(key string) (Executor, argProcessor) {
 	ps.argNum++
 
 	if ps.argNum == 1 {
 		ps.dbName = key
 	} else {
-		slog.Error("The new-db keyword only take 1 argument.", "Usage", newDbCmdUsage)
-		ps.err = errors.Errorf("The new-db keyword only take 1 argument.\n Usage: %s", newDbCmdUsage)
+		slog.Error("The new-db keyword only takes 1 argument.", "Usage", newDbCmdUsage)
+		ps.err = errors.Errorf("The new-db keyword only takes 1 argument.\n Usage: %s", newDbCmdUsage)
 	}
 
-	return ps
+	return nil, ps
 }
 
 func newNewDbCmd() *newDbCmd {
