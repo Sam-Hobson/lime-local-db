@@ -27,13 +27,13 @@ func ParseConfig() (*cp.ConfigParser, error) {
 
 	// If the config file hasn't yet been created...
 	if _, err := os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
-        err := createDefaultConfigFile(configPath)
-        if err != nil {
-            return nil, err
-        }
+		err := createDefaultConfigFile(configPath)
+		if err != nil {
+			return nil, err
+		}
 	} else if err != nil {
-        return nil, err
-    }
+		return nil, err
+	}
 
 	parser, err := cp.NewConfigParserFromFile(configPath)
 
@@ -42,7 +42,7 @@ func ParseConfig() (*cp.ConfigParser, error) {
 		return nil, err
 	}
 
-    slog.Info("Successfully parsed config file.")
+	slog.Info("Successfully parsed config file.")
 
 	return parser, nil
 }
@@ -57,7 +57,7 @@ func createDefaultConfigFile(configPath string) error {
 
 	slog.Info("Creating default config.", "path", configPath)
 
-	file, err := os.OpenFile(configPath, os.O_CREATE | os.O_TRUNC | os.O_RDWR, os.ModePerm)
+	file, err := os.OpenFile(configPath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	defer file.Close()
 
 	if err != nil {
