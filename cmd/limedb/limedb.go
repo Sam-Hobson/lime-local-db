@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	. "lime-local-db/interface/internal/command"
-	. "lime-local-db/interface/internal/config"
+	. "github.com/sam-hobson/internal/command"
+	. "github.com/sam-hobson/internal/config"
 	"os"
 
 	"github.com/go-errors/errors"

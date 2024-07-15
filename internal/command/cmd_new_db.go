@@ -20,10 +20,10 @@ func (ps *newDbCmd) error() error {
 }
 
 func (ps *newDbCmd) finished() {
-    if ps.argNum != numArgs {
-        slog.Error("The new-db keyword takes 1 argument.", "Usage", newDbCmdUsage)
-        ps.err = errors.Errorf("The new-db keyword takes 1 argument.\n Usage: %s", newDbCmdUsage)
-    }
+	if ps.argNum != numArgs {
+		slog.Error("The new-db keyword takes 1 argument.", "Usage", newDbCmdUsage)
+		ps.err = errors.Errorf("The new-db keyword takes 1 argument.\n Usage: %s", newDbCmdUsage)
+	}
 }
 
 func (ps *newDbCmd) process(key string) argProcessor {
@@ -32,8 +32,8 @@ func (ps *newDbCmd) process(key string) argProcessor {
 	if ps.argNum == 1 {
 		ps.dbName = key
 	} else {
-        slog.Error("The new-db keyword only take 1 argument.", "Usage", newDbCmdUsage)
-        ps.err = errors.Errorf("The new-db keyword only take 1 argument.\n Usage: %s", newDbCmdUsage)
+		slog.Error("The new-db keyword only take 1 argument.", "Usage", newDbCmdUsage)
+		ps.err = errors.Errorf("The new-db keyword only take 1 argument.\n Usage: %s", newDbCmdUsage)
 	}
 
 	return ps

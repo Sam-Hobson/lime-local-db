@@ -1,4 +1,4 @@
-module lime-local-db/interface
+module github.com/sam-hobson
 
 go 1.22.5
 
