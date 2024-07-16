@@ -4,22 +4,13 @@ import (
 	"log/slog"
 	"slices"
 
-	cp "github.com/bigkevmcd/go-configparser"
+	. "github.com/sam-hobson/internal/command/executors"
 )
 
 type argProcessor interface {
 	error() error
 	process(key string) (Executor, argProcessor)
 	onFinish() Executor
-}
-
-type Executor interface {
-	Priority() int
-	Execute(state *ExecutionState) (*ExecutionState, error)
-}
-
-type ExecutionState struct {
-	Config *cp.ConfigParser
 }
 
 func ProcessArgs(args []string) ([]Executor, error) {

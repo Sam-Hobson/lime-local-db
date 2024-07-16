@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/go-errors/errors"
+	. "github.com/sam-hobson/internal/command/executors"
 )
 
 const newDbCmdUsage = "limedb new-db [DB NAME]"
@@ -25,7 +26,7 @@ func (ps *newDbCmd) onFinish() Executor {
 		ps.err = errors.Errorf("The new-db keyword takes 1 argument.\n Usage: %s", newDbCmdUsage)
 	}
 
-    return nil
+	return nil
 }
 
 func (ps *newDbCmd) process(key string) (Executor, argProcessor) {

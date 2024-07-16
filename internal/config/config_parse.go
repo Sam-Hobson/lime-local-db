@@ -59,14 +59,6 @@ func CreateDefaultConfig(homeDir string, rootDir string) error {
 		"homeDir", homeDir,
 		"rootDir", rootDir)
 
-	storeDir := filepath.Join(rootDir, "store")
-	err = os.MkdirAll(storeDir, os.ModePerm)
-
-	if err != nil {
-		slog.Error("Could not create root directory.\n", "rootDir", rootDir)
-		return err
-	}
-
 	return nil
 }
 
