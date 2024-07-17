@@ -10,7 +10,7 @@ import (
 func main() {
     flags := GetFlags()
 
-    fmt.Printf("%+v\n", flags)
+    ProcessArgs(flags)
 }
 
 func panicErr(err error) {

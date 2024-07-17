@@ -38,8 +38,6 @@ func (e *SetupExecutor) Execute(state *ExecutionState) (*ExecutionState, error) 
 		return state, err
 	}
 
-	state.Config, err = config.ParseConfig(home)
-
 	return state, err
 }
 

@@ -9,46 +9,68 @@ import (
 )
 
 const (
-	setupDir       = "setup"
+	setup          = "setup"
 	newdb          = "new-db"
 	newdbShorthand = "n"
 	rmdb           = "rm-db"
 	rmdbShorthand  = "D"
+
+	SetupOff = uint8(0)
+	NewdbOff = uint8(1)
+	RmdbOff  = uint8(2)
 )
 
 type Flags struct {
-	setupDir         string
-	setupDirProvided bool
-	newdb            string
-	newdbProvided    bool
-	rmdb             string
-	rmdbProvided     bool
+	SetupDir bool
+	Newdb    string
+	Rmdb     string
+
+	ProvidedFields uint64
+}
+
+func (f *Flags) FlagSet(flagOff uint8) bool {
+	return (f.ProvidedFields & (1 << flagOff)) > 0
+}
+
+func (f *Flags) OtherFlagsSet(flagOff uint8) bool {
+	return (f.ProvidedFields ^ (1 << flagOff)) > 0
+}
+
+func (f *Flags) OneOfSet(flagOff uint64) bool {
+    return (f.ProvidedFields & flagOff) > 0
 }
 
 func (f *Flags) String() string {
-    return fmt.Sprintf("%+v", *f)
+	return fmt.Sprintf("%+v", *f)
+}
+
+func (f *Flags) setFlagIfProvided(name string, offset uint8) {
+	if pflag.CommandLine.Changed(name) {
+		f.ProvidedFields |= 1 << offset
+	}
 }
 
 func GetFlags() *Flags {
-    slog.Info("Parsing flags.")
+	slog.Info("Parsing flags.")
 	flags := &Flags{}
 
-	pflag.StringVar(&flags.setupDir, setupDir, "", "Provide the location of a configuration file to be generated. $HOME will be used by default.")
-	pflag.Lookup(setupDir).NoOptDefVal = os.Getenv("HOME")
-	pflag.StringVarP(&flags.newdb, newdb, newdbShorthand, "", "Provide the name of a new database which will be created.")
-	pflag.StringVarP(&flags.rmdb, rmdb, rmdbShorthand, "", "Provide the name of a new database which will be deleted PERMANENTLY.")
+	pflag.BoolVar(&flags.SetupDir, setup, false, "Create a new default config in the $HOME directory.")
+	pflag.StringVarP(&flags.Newdb, newdb, newdbShorthand, "", "Provide the name of a new database which will be created.")
+	pflag.StringVarP(&flags.Rmdb, rmdb, rmdbShorthand, "", "Provide the name of a new database which will be deleted PERMANENTLY.")
 
 	pflag.Parse()
 
-	flags.setupDirProvided = pflag.CommandLine.Changed(setupDir)
-	flags.newdbProvided = pflag.CommandLine.Changed(newdb)
-	flags.rmdbProvided = pflag.CommandLine.Changed(rmdb)
+	// If no flags were provided
+	if pflag.NFlag() == 0 {
+		pflag.Usage()
+		os.Exit(2)
+	}
 
-    slog.Info("Successfully parsed flags.", "flags", flags)
+	flags.setFlagIfProvided(setup, SetupOff)
+	flags.setFlagIfProvided(newdb, NewdbOff)
+	flags.setFlagIfProvided(rmdb, RmdbOff)
+
+	slog.Info("Successfully parsed flags.", "flags", flags)
 
 	return flags
 }
-
-func ProcessFlags() {
-}
-
