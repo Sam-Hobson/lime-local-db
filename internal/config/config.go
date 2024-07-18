@@ -18,30 +18,32 @@ const (
 	DebugSection = "DEBUG"
 )
 
+var configFullPath = filepath.Join(home, ConfigName)
+
 var config *cp.ConfigParser
 var configParsed bool
 
-func GetConfig() *cp.ConfigParser {
+func GetConfig() (*cp.ConfigParser, error) {
 	if !configParsed {
-		return nil
+		err := ParseConfig()
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return config
+	return config, nil
 }
 
 func ConfigExists() bool {
-	configPath := filepath.Join(home, ConfigName)
-	_, err := os.Stat(configPath)
+	_, err := os.Stat(configFullPath)
 	return err == nil
 }
 
 func ParseConfig() error {
-	configPath := filepath.Join(home, ConfigName)
-
-	parser, err := cp.NewConfigParserFromFile(configPath)
+	parser, err := cp.NewConfigParserFromFile(configFullPath)
 
 	if err != nil {
-		slog.Error("Could not open config file.\n", "log_code", "10e671cd", "path", configPath)
+		slog.Error("Could not open config file.\n", "log_code", "10e671cd", "path", configFullPath)
 		return err
 	}
 
@@ -54,33 +56,31 @@ func ParseConfig() error {
 }
 
 func CreateDefaultConfig() error {
-	configPath := filepath.Join(home, ConfigName)
-
-	template := getDefaultTemplate(home)
+	template := getDefaultTemplate()
 
 	slog.Info("Creating default config.",
 		"log_code", "cb196a26",
-		"path", configPath,
+		"path", configFullPath,
 		"homeDir", home)
 
-	file, err := os.OpenFile(configPath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
+	file, err := os.OpenFile(configFullPath, os.O_CREATE|os.O_TRUNC|os.O_RDWR, os.ModePerm)
 	defer file.Close()
 
 	if err != nil {
-		slog.Error("Cannot create config file.\n", "log_code", "3f93600b", "path", configPath)
+		slog.Error("Cannot create config file.\n", "log_code", "3f93600b", "path", configFullPath)
 		return err
 	}
 
 	_, err = file.WriteString(template)
 
 	if err != nil {
-		slog.Error("Cannot create config file.\n", "log_code", "b790cf52", "path", configPath)
+		slog.Error("Cannot create config file.\n", "log_code", "b790cf52", "path", configFullPath)
 		return err
 	}
 
 	slog.Info("Successfully created default config.\n",
 		"log_code", "8ea69957",
-		"path", configPath,
+		"path", configFullPath,
 		"homeDir", home)
 
 	return nil
@@ -92,6 +92,7 @@ log_location = {LOG_LOCATION}
 
 [STORE]
 root_dir = {ROOT_DIR}
+permanently_delete_on_rm = false
 `
 
 func getDefaultTemplate() string {

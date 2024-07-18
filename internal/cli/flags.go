@@ -78,21 +78,29 @@ func GetFlags() *Flags {
 
 	pflag.Parse()
 
-	ndb, err := parseNewDbData(*newdbFlag)
-
-	flags.Newdb = *ndb
-
 	// If no flags were provided
-	if pflag.NFlag() == 0 || err != nil {
-		pflag.Usage()
-		os.Exit(2)
+	if pflag.NFlag() == 0 {
+        printUsageThenQuit()
 	}
 
 	flags.setFlagIfProvided(setup, SetupOff)
 	flags.setFlagIfProvided(newdb, NewdbOff)
 	flags.setFlagIfProvided(rmdb, RmdbOff)
 
+	if flags.FlagsSet(NewdbOff) {
+		ndb, err := parseNewDbData(*newdbFlag)
+        if err != nil {
+            printUsageThenQuit()
+        }
+		flags.Newdb = *ndb
+	}
+
 	slog.Info("Successfully parsed flags.", "log_code", "fea120e1", "flags", flags)
 
 	return flags
+}
+
+func printUsageThenQuit() {
+	pflag.Usage()
+	os.Exit(2)
 }

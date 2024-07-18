@@ -5,12 +5,14 @@ import (
 	"math"
 
 	"github.com/go-errors/errors"
+	conf "github.com/sam-hobson/internal/config"
 	op "github.com/sam-hobson/internal/operations"
 )
 
 const (
 	SetupIncompatibleFlags = math.MaxUint64 ^ SetupOff
 	NewdbIncompatibleFlags = math.MaxUint64 ^ NewdbOff
+	RmDbIncompatibleFlags  = math.MaxUint64 ^ RmdbOff
 )
 
 func ProcessArgs(flags *Flags) error {
@@ -26,6 +28,13 @@ func ProcessArgs(flags *Flags) error {
 		return err
 	}
 
+	config, err := conf.GetConfig()
+
+	if err != nil {
+		slog.Warn("Cannot proceed with processing arguments, as no config is present.", "log_code", "36a6342f")
+		return err
+	}
+
 	// Handle --new-db/-n
 	if flags.FlagsSet(NewdbOff) {
 		if flags.FlagsSet(NewdbIncompatibleFlags) {
@@ -34,6 +43,16 @@ func ProcessArgs(flags *Flags) error {
 		}
 
 		err := op.NewDb(&flags.Newdb)
+		return err
+	}
+
+	if flags.FlagsSet(RmdbOff) {
+		if flags.FlagsSet(RmDbIncompatibleFlags) {
+			slog.Error("--rm-db or -D flag used when incompatible flags are provided.", "log_code", "5e0a183f", "flags", flags)
+			return errors.Errorf("--rm-db or -D flag used when incompatible flags are provided: %s", flags)
+		}
+
+		err := op.RmDb(flags.Rmdb, config)
 		return err
 	}
 
