@@ -32,6 +32,7 @@ func ProcessArgs(flags *Flags) error {
 			slog.Error("--new-db or -n flag used when incompatible flags are provided.", "Hash", "d2e62f94", "flags", flags)
 			return errors.Errorf("--new-db or -n flag used when incompatible flags are provided: %s", flags)
         }
+
 	}
 
 	return nil

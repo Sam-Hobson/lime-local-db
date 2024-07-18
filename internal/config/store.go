@@ -12,7 +12,7 @@ const (
 )
 
 func createRootDir() error {
-	rootPath := filepath.Join(os.Getenv("HOME"), LimeDir)
+	rootPath := filepath.Join(home, LimeDir)
 	err := os.MkdirAll(rootPath, os.ModePerm)
 	return err
 }
