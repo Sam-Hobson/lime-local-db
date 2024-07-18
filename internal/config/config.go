@@ -7,12 +7,10 @@ import (
 	"strings"
 
 	cp "github.com/bigkevmcd/go-configparser"
-	"github.com/go-errors/errors"
 )
 
 const (
 	ConfigName = ".limerc"
-	LimeDir    = ".limedb"
 )
 
 const (
@@ -21,6 +19,7 @@ const (
 )
 
 var home = os.Getenv("HOME")
+
 var config *cp.ConfigParser
 var configParsed bool
 
@@ -44,11 +43,11 @@ func ParseConfig() error {
 	parser, err := cp.NewConfigParserFromFile(configPath)
 
 	if err != nil {
-		slog.Error("Could not open config file.\n", "path", configPath)
+		slog.Error("Could not open config file.\n", "Hash", "10e671cd", "path", configPath)
 		return err
 	}
 
-	slog.Info("Successfully parsed config file.")
+	slog.Info("Successfully parsed config file.", "Hash", "caf29dea")
 
 	configParsed = true
 	config = parser
@@ -62,6 +61,7 @@ func CreateDefaultConfig() error {
 	template := getDefaultTemplate(home)
 
 	slog.Info("Creating default config.",
+        "Hash", "cb196a26",
 		"path", configPath,
 		"homeDir", home)
 
@@ -69,18 +69,19 @@ func CreateDefaultConfig() error {
 	defer file.Close()
 
 	if err != nil {
-		slog.Error("Cannot create config file.\n", "path", configPath)
+		slog.Error("Cannot create config file.\n", "Hash", "3f93600b", "path", configPath)
 		return err
 	}
 
 	_, err = file.WriteString(template)
 
 	if err != nil {
-		slog.Error("Cannot create config file.\n", "path", configPath)
+		slog.Error("Cannot create config file.\n", "Hash", "b790cf52", "path", configPath)
 		return err
 	}
 
 	slog.Info("Successfully created default config.\n",
+        "Hash", "8ea69957",
 		"path", configPath,
 		"homeDir", home)
 
@@ -109,52 +110,4 @@ func getDefaultTemplate(homeDir string) string {
 	}
 
 	return template
-}
-
-func StoreDirExists() (bool, error) {
-	if GetConfig() == nil {
-		slog.Error("Cannot check if lime dir exists, config not parsed.")
-		return false, errors.Errorf("Config not parsed.")
-	}
-
-	storeDir, err := GetConfig().Get(StoreSection, "root_dir")
-
-	if err != nil {
-		return false, err
-	}
-
-	_, err = os.Stat(storeDir)
-
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-
-	return false, err
-}
-
-func CreateStore() error {
-	if GetConfig() == nil {
-		slog.Error("Cannot create store if no config has been parsed.")
-		return errors.Errorf("Config not parsed.")
-	}
-
-	storeDir, err := GetConfig().Get(StoreSection, "root_dir")
-
-	slog.Info("Creating store directory.", "path", storeDir)
-
-	if err != nil {
-		return err
-	}
-
-	err = os.MkdirAll(storeDir, os.ModePerm)
-
-	if err != nil {
-		slog.Error("Could not create store directory.")
-		return err
-	}
-
-	return nil
 }

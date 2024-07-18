@@ -47,7 +47,7 @@ func (f *Flags) setFlagIfProvided(name string, offset uint64) {
 }
 
 func GetFlags() *Flags {
-	slog.Info("Parsing flags.")
+	slog.Info("Parsing flags.", "Hash", "ae0a99b8")
 	flags := &Flags{}
 
 	pflag.BoolVar(&flags.SetupDir, setup, false, "Create a new default config in the $HOME directory.")
@@ -66,7 +66,7 @@ func GetFlags() *Flags {
 	flags.setFlagIfProvided(newdb, NewdbOff)
 	flags.setFlagIfProvided(rmdb, RmdbOff)
 
-	slog.Info("Successfully parsed flags.", "flags", flags)
+	slog.Info("Successfully parsed flags.", "Hash", "fea120e1", "flags", flags)
 
 	return flags
 }

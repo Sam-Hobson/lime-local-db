@@ -7,10 +7,10 @@ import (
 )
 
 func Setup() error {
-	slog.Info("Beginning setup operation.")
+	slog.Info("Beginning setup operation.", "Hash", "8b6822bb")
 
 	if config.ConfigExists() {
-		slog.Warn("Setup called when there already exists a config file. Nothing done.")
+		slog.Warn("Setup called when there already exists a config file. Nothing done.", "Hash", "d3a9e666")
 		return nil
 	}
 
