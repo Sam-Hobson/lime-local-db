@@ -15,9 +15,9 @@ const (
 	rmdb           = "rm-db"
 	rmdbShorthand  = "D"
 
-	SetupOff = uint8(0)
-	NewdbOff = uint8(1)
-	RmdbOff  = uint8(2)
+	SetupOff = uint64(1 << 0)
+	NewdbOff = uint64(1 << 1)
+	RmdbOff  = uint64(1 << 2)
 )
 
 type Flags struct {
@@ -28,25 +28,21 @@ type Flags struct {
 	ProvidedFields uint64
 }
 
-func (f *Flags) FlagSet(flagOff uint8) bool {
-	return (f.ProvidedFields & (1 << flagOff)) > 0
+func (f *Flags) FlagsSet(flagOff uint64) bool {
+	return (f.ProvidedFields & flagOff) > 0
 }
 
-func (f *Flags) OtherFlagsSet(flagOff uint8) bool {
-	return (f.ProvidedFields ^ (1 << flagOff)) > 0
-}
-
-func (f *Flags) OneOfSet(flagOff uint64) bool {
-    return (f.ProvidedFields & flagOff) > 0
+func (f *Flags) OtherFlagsSet(flagOff uint64) bool {
+	return (f.ProvidedFields ^ flagOff) > 0
 }
 
 func (f *Flags) String() string {
 	return fmt.Sprintf("%+v", *f)
 }
 
-func (f *Flags) setFlagIfProvided(name string, offset uint8) {
+func (f *Flags) setFlagIfProvided(name string, offset uint64) {
 	if pflag.CommandLine.Changed(name) {
-		f.ProvidedFields |= 1 << offset
+		f.ProvidedFields |= offset
 	}
 }
 
