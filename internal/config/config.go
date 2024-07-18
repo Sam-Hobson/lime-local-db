@@ -18,8 +18,6 @@ const (
 	DebugSection = "DEBUG"
 )
 
-var home = os.Getenv("HOME")
-
 var config *cp.ConfigParser
 var configParsed bool
 
@@ -61,7 +59,7 @@ func CreateDefaultConfig() error {
 	template := getDefaultTemplate(home)
 
 	slog.Info("Creating default config.",
-        "log_code", "cb196a26",
+		"log_code", "cb196a26",
 		"path", configPath,
 		"homeDir", home)
 
@@ -81,7 +79,7 @@ func CreateDefaultConfig() error {
 	}
 
 	slog.Info("Successfully created default config.\n",
-        "log_code", "8ea69957",
+		"log_code", "8ea69957",
 		"path", configPath,
 		"homeDir", home)
 
@@ -96,12 +94,12 @@ log_location = {LOG_LOCATION}
 root_dir = {ROOT_DIR}
 `
 
-func getDefaultTemplate(homeDir string) string {
+func getDefaultTemplate() string {
 	var template = defaultTemplate
 
 	defaultMap := map[string]string{
 		"{LOG_LOCATION}": "",
-		"{ROOT_DIR}":     filepath.Join(homeDir, LimeDir),
+		"{ROOT_DIR}":     FullPath(""),
 	}
 
 	// Yes, this is horribly inefficient but it will do for now

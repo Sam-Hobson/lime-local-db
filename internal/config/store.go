@@ -11,6 +11,8 @@ const (
 	LimeDir = ".limedb"
 )
 
+var home = os.Getenv("HOME")
+
 func FileExists(relPath string, fileName string) (bool, error) {
     _, err := os.Stat(FullPath(relPath, fileName))
 
