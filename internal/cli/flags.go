@@ -24,7 +24,7 @@ const (
 	RmdbOff  = uint64(1 << 2)
 )
 
-func newNewdb(rawInput string) (*op.NewdbCmd, error) {
+func parseNewDbData(rawInput string) (*op.NewdbData, error) {
 	re := regexp.MustCompile(`^(.*?)\s+\[(.*?)\]$`)
 	matches := re.FindStringSubmatch(rawInput)
 
@@ -36,7 +36,7 @@ func newNewdb(rawInput string) (*op.NewdbCmd, error) {
 	name := matches[1]
 	attrs := strings.Fields(matches[2])
 
-	return &op.NewdbCmd{
+	return &op.NewdbData{
 		Dbname:   name,
 		ColNames: attrs,
 	}, nil
@@ -44,7 +44,7 @@ func newNewdb(rawInput string) (*op.NewdbCmd, error) {
 
 type Flags struct {
 	SetupDir bool
-	Newdb    op.NewdbCmd
+	Newdb    op.NewdbData
 	Rmdb     string
 
 	ProvidedFields uint64
@@ -78,7 +78,7 @@ func GetFlags() *Flags {
 
 	pflag.Parse()
 
-	ndb, err := newNewdb(*newdbFlag)
+	ndb, err := parseNewDbData(*newdbFlag)
 
 	flags.Newdb = *ndb
 

@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/go-errors/errors"
 	_ "github.com/mattn/go-sqlite3"
 
 	conf "github.com/sam-hobson/internal/config"
@@ -13,26 +14,36 @@ import (
 
 const StoresRelDir = "stores"
 
-type NewdbCmd struct {
+type NewdbData struct {
 	Dbname   string
 	ColNames []string
 }
 
-func (f *NewdbCmd) String() string {
+func (f *NewdbData) String() string {
 	return fmt.Sprintf("%+v", *f)
 }
 
-func NewDb(cmd *NewdbCmd) error {
+func NewDb(cmd *NewdbData) error {
 	slog.Info("Beginning new-db operation.", "log_code", "26cd37c1", "cmd", cmd)
 
-    dbName := cmd.Dbname
+	dbName := cmd.Dbname
 
 	if !strings.HasSuffix(dbName, ".db") {
 		dbName += ".db"
 	}
 
-	// Create the dir if it doesn't exist
-	err := conf.CreateFile(StoresRelDir, dbName)
+	exists, err := conf.FileExists(StoresRelDir, dbName)
+
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		slog.Error("Cannot create a new database as it already exists.", "log_code", "6c95edf6", "path", conf.FullPath(StoresRelDir, dbName))
+		return errors.Errorf("Cannot create a new database as it already exists.")
+	}
+
+	err = conf.CreateFile(StoresRelDir, dbName)
 
 	if err != nil {
 		return err
@@ -47,7 +58,7 @@ func NewDb(cmd *NewdbCmd) error {
 		return err
 	}
 
-	// TODO: Actually create the database.
+    // TODO: Insert into db
 
 	slog.Info("Successfully created a new-db.", "log_code", "7bf9634b", "Db_path", dbPath)
 	return nil

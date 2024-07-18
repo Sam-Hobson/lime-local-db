@@ -11,15 +11,30 @@ const (
 	LimeDir = ".limedb"
 )
 
+func FileExists(relPath string, fileName string) (bool, error) {
+    _, err := os.Stat(FullPath(relPath, fileName))
+
+    if err != nil {
+        if os.IsNotExist(err) {
+            return false, nil
+        }
+
+        slog.Error("Could not check if file exists.", "log_code", "d74bd3e7", "path", FullPath(relPath, fileName))
+        return false, err
+    }
+
+    return true, nil
+}
+
 func CreateFile(relPath string, fileName string) error {
-	err := CreateDir(FullPath(relPath))
+	err := CreateDir(relPath)
 
 	if err != nil {
 		slog.Error("Could not create directory.", "log_code", "ecdb8557", "Directory", FullPath(relPath))
 		return err
 	}
 
-    file, err := os.Create(FullPath(relPath, fileName))
+    file, err := os.OpenFile(FullPath(relPath, fileName), os.O_RDWR | os.O_CREATE | os.O_TRUNC, os.ModePerm)
     defer file.Close()
 
     if err != nil {
