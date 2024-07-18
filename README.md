@@ -7,9 +7,16 @@ but with more flexibility.
 
 ## Commands
 
-Create a new database
+Create default configuration file (~/.limerc):
 ```sh
-limedb new-db [DB_NAME]
+limedb --setup
+```
+
+Create a new database:
+```sh
+limedb --new-db "<DB-NAME> [<col1> <col2> <col3>]"
+# Eg:
+limedb --new-db "Dogs [Name Gender Breed]"
 ```
 
 ## Features to add
