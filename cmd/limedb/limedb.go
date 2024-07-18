@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/go-errors/errors"
 
-    . "github.com/sam-hobson/internal/cli"
+	. "github.com/sam-hobson/internal/cli"
 )
 
 func main() {
-    flags := GetFlags()
+	flags := GetFlags()
 
-    ProcessArgs(flags)
+	ProcessArgs(flags)
 }
 
 func panicErr(err error) {

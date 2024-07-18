@@ -10,15 +10,15 @@ import (
 
 const (
 	SetupIncompatibleFlags = math.MaxUint64 ^ SetupOff
-    NewdbIncompatibleFlags = math.MaxUint64 ^ NewdbOff
+	NewdbIncompatibleFlags = math.MaxUint64 ^ NewdbOff
 )
 
 func ProcessArgs(flags *Flags) error {
 
-    // Handle --config
+	// Handle --config
 	if flags.FlagsSet(SetupOff) {
 		if flags.FlagsSet(SetupIncompatibleFlags) {
-			slog.Error("--setup flag used when other flags are provided flags.", "Hash", "8e7e78d3", "flags", flags)
+			slog.Error("--setup flag used when other flags are provided flags.", "log_code", "8e7e78d3", "flags", flags)
 			return errors.Errorf("--setup flag used when other flags are provided: %s", flags)
 		}
 
@@ -26,13 +26,15 @@ func ProcessArgs(flags *Flags) error {
 		return err
 	}
 
-    // Handle --new-db/-n
+	// Handle --new-db/-n
 	if flags.FlagsSet(NewdbOff) {
-        if flags.FlagsSet(NewdbIncompatibleFlags) {
-			slog.Error("--new-db or -n flag used when incompatible flags are provided.", "Hash", "d2e62f94", "flags", flags)
+		if flags.FlagsSet(NewdbIncompatibleFlags) {
+			slog.Error("--new-db or -n flag used when incompatible flags are provided.", "log_code", "d2e62f94", "flags", flags)
 			return errors.Errorf("--new-db or -n flag used when incompatible flags are provided: %s", flags)
-        }
+		}
 
+		err := op.NewDb(&flags.Newdb)
+		return err
 	}
 
 	return nil

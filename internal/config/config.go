@@ -43,11 +43,11 @@ func ParseConfig() error {
 	parser, err := cp.NewConfigParserFromFile(configPath)
 
 	if err != nil {
-		slog.Error("Could not open config file.\n", "Hash", "10e671cd", "path", configPath)
+		slog.Error("Could not open config file.\n", "log_code", "10e671cd", "path", configPath)
 		return err
 	}
 
-	slog.Info("Successfully parsed config file.", "Hash", "caf29dea")
+	slog.Info("Successfully parsed config file.", "log_code", "caf29dea")
 
 	configParsed = true
 	config = parser
@@ -61,7 +61,7 @@ func CreateDefaultConfig() error {
 	template := getDefaultTemplate(home)
 
 	slog.Info("Creating default config.",
-        "Hash", "cb196a26",
+        "log_code", "cb196a26",
 		"path", configPath,
 		"homeDir", home)
 
@@ -69,19 +69,19 @@ func CreateDefaultConfig() error {
 	defer file.Close()
 
 	if err != nil {
-		slog.Error("Cannot create config file.\n", "Hash", "3f93600b", "path", configPath)
+		slog.Error("Cannot create config file.\n", "log_code", "3f93600b", "path", configPath)
 		return err
 	}
 
 	_, err = file.WriteString(template)
 
 	if err != nil {
-		slog.Error("Cannot create config file.\n", "Hash", "b790cf52", "path", configPath)
+		slog.Error("Cannot create config file.\n", "log_code", "b790cf52", "path", configPath)
 		return err
 	}
 
 	slog.Info("Successfully created default config.\n",
-        "Hash", "8ea69957",
+        "log_code", "8ea69957",
 		"path", configPath,
 		"homeDir", home)
 
