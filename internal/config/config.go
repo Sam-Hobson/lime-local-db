@@ -92,7 +92,7 @@ log_location = {LOG_LOCATION}
 
 [STORE]
 root_dir = {ROOT_DIR}
-permanently_delete_on_rm = false
+soft_delete_on_rm = true
 `
 
 func getDefaultTemplate() string {

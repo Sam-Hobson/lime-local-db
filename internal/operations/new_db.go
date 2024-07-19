@@ -2,7 +2,6 @@ package operations
 
 import (
 	"database/sql"
-	"fmt"
 	"log/slog"
 	"strings"
 
@@ -14,19 +13,11 @@ import (
 
 const StoresRelDir = "stores"
 
-type NewdbData struct {
-	Dbname   string
-	ColNames []string
-}
-
-func (f *NewdbData) String() string {
-	return fmt.Sprintf("%+v", *f)
-}
-
-func NewDb(cmd *NewdbData) error {
-	slog.Info("Beginning new-db operation.", "log_code", "26cd37c1", "cmd", cmd)
-
-	dbName := cmd.Dbname
+func NewDb(dbName string, colNames []string) error {
+	slog.Info("Beginning new-db operation.",
+		"log_code", "26cd37c1",
+		"db-name", dbName,
+		"col-names", colNames)
 
 	if !strings.HasSuffix(dbName, ".db") {
 		dbName += ".db"
@@ -58,7 +49,7 @@ func NewDb(cmd *NewdbData) error {
 		return err
 	}
 
-    // TODO: Insert into db
+	// TODO: Insert into db
 
 	slog.Info("Successfully created a new-db.", "log_code", "7bf9634b", "Db_path", dbPath)
 	return nil
