@@ -7,24 +7,32 @@ but with more flexibility.
 
 ## Commands
 
+
 Create default configuration file (~/.limerc):
 ```sh
-limedb --setup
+limedb setup
 ```
+
 
 Create a new database:
 ```sh
-limedb --new-db "<DB-NAME> [<col1> <col2> <col3>]"
+limedb new-db [DB-NAME] "[<col1> <col2> <col3>]"
 # Eg:
-limedb --new-db "Dogs [Name Gender Breed]"
+limedb new-db Dogs "[Name Gender Breed]"
+```
+
+
+Remove a database:
+```sh
+limedb rm-db [DB-NAME]
+# Eg:
+limedb rm-db Dogs
 ```
 
 ## Features to add
 - Operations
-    - new-db
     - alter
     - insert
-    - delete
     - with configuration
 - Command templates/aliases
 - Password authentication for sqlite db.
