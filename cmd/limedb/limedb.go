@@ -9,9 +9,7 @@ import (
 )
 
 func main() {
-	flags := GetFlags()
-
-	ProcessArgs(flags)
+	ProcessArgs()
 }
 
 func panicErr(err error) {
