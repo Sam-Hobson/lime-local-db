@@ -8,7 +8,7 @@ but with more flexibility.
 ## Commands
 
 
-Create default configuration file (~/.limerc):
+Create default configuration file at ~/.limerc:
 ```sh
 limedb setup
 ```
@@ -33,7 +33,10 @@ limedb rm-db Dogs
 - Operations
     - alter
     - insert
-    - with configuration
+    - Command templates
+    - Sub document creation (eg. Adding a html file to a row)
+    - with configuration flag
+    - (Maybe) Dynamic Cobra subcommands.
 - Command templates/aliases
 - Password authentication for sqlite db.
 - HTMX front end interface
