@@ -13,11 +13,28 @@ import (
 
 const StoresRelDir = "stores"
 
-func NewDb(dbName string, colNames []string) error {
+type Column struct {
+	ColName    string
+	PrimaryKey bool
+	ForeignKey bool
+	Nullable   bool
+	DefaultVal any // TODO: Update this to a real type
+}
+
+// TODO: Default values for colName and defaultVal
+func NewColumn() *Column {
+	return &Column{
+		PrimaryKey: false,
+		ForeignKey: false,
+		Nullable:   true,
+	}
+}
+
+func NewDb(dbName string, columns []*Column) error {
 	slog.Info("Beginning new-db operation.",
 		"log_code", "26cd37c1",
 		"db-name", dbName,
-		"col-names", colNames)
+		"col-names", columns)
 
 	if !strings.HasSuffix(dbName, ".db") {
 		dbName += ".db"
