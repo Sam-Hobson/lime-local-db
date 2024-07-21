@@ -3,6 +3,7 @@ package cli
 import (
 	"log/slog"
 	"math"
+	"strconv"
 	"strings"
 
 	"github.com/go-errors/errors"
@@ -14,11 +15,11 @@ const NewDbCommandUsage = `new-db [Database name] [Database columns]...
 
 A Database column is formatted as follows:
 
-[Key flags][Nullable]:[Column type]:[Column name]{[Default value]}
+[Key flags][Not null]:[Column type]:[Column name]{[Default value]}
 
 
 [Key flags] is either P for primary key, or F for foreign key.
-[Nullable] is N if the column should be Nullable.
+[Not null] is N if the column should not be NULL.
 
 [Column type] is the data type of the column, one of:
 - INT
@@ -32,7 +33,7 @@ A Database column is formatted as follows:
 [Default value] is the value of the column if a value is not specified.
 `
 
-const NewDbCommandExample = `limedb new-db petdb P:TEXT:name{default} N:TEXT:gender{F} N::breed{Dog}
+const NewDbCommandExample = `limedb new-db petdb P:STR:name{default} N:STR:gender{F} N::breed{Dog}
 
 limedb new-db petdb P:INT:age ::gender{M} FN:INT:id
 
@@ -93,55 +94,134 @@ func parseColEntry(colEntry string) (*op.Column, error) {
 		return nil, errors.Errorf("Found malformed column entry input: %s", colEntry)
 	}
 
-    column := op.NewColumn()
+	column := op.NewColumn()
 
-	keyFlagsOrNullable := parts[0]
-	// colType := parts[1]
-	// nameAndDefaultVal := parts[2]
+	keyFlags := parts[0]
+	colType := parts[1]
+	nameAndDefaultVal := parts[2]
 
-    err := parseKeyFlags(keyFlagsOrNullable, column)
+	if err := parseKeyFlags(keyFlags, column); err != nil {
+		return nil, err
+	}
+	if err := parseDataType(colType, column); err != nil {
+		return nil, err
+	}
+	if err := parseNameAndDefaultVal(nameAndDefaultVal, column); err != nil {
+		return nil, err
+	}
 
-    if err != nil {
-        return nil, err
-    }
-
-	return nil, nil
+	return column, nil
 }
 
 func parseKeyFlags(flags string, column *op.Column) error {
 	var primaryKey = false
 	var foreignKey = false
-	var nullable = false
+	var notNull = false
+
+	flags = strings.ToUpper(flags)
 
 	for _, flag := range flags {
 		switch flag {
 		case 'P':
 			if primaryKey {
-				slog.Error("Column entry malformed.", "log_code", "759534a7", "Column", flags)
+				slog.Error("Column entry malformed.", "log_code", "759534a7", "Key_flags", flags)
 				return errors.Errorf("Found malformed column entry input (P used more than once): %s", flags)
 			}
-            primaryKey = true
+			primaryKey = true
 		case 'F':
 			if foreignKey {
-				slog.Error("Column entry malformed.", "log_code", "ec05b044", "Column", flags)
+				slog.Error("Column entry malformed.", "log_code", "ec05b044", "Key_flags", flags)
 				return errors.Errorf("Found malformed column entry input (F used more than once): %s", flags)
 			}
-            foreignKey = true
+			foreignKey = true
 		case 'N':
-			if nullable {
-				slog.Error("Column entry malformed.", "log_code", "41383bf1", "Column", flags)
+			if notNull {
+				slog.Error("Column entry malformed.", "log_code", "41383bf1", "Key_flags", flags)
 				return errors.Errorf("Found malformed column entry input (N used more than once): %s", flags)
 			}
-            nullable = true
+			notNull = true
 		default:
-			slog.Error("Column entry malformed.", "log_code", "9288e4b5", "Column", flags)
-			return errors.Errorf("Found malformed key flags/nullable on column entry input: %s", flags)
+			slog.Error("Column entry malformed.", "log_code", "9288e4b5", "Key_flags", flags)
+			return errors.Errorf("Found malformed key flags on column entry input: %s", flags)
 		}
 	}
 
-    column.PrimaryKey = primaryKey
-    column.ForeignKey = foreignKey
-    column.Nullable = nullable
+	column.PrimaryKey = primaryKey
+	column.ForeignKey = foreignKey
+	column.NotNull = notNull
 
-    return nil
+	return nil
+}
+
+func parseDataType(dataType string, column *op.Column) error {
+	dataType = strings.ToUpper(dataType)
+
+	// re := regexp.MustCompile(`STR{(.*)}`)
+
+	if dataType == "INT" {
+		column.DataType = op.ColumnIntDataType
+	} else if dataType == "REAL" {
+		column.DataType = op.ColumnRealDataType
+	} else if dataType == "STR" {
+		column.DataType = op.ColumnTextDataType
+	} else if dataType == "BLOB" {
+		column.DataType = op.ColumnBlobCharDataType
+	} else if strings.HasPrefix(dataType, "STR{") && strings.HasSuffix(dataType, "}") {
+		endLenIndex := strings.IndexRune(dataType, '}')
+
+		if endLenIndex != len(dataType)-1 {
+			slog.Error("Column entry malformed.", "log_code", "5acc18ef", "Data_types", dataType)
+			return errors.Errorf("Found malformed column data type input: %s", dataType)
+		}
+
+		lengthStr := dataType[len("STR{") : endLenIndex]
+
+        if lengthStr == "" {
+            column.DataType = op.ColumnTextDataType
+            return nil
+        }
+
+		length, err := strconv.ParseUint(lengthStr, 10, 32)
+
+		if err != nil {
+			slog.Error("Column entry malformed.", "log_code", "699712b6", "Data_types", dataType)
+			return errors.Errorf("Found malformed column data type input (invalid STR length): %s", dataType)
+		}
+
+		column.DataType = op.ColumnVarCharDataType
+		column.VarCharLength = uint32(length)
+	} else if dataType == "" {
+        column.DataType = op.ColumnNullDataType
+	} else {
+		slog.Error("Column entry malformed.", "log_code", "aaf65198", "Data_types", dataType)
+		return errors.Errorf("Found malformed column data type input: %s", dataType)
+	}
+
+	return nil
+}
+
+func parseNameAndDefaultVal(nameAndDefaultVal string, column *op.Column) error {
+    if nameAndDefaultVal == "" {
+		slog.Error("Column entry malformed.", "log_code", "ea5cd3fa", "Name", nameAndDefaultVal)
+		return errors.Errorf("Found malformed column name input (a column name must be provided): %s", nameAndDefaultVal)
+    }
+
+	startDefaultValIndex := strings.IndexRune(nameAndDefaultVal, '{')
+
+	if startDefaultValIndex == -1 {
+		column.ColName = nameAndDefaultVal
+		return nil
+	}
+
+	endDefaultValIndex := strings.IndexRune(nameAndDefaultVal, '}')
+
+	if (startDefaultValIndex == 0) || (endDefaultValIndex != len(nameAndDefaultVal)-1) {
+		slog.Error("Column entry malformed.", "log_code", "d63efff4", "Name", nameAndDefaultVal)
+		return errors.Errorf("Found malformed column name input: %s", nameAndDefaultVal)
+	}
+
+	column.ColName = nameAndDefaultVal[:startDefaultValIndex]
+	column.DefaultVal = nameAndDefaultVal[startDefaultValIndex+1 : endDefaultValIndex]
+
+	return nil
 }
