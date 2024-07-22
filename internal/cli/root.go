@@ -18,4 +18,6 @@ func init() {
 	rootCmd.AddCommand(SetupCommand)
 	rootCmd.AddCommand(NewDbCommand)
 	rootCmd.AddCommand(RmDbCommand)
+    rootCmd.AddCommand(SelDbCommand)
+    rootCmd.AddCommand(SelColumnCommand)
 }

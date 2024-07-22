@@ -2,7 +2,6 @@ package cli
 
 import (
 	"log/slog"
-	"math"
 	"strconv"
 	"strings"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const NewDbCommandUsage = `new-db [Database name] [Database columns]...
+const newDbCommandUsage = `new-db DatabaseName DatabaseColumns...
 
 A Database column is formatted as follows:
 
@@ -33,7 +32,7 @@ A Database column is formatted as follows:
 [Default value] is the value of the column if a value is not specified.
 `
 
-const NewDbCommandExample = `limedb new-db petdb P:STR:name{default} N:STR:gender{F} N::breed{Dog}
+const newDbCommandExample = `limedb new-db petdb P:STR:name{default} N:STR:gender{F} N::breed{Dog}
 
 limedb new-db petdb P:INT:age ::gender{M} FN:INT:id
 
@@ -41,10 +40,10 @@ limedb new-db petdb "P:STR{50}:name{a puppy}" "N:STR:goodBoy{Yes hes a good boy}
 `
 
 var NewDbCommand = &cobra.Command{
-	Use:     NewDbCommandUsage,
-	Example: NewDbCommandExample,
+	Use:     newDbCommandUsage,
+	Example: newDbCommandExample,
 	Short:   "Create a new database",
-	Args:    cobra.RangeArgs(2, math.MaxInt8),
+	Args:    cobra.MinimumNArgs(2),
 
 	DisableFlagsInUseLine: true, // TODO: Remove this when flags are added
 
@@ -79,7 +78,6 @@ func processNewDbCmd(cmd *cobra.Command, args []string) error {
 	err := op.NewDb(name, columns)
 
 	if err != nil {
-		slog.Error("new-db command failed.", "log_code", "0f36afa0")
 		return err
 	}
 

@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+    // TODO: Load config if it exist
+
 	ProcessArgs()
 }
 
@@ -17,4 +19,5 @@ func panicErr(err error) {
 		fmt.Println(err.(*errors.Error).ErrorStack())
 		panic(err)
 	}
+
 }
