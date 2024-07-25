@@ -61,9 +61,9 @@ func NewDb(dbName string, columns []*Column) error {
 			opts = append(opts, "PRIMARY KEY")
 		}
 
-		if col.ForeignKey {
-			opts = append(opts, "FOREIGN KEY")
-		}
+		// if col.ForeignKey {
+		// 	opts = append(opts, "FOREIGN KEY")
+		// }
 
 		ctb.Define(opts...)
 	}

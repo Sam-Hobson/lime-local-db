@@ -30,6 +30,7 @@ limedb rm-db Dogs
 ```
 
 ## Features to add
+- Proper support for foreign keys
 - Operations
     - alter
     - insert
