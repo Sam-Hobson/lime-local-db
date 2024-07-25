@@ -13,15 +13,15 @@ var rootCmd = &cobra.Command{
 	Short: "An application for interacting with a simple database",
 	Long:  "TODO: This",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-        if cmd.PersistentFlags().Lookup("db").Changed {
-            operations.SelectDb(selectedDb)
-        }
+		if selectedDb != "" {
+			operations.SelectDb(selectedDb)
+		}
 
-        if selectedCol != "" {
-            operations.SelectCol(selectedCol)
-        }
+		if selectedCol != "" {
+			operations.SelectCol(selectedCol)
+		}
 
-        return nil
+		return nil
 	},
 }
 
@@ -31,12 +31,10 @@ func ProcessArgs() error {
 
 func init() {
 	globalFlags := rootCmd.PersistentFlags()
-
 	globalFlags.StringVar(&selectedDb, "db", "", "Selected database to use for operations")
 	globalFlags.StringVar(&selectedCol, "col", "", "Selected column to use for operations")
 
 	rootCmd.AddCommand(SetupCommand)
-
 	rootCmd.AddCommand(NewDbCommand)
 	rootCmd.AddCommand(RmDbCommand)
 }

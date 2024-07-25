@@ -4,12 +4,15 @@ import (
 	"fmt"
 
 	"github.com/go-errors/errors"
+	"github.com/huandu/go-sqlbuilder"
 
 	. "github.com/sam-hobson/internal/cli"
 )
 
 func main() {
     // TODO: Load config if it exist
+
+    sqlbuilder.DefaultFlavor = sqlbuilder.SQLite
 
 	ProcessArgs()
 }
