@@ -1,8 +1,11 @@
 package operations
 
 import (
+	"fmt"
 	"log/slog"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/sam-hobson/internal/config"
 )
@@ -30,7 +33,8 @@ func RmDb(dbName string) error {
 	}
 
 	if softDelete {
-		if err := config.MoveFile(StoresRelDir, dbName, SoftDeleteFileDir, dbName); err != nil {
+        newDbName := fmt.Sprintf("%s-%s", dbName, strconv.FormatInt(time.Now().Unix(), 10))
+		if err := config.MoveFile(StoresRelDir, dbName, SoftDeleteFileDir, newDbName); err != nil {
 			return err
 		}
 	} else {
