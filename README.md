@@ -16,9 +16,9 @@ limedb setup
 
 Create a new database:
 ```sh
-limedb new-db [DB-NAME] "[<col1> <col2> <col3>]"
+limedb [DB-name] [Key flags][Not null]:[Column type]:[Column name]{[Default value]}
 # Eg:
-limedb new-db Dogs "[Name Gender Breed]"
+limedb new-db petdb P:STR:name{default} N:STR:gender{F} N::breed{Dog}
 ```
 
 
