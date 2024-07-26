@@ -24,9 +24,6 @@ func ReadConfigFile() {
 
 	homeDir := util.PanicIfErr(os.UserHomeDir())
 
-	viper.SetDefault("limedbHome", filepath.Join(homeDir, ".limedb"))
-	viper.SetDefault("softDeletion", true)
-
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 			panic(errors.Errorf("Fatal error config file: %w", err))
@@ -34,11 +31,14 @@ func ReadConfigFile() {
 
 		slog.Warn("Could not find config file, creating new one", "log_code", "d44bb577")
 
-		err = viper.WriteConfigAs(fmt.Sprintf("%s/%s.%s", homeDir, ConfigFileName, ConfigFileExt))
+		viper.SetDefault("limedbHome", filepath.Join(homeDir, ".limedb"))
+		viper.SetDefault("softDeletion", true)
+		viper.SetDefault("defaultDb", "")
 
-		if err != nil {
-			panic(errors.Errorf("Fatal error creating config file: %w", err))
+		if err := viper.WriteConfigAs(fmt.Sprintf("%s/%s.%s", homeDir, ConfigFileName, ConfigFileExt)); err != nil {
+			panic(errors.Errorf("Fatal error writing to config file: %w", err))
 		}
+
 	} else {
 		slog.Info("Successfully read config file", "log_code", "b040b5d9")
 	}

@@ -23,6 +23,16 @@ limedb rm-db Dogs
 ```
 
 
+## Flags
+
+Provide comma separated list of configuration options:
+```sh
+limedb [Any command] --with-config key:value
+# Eg:
+limedb [Any command] --with-config softDeletion:false
+limedb [Any command] --with-config softDeletion:false,limedbHome:/etc/limedb/
+```
+
 ## Features to add
 - Proper support for foreign keys
 - Operations
