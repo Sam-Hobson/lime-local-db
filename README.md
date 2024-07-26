@@ -8,12 +8,6 @@ but with more flexibility.
 ## Commands
 
 
-Create default configuration file at ~/.limerc:
-```sh
-limedb setup
-```
-
-
 Create a new database:
 ```sh
 limedb [DB-name] [Key flags][Not null]:[Column type]:[Column name]{[Default value]}
@@ -21,13 +15,13 @@ limedb [DB-name] [Key flags][Not null]:[Column type]:[Column name]{[Default valu
 limedb new-db petdb P:STR:name{default} N:STR:gender{F} N::breed{Dog}
 ```
 
-
 Remove a database:
 ```sh
 limedb rm-db [DB-NAME]
 # Eg:
 limedb rm-db Dogs
 ```
+
 
 ## Features to add
 - Proper support for foreign keys

@@ -34,7 +34,7 @@ func RemoveDatabase(databaseName string) error {
 		}
 	}
 
-	slog.Info("Successfully completed rm-db operation.", "log_code", "d73a061e", "db-name", fileName)
+	slog.Info("Successfully removed database.", "log_code", "d73a061e", "db-name", fileName, "soft-delete", softDelete)
 	return nil
 
 }
