@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	newdb "github.com/sam-hobson/cmd/new-db"
+	rmdb "github.com/sam-hobson/cmd/rm-db"
 	"github.com/spf13/cobra"
 )
 
@@ -15,7 +16,7 @@ func NewCommand(version, commit string) *cobra.Command {
         Version: buildVersion(version, commit),
     }
 
-    cmd.AddCommand(newdb.NewCommand())
+    cmd.AddCommand(newdb.NewCommand(), rmdb.NewCommand())
 
     return cmd
 }
