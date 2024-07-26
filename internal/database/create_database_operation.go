@@ -1,37 +1,43 @@
-package operations
+package database
 
 import (
 	"database/sql"
-	"fmt"
 	"log/slog"
 	"strings"
 
 	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
 	_ "github.com/mattn/go-sqlite3"
-
-	conf "github.com/sam-hobson/internal/config"
+	"github.com/sam-hobson/internal/util"
+	"github.com/spf13/viper"
 )
 
-const StoresRelDir = "stores"
-
-func NewDb(dbName string, columns []*Column) error {
+func CreateDatabase(databaseName string, columns []*Column) error {
 	slog.Info("Beginning new-db operation.",
 		"log_code", "26cd37c1",
-		"db-name", dbName,
+		"db-name", databaseName,
 		"Columns", columns)
 
-	fileName := dbName
+	fileName := databaseName
 
-	if !strings.HasSuffix(dbName, ".db") {
+	if !strings.HasSuffix(databaseName, ".db") {
 		fileName += ".db"
 	}
 
-	if err := createDbFile(StoresRelDir, fileName); err != nil {
-		return err
-	}
+    relFs := util.NewRelativeFsManager(viper.GetString("limedbHome"))
 
-	dbPath := conf.FullPath(StoresRelDir, fileName)
+    if exists, err := relFs.FileExists("stores", fileName); err != nil {
+        return err
+    } else if exists {
+		slog.Error("Cannot create a new database as it already exists.", "log_code", "6c95edf6", "database_name", databaseName)
+		return errors.Errorf("Cannot create a new database as it already exists")
+    }
+
+    if err := relFs.CreateFile("stores", fileName); err != nil {
+        return err
+    }
+
+	dbPath := relFs.FullPath("stores", fileName)
 	db, err := sql.Open("sqlite3", dbPath)
 	defer db.Close()
 
@@ -41,17 +47,12 @@ func NewDb(dbName string, columns []*Column) error {
 	}
 
 	ctb := sqlbuilder.NewCreateTableBuilder()
-	ctb.CreateTable(dbName).IfNotExists()
+	ctb.CreateTable(databaseName).IfNotExists()
 
 	for _, col := range columns {
 		opts := make([]string, 10)
 		opts = append(opts, col.ColName)
-
-		if col.DataType == ColumnVarCharDataType {
-			opts = append(opts, fmt.Sprintf("%s(%d)", col.DataType.String(), col.VarCharLength))
-		} else {
-			opts = append(opts, col.DataType.String())
-		}
+        opts = append(opts, col.DataType.String())
 
 		if col.NotNull {
 			opts = append(opts, "NOT NULL")
@@ -81,23 +82,5 @@ func NewDb(dbName string, columns []*Column) error {
 
 	slog.Info("Successfully created a new-db.", "log_code", "7bf9634b", "Db_path", dbPath)
 	return err
-}
 
-func createDbFile(fileDir, fileName string) error {
-	dbPath := conf.FullPath(fileDir, fileName)
-
-	exists, err := conf.FileExists(fileDir, fileName)
-
-	if err != nil {
-		return err
-	}
-
-	if exists {
-		slog.Error("Cannot create a new database as it already exists.", "log_code", "6c95edf6", "path", dbPath)
-		return errors.Errorf("Cannot create a new database as it already exists.")
-	}
-
-	err = conf.CreateFile(fileDir, fileName)
-
-	return err
 }
