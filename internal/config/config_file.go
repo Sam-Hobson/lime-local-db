@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-errors/errors"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/viper"
 )
@@ -41,6 +42,10 @@ func ReadConfigFile() {
 
 	} else {
 		slog.Info("Successfully read config file", "log_code", "b040b5d9")
+	}
+
+	if db := viper.GetString("defaultDb"); db != "" {
+		state.ApplicationState().SetSelectedDb(db)
 	}
 
 }

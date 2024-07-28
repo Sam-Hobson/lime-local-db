@@ -32,7 +32,7 @@ func NewDataType(dataType string) (ColumnDataType, error) {
 	switch strings.ToUpper(dataType) {
 	case "INT", "INTEGER":
 		return ColumnIntDataType, nil
-	case "REAL":
+	case "REAL", "FLOAT":
 		return ColumnRealDataType, nil
 	case "TEXT", "STR":
 		return ColumnTextDataType, nil

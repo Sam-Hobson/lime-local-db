@@ -8,6 +8,7 @@ import (
 	"github.com/go-errors/errors"
 	newdb "github.com/sam-hobson/cmd/new-db"
 	rmdb "github.com/sam-hobson/cmd/rm-db"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -23,6 +24,7 @@ func NewCommand(version, commit string) *cobra.Command {
 	}
 
 	cmd.PersistentFlags().StringSlice("with-config", nil, "Override a configuration option during the execution of this command.")
+	cmd.PersistentFlags().StringP("db", "d", "", "Choose the database to perform operations on.")
 
 	cmd.AddCommand(newdb.NewCommand(), rmdb.NewCommand())
 
@@ -45,6 +47,10 @@ func preRun(cmd *cobra.Command, args []string) error {
 
 			viper.Set(key, value)
 		}
+	}
+
+	if selectedDb := util.PanicIfErr(cmd.Flags().GetString("db")); selectedDb != "" {
+		state.ApplicationState().SetSelectedDb(selectedDb)
 	}
 
 	return nil
