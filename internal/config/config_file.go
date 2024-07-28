@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -36,7 +35,7 @@ func ReadConfigFile() {
 		viper.SetDefault("softDeletion", true)
 		viper.SetDefault("defaultDb", "")
 
-		if err := viper.WriteConfigAs(fmt.Sprintf("%s/%s.%s", homeDir, ConfigFileName, ConfigFileExt)); err != nil {
+		if err := viper.WriteConfigAs(filepath.Join(homeDir, ConfigFileName+"."+ConfigFileExt)); err != nil {
 			panic(errors.Errorf("Fatal error writing to config file: %w", err))
 		}
 

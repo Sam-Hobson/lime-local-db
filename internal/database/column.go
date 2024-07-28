@@ -14,7 +14,7 @@ type Column struct {
 	PrimaryKey bool
 	ForeignKey bool
 	NotNull    bool
-	DefaultVal string // TODO: Update this to a real type
+	DefaultVal string
 }
 
 func (c *Column) String() string {
@@ -35,7 +35,11 @@ func (c *Column) String() string {
 	sb.WriteRune(':')
 	sb.WriteString(c.ColName)
 
-	// TODO: Write default value
+	if c.DefaultVal != "" {
+		sb.WriteRune('{')
+		sb.WriteString(c.DefaultVal)
+		sb.WriteRune('}')
+	}
 
 	return sb.String()
 }
