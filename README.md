@@ -23,8 +23,22 @@ limedb rm-db [DB-NAME]
 limedb rm-db petdb
 ```
 
+Add an entry to a database:
+```sh
+limedb add-entry [column names and values]...
+# Eg:
+limedb --db petdb add-entry name{Woofy} age{5} gender{M} breed{Beagle}
+```
+
 
 ## Flags
+
+Provide the database that operations will operate on:
+```sh
+limedb --db [db name] [Any command]
+# Eg:
+limedb --db petdb add-entry name{Woofy} age{5} gender{M}
+```
 
 Provide comma separated list of configuration options:
 ```sh
