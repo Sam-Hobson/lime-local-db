@@ -14,7 +14,7 @@ type Column struct {
 	PrimaryKey bool
 	ForeignKey bool
 	NotNull    bool
-	DefaultVal any // TODO: Update this to a real type
+	DefaultVal string // TODO: Update this to a real type
 }
 
 func (c *Column) String() string {
@@ -62,6 +62,10 @@ func ParseColumnString(col string) (*Column, error) {
 	}
 	if err := parseColumnNameAndDefaultVal(nameAndDefaultVal, column); err != nil {
 		return nil, err
+	}
+
+	if (column.DataType == ColumnTextDataType) && (column.DefaultVal != "") {
+		column.DefaultVal = "'" + column.DefaultVal + "'"
 	}
 
 	return column, nil

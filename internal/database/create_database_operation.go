@@ -54,6 +54,10 @@ func CreateDatabase(databaseName string, columns []*Column) error {
 		opts = append(opts, col.ColName)
 		opts = append(opts, col.DataType.String())
 
+        if col.DefaultVal != "" {
+            opts = append(opts, "DEFAULT " + col.DefaultVal)
+        }
+
 		if col.NotNull {
 			opts = append(opts, "NOT NULL")
 		}

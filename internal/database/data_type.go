@@ -21,7 +21,7 @@ const (
 )
 
 var columnDataTypeName = [...]string{
-	"INT",
+	"INTEGER",
 	"REAL",
 	"TEXT",
 	"BLOB",
@@ -30,11 +30,11 @@ var columnDataTypeName = [...]string{
 
 func NewDataType(dataType string) (ColumnDataType, error) {
 	switch strings.ToUpper(dataType) {
-	case "INT":
+	case "INT", "INTEGER":
 		return ColumnIntDataType, nil
 	case "REAL":
 		return ColumnRealDataType, nil
-	case "TEXT":
+	case "TEXT", "STR":
 		return ColumnTextDataType, nil
 	case "BLOB":
 		return ColumnBlobCharDataType, nil
