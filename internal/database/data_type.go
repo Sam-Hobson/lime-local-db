@@ -1,6 +1,7 @@
 package database
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/go-errors/errors"
@@ -43,4 +44,28 @@ func NewDataType(dataType string) (ColumnDataType, error) {
 	default:
 		return ColumnNullDataType, errors.Errorf("Data type %s does not exist", dataType)
 	}
+}
+
+// TODO: Finish this function
+func ParseType(dataType ColumnDataType, data string) (interface{}, error) {
+	switch dataType {
+	case ColumnIntDataType:
+		return ParseInt(data)
+	case ColumnRealDataType:
+		return ParseReal(data)
+    case ColumnTextDataType:
+        return data, nil
+    case ColumnNullDataType:
+        return "NULL", nil
+	}
+
+	return nil, nil
+}
+
+func ParseInt(data string) (int64, error) {
+	return strconv.ParseInt(data, 10, 64)
+}
+
+func ParseReal(data string) (float64, error) {
+	return strconv.ParseFloat(data, 64)
 }

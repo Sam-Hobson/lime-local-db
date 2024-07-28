@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/go-errors/errors"
+	"github.com/sam-hobson/internal/database"
 	"github.com/spf13/cobra"
 )
 
@@ -33,8 +34,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	slog.Info("Parsed add-entry arguments.", "log_code", "7a8f5e35", "Args", entryValues)
-
-	return nil
+    return database.AddEntry(entryValues)
 }
 
 func parseColValue(value string) (string, string, error) {

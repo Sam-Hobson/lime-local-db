@@ -14,12 +14,11 @@ var (
 )
 
 func main() {
-    sqlbuilder.DefaultFlavor = sqlbuilder.SQLite
+	sqlbuilder.DefaultFlavor = sqlbuilder.SQLite
 
-    config.ReadConfigFile()
+	config.ReadConfigFile()
 
 	if err := cmd.NewCommand(version, commit).Execute(); err != nil {
 		os.Exit(1)
 	}
 }
-
