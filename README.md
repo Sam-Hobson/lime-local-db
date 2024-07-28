@@ -1,6 +1,6 @@
 # lime-local-db
 
-Limedb is a local wrapper for an sqlite database. It is designed to make interacting
+Limedb is a local wrapper for a sqlite database. It is designed to make interacting
 with the database easier, to eventually provide similar functionality to Notion or Obsidian,
 but with more flexibility.
 
@@ -12,14 +12,15 @@ Create a new database:
 ```sh
 limedb [DB-name] [Key flags][Not null]:[Column type]:[Column name]{[Default value]}
 # Eg:
-limedb new-db petdb P:STR:name{default} N:STR:gender{F} N::breed{Dog}
+limedb new-db petdb P:TEXT:name{default} N:TEXT:gender{F} N::breed{Dog}
+limedb new-db petdb P:TEXT:name{default} N:TEXT:gender{F} N:INT:age :REAL:height_cm
 ```
 
 Remove a database:
 ```sh
 limedb rm-db [DB-NAME]
 # Eg:
-limedb rm-db Dogs
+limedb rm-db petdb
 ```
 
 
@@ -30,7 +31,7 @@ Provide comma separated list of configuration options:
 limedb [Any command] --with-config key:value
 # Eg:
 limedb [Any command] --with-config softDeletion:false
-limedb [Any command] --with-config softDeletion:false,limedbHome:/etc/limedb/
+limedb rm-db petdb --confirm --with-config softDeletion:false,limedbHome:/etc/limedb/
 ```
 
 ## Features to add
