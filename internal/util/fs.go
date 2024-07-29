@@ -108,6 +108,20 @@ func (relFs relativeFsManager) CreateDir(relPath string) error {
 	return nil
 }
 
+func (relFs relativeFsManager) ReadDir(relPath string) ([]os.DirEntry, error) {
+	slog.Info("Reading directory.", "log_code", "ca2b2793", "Path", relPath)
+
+	path := relFs.FullPath(relPath)
+	res, err := os.ReadDir(path)
+
+	if err != nil {
+        slog.Error("Could not read directory.", "log_code", "76a8af95", "FullPath", path)
+        return nil, err
+	}
+
+	return res, nil
+}
+
 func (relOs relativeFsManager) FullPath(relPath ...string) string {
 	return filepath.Join(relOs.path, filepath.Join(relPath...))
 }

@@ -34,7 +34,19 @@ func OpenSqliteDatabase(dbName string) (*sql.DB, error) {
 	return sql.Open("sqlite3", dbPath)
 }
 
-func AllExistingDatabaseNames() []string {
+// TODO: This should be refactored into a struct
+func AllExistingDatabaseNames() ([]string, error) {
+	files, err := NewRelativeFsManager(viper.GetString("limedbHome")).ReadDir("stores")
 
-    return nil
+	if err != nil {
+		return nil, err
+	}
+
+	dbNames := make([]string, len(files))
+
+	for i, file := range files {
+		dbNames[i] = file.Name()
+	}
+
+	return dbNames, nil
 }

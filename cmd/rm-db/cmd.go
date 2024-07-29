@@ -10,11 +10,11 @@ import (
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "rm-db [Database name]",
-		Short:   "Delete a database",
-		Example: "limedb rm-db petdb",
-		Args: cobra.ExactArgs(1),
-        ValidArgs: nil, // TODO: This should contain the available database names.
+		Use:       "rm-db [Database name]",
+		Short:     "Delete a database",
+		Example:   "limedb rm-db petdb",
+		Args:      cobra.ExactArgs(1),
+		ValidArgs: dbNames(),
 
 		RunE: run,
 	}
@@ -32,4 +32,12 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	return database.RemoveDatabase(args[0])
+}
+
+func dbNames() []string {
+	if names, err := util.AllExistingDatabaseNames(); err != nil {
+		return []string{}
+	} else {
+		return names
+	}
 }
