@@ -22,7 +22,7 @@ func (relFs relativeFsManager) FileExists(relPath string, fileName string) (bool
 			return false, nil
 		}
 
-		slog.Error("Could not check if file exists.", "log_code", "d74bd3e7", "path", relFs.FullPath(relPath, fileName))
+		slog.Warn("Could not check if file exists.", "log_code", "d74bd3e7", "path", relFs.FullPath(relPath, fileName))
 		return false, err
 	}
 
@@ -35,7 +35,7 @@ func (relFs relativeFsManager) CreateFile(relPath string, fileName string) error
 	err := relFs.CreateDir(relPath)
 
 	if err != nil {
-		slog.Error("Could not create directory.", "log_code", "ecdb8557", "Directory", relFs.FullPath(relPath))
+		slog.Warn("Could not create directory.", "log_code", "ecdb8557", "Directory", relFs.FullPath(relPath))
 		return err
 	}
 
@@ -43,7 +43,8 @@ func (relFs relativeFsManager) CreateFile(relPath string, fileName string) error
 	defer file.Close()
 
 	if err != nil {
-		slog.Error("Could not create file.", "log_code", "3b5806d7", "File path", relFs.FullPath(relPath, fileName))
+		slog.Warn("Could not create file.", "log_code", "3b5806d7", "File path", relFs.FullPath(relPath, fileName))
+        return err
 	}
 
 	slog.Info("Successfully created file.", "log_code", "31512c87", "Path", relFs.FullPath(relPath, fileName))
@@ -62,7 +63,7 @@ func (relFs relativeFsManager) MoveFile(fromRelPath, fromFileName, toRelPath, to
 	}
 
 	if !exists {
-		slog.Error("Cannot move file as it doesn't exist.", "log_code", "80331077", "From", from)
+		slog.Warn("Cannot move file as it doesn't exist.", "log_code", "80331077", "From", from)
 		return os.ErrNotExist
 	}
 
@@ -71,7 +72,7 @@ func (relFs relativeFsManager) MoveFile(fromRelPath, fromFileName, toRelPath, to
 	}
 
 	if err := os.Rename(from, to); err != nil {
-		slog.Error("Could not rename file.", "log_code", "7213ca47", "From", from, "To", to)
+		slog.Warn("Could not rename file.", "log_code", "7213ca47", "From", from, "To", to)
 		return err
 	}
 
@@ -85,7 +86,7 @@ func (relFs relativeFsManager) RmFile(relPath string, fileName string) error {
 	err := os.Remove(relFs.FullPath(relPath, fileName))
 
 	if err != nil {
-		slog.Error("Could not remove file.", "log_code", "8ee71301", "Path", relFs.FullPath(relPath, fileName))
+		slog.Warn("Could not remove file.", "log_code", "8ee71301", "Path", relFs.FullPath(relPath, fileName))
 		return err
 	}
 
@@ -100,7 +101,7 @@ func (relFs relativeFsManager) CreateDir(relPath string) error {
 	err := os.MkdirAll(path, os.ModePerm)
 
 	if err != nil {
-		slog.Error("Could not create directory.", "log_code", "791e81d6", "Directory", path)
+		slog.Warn("Could not create directory.", "log_code", "791e81d6", "Directory", path)
 		return err
 	}
 
@@ -115,7 +116,7 @@ func (relFs relativeFsManager) ReadDir(relPath string) ([]os.DirEntry, error) {
 	res, err := os.ReadDir(path)
 
 	if err != nil {
-        slog.Error("Could not read directory.", "log_code", "76a8af95", "FullPath", path)
+        slog.Warn("Could not read directory.", "log_code", "76a8af95", "FullPath", path)
         return nil, err
 	}
 
