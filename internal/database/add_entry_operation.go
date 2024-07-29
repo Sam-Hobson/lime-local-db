@@ -20,6 +20,10 @@ func AddEntry(entries map[string]string) error {
 		slog.Error("Cannot add entry as no database is selected.", "log_code", "c40be9f9")
 		return errors.Errorf("Cannot add entry as no database is selected")
 	}
+    if exists, err := util.SqliteDatabaseExists(selectedDb); !exists || err != nil {
+        slog.Error("Cannot add entry as database does not exist.", "log_code", "765a9254")
+        return errors.Errorf("Cannot add entry as database does not exist.")
+    }
 
 	db, err := util.OpenSqliteDatabase(selectedDb)
 

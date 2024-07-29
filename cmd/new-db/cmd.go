@@ -8,10 +8,10 @@ import (
 // TODO: Flesh out use/examples documentation.
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "new-db DatabaseName DatabaseColumns",
-		Short:   "Create a new database.",
-		Example: "limedb new-db pets PN:TEXT:name :INT:age{0} :TEXT:gender{F}",
-		Args:    cobra.MinimumNArgs(2),
+		Use:       "new-db DatabaseName DatabaseColumns",
+		Short:     "Create a new database.",
+		Example:   "limedb new-db pets PN:TEXT:name :INT:age{0} :TEXT:gender{F}",
+		Args:      cobra.MinimumNArgs(2),
 
 		RunE: run,
 	}
