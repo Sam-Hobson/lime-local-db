@@ -53,6 +53,7 @@ limedb rm-db petdb --confirm --with-config softDeletion:false,limedbHome:/etc/li
 - Operations
     - alter
     - insert
+    - List databases and properties
     - Command templates
     - Sub document creation (eg. Adding a html file to a row)
     - with configuration flag
