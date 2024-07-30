@@ -9,6 +9,7 @@ import (
 	addentry "github.com/sam-hobson/cmd/add-entry"
 	newdb "github.com/sam-hobson/cmd/new-db"
 	rmdb "github.com/sam-hobson/cmd/rm-db"
+	rmentriesall "github.com/sam-hobson/cmd/rm-entries-all"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
@@ -27,7 +28,12 @@ func NewCommand(version, commit string) *cobra.Command {
 	cmd.PersistentFlags().StringSlice("with-config", nil, "Override a configuration option during the execution of this command.")
 	cmd.PersistentFlags().StringP("db", "d", "", "Choose the database to perform operations on.")
 
-	cmd.AddCommand(newdb.NewCommand(), rmdb.NewCommand(), addentry.NewCommand())
+	cmd.AddCommand(
+        newdb.NewCommand(),
+        rmdb.NewCommand(),
+        addentry.NewCommand(),
+        rmentriesall.NewCommand(),
+    )
 
 	return cmd
 }

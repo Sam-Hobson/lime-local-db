@@ -55,8 +55,8 @@ limedb rm-db petdb --confirm --with-config softDeletion:false,limedbHome:/etc/li
     - List databases and properties
     - Command templates
     - Sub document creation (eg. Adding a html file to a row)
-    - with configuration flag
     - (Maybe) Dynamic Cobra subcommands.
+- More complex deletions, eg extracting a subset of data into a new table.
 - Command templates/aliases
 - Password authentication for sqlite db.
 - HTMX front end interface
