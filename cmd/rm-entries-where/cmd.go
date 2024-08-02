@@ -36,7 +36,7 @@ func run(cmd *cobra.Command, args []string) error {
 	if rowsEffected, err := database.RemoveEntries(where); err != nil {
 		return err
 	} else {
-		cmd.Printf("%d rows effected\n", rowsEffected)
+		cmd.Printf("%d rows affected\n", rowsEffected)
 		return nil
 	}
 }

@@ -33,23 +33,22 @@ func RemoveEntries(where *sqlbuilder.WhereClause) (int64, error) {
 	}
 	defer db.Close()
 
-    delBuilder := sqlbuilder.NewDeleteBuilder()
-    delBuilder.DeleteFrom(selectedDb)
-    delBuilder.AddWhereClause(where)
+	delBuilder := sqlbuilder.NewDeleteBuilder()
+	delBuilder.DeleteFrom(selectedDb)
+	delBuilder.AddWhereClause(where)
 
-    sql, args := delBuilder.Build()
+	sql, args := delBuilder.Build()
+	slog.Info("remove-entries operation with SQL command.", "log_code", "8fc6aa55", "SQL", sql, "args", args)
+	res, err := db.Exec(sql, args...)
 
-    slog.Info("remove-entries operation with SQL command.", "log_code", "8fc6aa55", "SQL", sql, "args", args)
-
-    res, err := db.Exec(sql, args...)
-
-    if err != nil {
+	if err != nil {
 		slog.Error("Failed executing remove-entries command.", "log_code", "75d6eb60", "SQL", sql, "args", args)
 		return -1, err
 	}
 
+    rowsAffected := util.PanicIfErr(res.RowsAffected())
 
-    slog.Info("Successfully removed entries.", "log_code", "aa8cd72c", "rows-effected", util.PanicIfErr(res.RowsAffected()), "db", selectedDb)
+	slog.Info("Successfully removed entries.", "log_code", "aa8cd72c", "rows-affected", rowsAffected, "db", selectedDb)
 
-	return util.PanicIfErr(res.RowsAffected()), nil
+	return rowsAffected, nil
 }
