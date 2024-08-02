@@ -1,6 +1,13 @@
 package rmentriesall
 
-import "github.com/spf13/cobra"
+import (
+	"log/slog"
+
+	"github.com/huandu/go-sqlbuilder"
+	"github.com/sam-hobson/internal/database"
+	"github.com/sam-hobson/internal/util"
+	"github.com/spf13/cobra"
+)
 
 
 func NewCommand() *cobra.Command {
@@ -13,11 +20,20 @@ func NewCommand() *cobra.Command {
         RunE: run,
     }
 
+	cmd.Flags().Bool("confirm", false, "Confirm that you want to take the current risky action")
+
     return cmd
 }
 
 
 func run(cmd *cobra.Command, args []string) error {
+	if !util.PanicIfErr(cmd.Flags().GetBool("confirm")) {
+		slog.Warn("rm-db rejected. Operation was not confirmed.", "log_code", "abf450ec")
+		cmd.PrintErrln("Command rejected. Please use the --confirm flag if you are sure you want to proceed.")
+		return nil
+	}
 
+    where := sqlbuilder.NewWhereClause()
+    database.RemoveEntries(where)
     return nil
 }

@@ -75,7 +75,7 @@ func CreateDatabase(databaseName string, columns []*Column) error {
 
 	createTableStr, args := ctb.Build()
 
-	slog.Info("Creating table with SQL command.", "log_code", "0cb6a54d", "SQL", createTableStr)
+	slog.Info("Creating table with SQL command.", "log_code", "0cb6a54d", "SQL", createTableStr, "args", args)
 
 	if _, err = db.Exec(createTableStr, args...); err != nil {
 		slog.Error("Failed executing create table command.", "log_code", "fed4e102", "SQL", createTableStr)
