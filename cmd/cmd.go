@@ -10,6 +10,7 @@ import (
 	newdb "github.com/sam-hobson/cmd/new-db"
 	rmdb "github.com/sam-hobson/cmd/rm-db"
 	rmentriesall "github.com/sam-hobson/cmd/rm-entries-all"
+	rmentrieswhere "github.com/sam-hobson/cmd/rm-entries-where"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
@@ -33,6 +34,7 @@ func NewCommand(version, commit string) *cobra.Command {
         rmdb.NewCommand(),
         addentry.NewCommand(),
         rmentriesall.NewCommand(),
+        rmentrieswhere.NewCommand(),
     )
 
 	return cmd

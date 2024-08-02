@@ -30,6 +30,12 @@ limedb add-entry [column names and values]...
 limedb --db petdb add-entry name{Woofy} age{5} gender{M} breed{Beagle}
 ```
 
+Remove entries from a database:
+```sh
+# Remove all database entries
+limedb --db petdb rm-entries-all
+```
+
 
 ## Flags
 
@@ -50,14 +56,18 @@ limedb rm-db petdb --confirm --with-config softDeletion:false,limedbHome:/etc/li
 
 ## Features to add
 - Proper support for foreign keys
+- Add option in where clauses to input raw sqlite
 - Operations
+    - Backup db
+    - Restore db
     - alter
     - List databases and properties
     - Command templates
     - Sub document creation (eg. Adding a html file to a row)
-    - (Maybe) Dynamic Cobra subcommands.
-- More complex deletions, eg extracting a subset of data into a new table.
+    - (Maybe) Dynamic Cobra subcommands
+- More complex deletions, eg extracting a subset of data into a new table
+- Add soft deletion for rows
 - Command templates/aliases
-- Password authentication for sqlite db.
+- Password authentication for sqlite db
 - HTMX front end interface
 - lua scripts to execute on db hooks

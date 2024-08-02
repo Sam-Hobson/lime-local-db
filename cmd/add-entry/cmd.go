@@ -43,11 +43,11 @@ func parseColValue(value string) (string, string, error) {
 
 	if (startVal == -1) || (endVal == -1) {
 		slog.Error("Could not parse entry value.", "log_code", "1361631e", "value", value)
-		return "", "", errors.Errorf("Invalid add-entry value in %s, value not present.", value)
+		return "", "", errors.Errorf("Invalid add-entry value in %s, value not present", value)
 	}
 	if (startVal == 0) || (endVal != len(value)-1) {
 		slog.Error("Could not parse entry value.", "log_code", "f6fa2b05", "value", value)
-		return "", "", errors.Errorf("Invalid add-entry value in %s, malformed input.", value)
+		return "", "", errors.Errorf("Invalid add-entry value in %s, malformed input", value)
 	}
 
 	return value[:startVal], value[startVal+1 : endVal], nil
