@@ -12,28 +12,31 @@ Create a new database:
 ```sh
 limedb [DB-name] [Key flags][Not null]:[Column type]:[Column name]{[Default value]}
 # Eg:
-limedb new-db petdb P:TEXT:name{default} N:TEXT:gender{F} N::breed{Dog}
-limedb new-db petdb P:TEXT:name{default} N:TEXT:gender{F} N:INT:age :REAL:height_cm
+limedb new-db pets P:TEXT:name{default} N:TEXT:gender{F} N::breed{Dog}
+limedb new-db pets P:TEXT:name{default} N:TEXT:gender{F} N:INT:age :REAL:height_cm
 ```
 
 Remove a database:
 ```sh
 limedb rm-db [DB-NAME]
 # Eg:
-limedb rm-db petdb
+limedb rm-db pets
 ```
 
 Add an entry to a database:
 ```sh
 limedb add-entry [column names and values]...
 # Eg:
-limedb --db petdb add-entry name{Woofy} age{5} gender{M} breed{Beagle}
+limedb --db pets add-entry name{Woofy} age{5} gender{M} breed{Beagle}
 ```
 
 Remove entries from a database:
 ```sh
 # Remove all database entries
-limedb --db petdb rm-entries-all
+limedb --db pets rm-entries-all
+# Remove database entries conditionally
+limedb --db pets rm-entries-where name{like:W%}
+limedb --db pets rm-entries-where "age{>:5}" gender{!=:F}
 ```
 
 
@@ -43,7 +46,7 @@ Provide the database that operations will operate on:
 ```sh
 limedb --db [db name] [Any command]
 # Eg:
-limedb --db petdb add-entry name{Woofy} age{5} gender{M}
+limedb --db pets add-entry name{Woofy} age{5} gender{M}
 ```
 
 Provide comma separated list of configuration options:
@@ -51,7 +54,7 @@ Provide comma separated list of configuration options:
 limedb [Any command] --with-config key:value
 # Eg:
 limedb [Any command] --with-config softDeletion:false
-limedb rm-db petdb --confirm --with-config softDeletion:false,limedbHome:/etc/limedb/
+limedb rm-db pets --confirm --with-config softDeletion:false,limedbHome:/etc/limedb/
 ```
 
 ## Features to add
