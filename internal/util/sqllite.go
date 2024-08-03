@@ -4,41 +4,84 @@ import (
 	"database/sql"
 	"log/slog"
 	"path/filepath"
-	"strings"
 
+	"github.com/huandu/go-sqlbuilder"
+	"github.com/sam-hobson/internal/types"
 	"github.com/spf13/viper"
 )
 
-func SqliteDatabaseExists(dbName string) (bool, error) {
-	fileName := dbName
+func CreateSqliteTable(tableName string, columns []*types.Column) (string, []interface{}) {
+	slog.Info("Creating sqlite to create table.", "log_code", "19529bb3", "Table-name", tableName, "Columns", columns)
 
-	if !strings.HasSuffix(fileName, ".db") {
-		fileName += ".db"
+	ctb := sqlbuilder.NewCreateTableBuilder()
+	ctb.CreateTable(tableName).IfNotExists()
+
+	for _, col := range columns {
+		opts := make([]string, 10)
+		opts = append(opts, col.ColName)
+		opts = append(opts, col.DataType.String())
+
+		if col.DefaultVal != "" {
+			opts = append(opts, "DEFAULT "+col.DefaultVal)
+		}
+
+		if col.NotNull {
+			opts = append(opts, "NOT NULL")
+		}
+
+		if col.PrimaryKey {
+			opts = append(opts, "PRIMARY KEY")
+		}
+
+		// if col.ForeignKey {
+		// 	opts = append(opts, "FOREIGN KEY")
+		// }
+
+		ctb.Define(opts...)
 	}
 
-	slog.Info("Checking if database exists.", "log_code", "e75f8412", "dbName", dbName)
+	return ctb.Build()
+}
 
-    relFs := NewRelativeFsManager(viper.GetString("limedbHome"))
+func InsertIntoSqliteTable(tableName string, entries map[string]string) (string, []interface{}) {
+	slog.Info("Creating sqlite to insert into table.", "log_code", "9391c009", "Table-name", tableName, "Entries", entries)
 
+	ib := sqlbuilder.NewInsertBuilder()
+	ib.InsertInto(tableName)
+
+	keys := make([]string, len(entries))
+	values := make([]interface{}, len(entries))
+	var i = 0
+
+	for key, value := range entries {
+		keys[i] = key
+		values[i] = value
+		i++
+	}
+
+	ib.Cols(keys...)
+	ib.Values(values...)
+
+	return ib.Build()
+}
+
+func SqliteDatabaseExists(databaseName string) (bool, error) {
+	fileName := databaseName + ".db"
+	relFs := NewRelativeFsManager(viper.GetString("limedbHome"))
+	slog.Info("Checking if database exists.", "log_code", "e75f8412", "dbName", databaseName)
 	return relFs.FileExists("stores", fileName)
 }
 
-func OpenSqliteDatabase(dbName string) (*sql.DB, error) {
-	fileName := dbName
-
-	if !strings.HasSuffix(fileName, ".db") {
-		fileName += ".db"
-	}
+func OpenSqliteDatabase(databaseName string) (*sql.DB, error) {
+	fileName := databaseName + ".db"
 	dbPath := filepath.Join(viper.GetString("limedbHome"), "stores", fileName)
-
 	slog.Info("Opening database file.", "log_code", "34503562", "db_path", dbPath)
-
 	return sql.Open("sqlite3", dbPath)
 }
 
 // TODO: This should be refactored into a struct
 func AllExistingDatabaseNames() ([]string, error) {
-    relFs := NewRelativeFsManager(viper.GetString("limedbHome"))
+	relFs := NewRelativeFsManager(viper.GetString("limedbHome"))
 	files, err := relFs.ReadDir("stores")
 
 	if err != nil {

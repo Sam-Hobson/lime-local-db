@@ -32,12 +32,21 @@ limedb --db pets add-entry name{Woofy} age{5} gender{M} breed{Beagle}
 
 Remove entries from a database:
 ```sh
+limedb rm-entries-all
+limedb rm-entries-where [Column name]:[Operation]{[Value]}
 # Remove all database entries
 limedb --db pets rm-entries-all
 # Remove database entries conditionally
 limedb --db pets rm-entries-where name:like{W%}
 # Adding multiple conditions will logically AND them together
 limedb --db pets rm-entries-where "age:>{5}" gender:!={F} height_cm:between{10:30} name:null
+```
+
+Create a backup of a database:
+```sh
+limedb backup [Table name]
+# Eg:
+limedb backup pets
 ```
 
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/sam-hobson/internal/util"
@@ -14,11 +13,7 @@ import (
 func RemoveDatabase(databaseName string) error {
 	slog.Info("Beginning rm-db operation.", "log_code", "49aaf185", "Database_name", databaseName)
 
-	fileName := databaseName
-
-	if !strings.HasSuffix(databaseName, ".db") {
-		fileName += ".db"
-	}
+	fileName := databaseName + ".db"
 
 	relFs := util.NewRelativeFsManager(viper.GetString("limedbHome"))
 	softDelete := viper.GetBool("softDeletion")

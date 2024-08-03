@@ -1,7 +1,8 @@
 package newdb
 
 import (
-	"github.com/sam-hobson/internal/database"
+	database "github.com/sam-hobson/internal/database"
+	types "github.com/sam-hobson/internal/types"
 	"github.com/spf13/cobra"
 )
 
@@ -23,10 +24,10 @@ func run(cmd *cobra.Command, args []string) error {
 	name := args[0]
 	colStrings := args[1:]
 
-	columns := make([]*database.Column, len(colStrings))
+	columns := make([]*types.Column, len(colStrings))
 
 	for i, colStr := range colStrings {
-		column, err := database.ParseColumnString(colStr)
+		column, err := types.ParseColumnString(colStr)
 
 		if err != nil {
 			return err
