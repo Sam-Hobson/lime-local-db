@@ -17,11 +17,13 @@ func NewCommand() *cobra.Command {
 		RunE: run,
 	}
 
+	cmd.Flags().StringP("message", "m", "", "Add a message/note associated with the backup")
+
 	return cmd
 }
 
 func run(cmd *cobra.Command, args []string) error {
-    return database.BackupDatabase(args[0])
+	return database.BackupDatabase(args[0], util.PanicIfErr(cmd.Flags().GetString("message")))
 }
 
 func dbNames() []string {

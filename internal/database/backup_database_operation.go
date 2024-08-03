@@ -26,14 +26,19 @@ var backupColumns = []*types.Column{
 		DataType: types.ColumnTextDataType,
 		NotNull:  true,
 	},
+	{
+		ColName:  "comment",
+		DataType: types.ColumnTextDataType,
+		NotNull:  false,
+	},
 }
 
-func BackupDatabase(databaseName string) error {
+func BackupDatabase(databaseName, comment string) error {
 	slog.Info("Beginning backup operation.", "log_code", "52b2d0a8", "Database-name", databaseName)
 
 	if exists, err := util.SqliteDatabaseExists(databaseName); !exists || err != nil {
-		slog.Error("Cannot add entry as database does not exist.", "log_code", "b13e3181")
-		return errors.Errorf("Cannot add entry as database does not exist.")
+		slog.Error("Cannot backup database as it does not exist.", "log_code", "97fc0bd4")
+		return errors.Errorf("Cannot backup database as it does not exist")
 	}
 
 	var fileName = databaseName + ".db"
@@ -62,6 +67,7 @@ func BackupDatabase(databaseName string) error {
 	insertStr, insertArgs := util.InsertIntoSqliteTable("backups", map[string]string{
 		"date":       time.Now().Format(time.RFC3339),
 		"backupName": newDbName,
+		"comment":    comment,
 	})
 
 	slog.Info("Inserting into backup table with SQL command.", "log_code", "83d9e967", "SQL", insertStr, "Args", insertArgs)
