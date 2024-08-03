@@ -18,7 +18,7 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 		"Columns", columns)
 
 	fileName := databaseName + ".db"
-	relFs := util.NewRelativeFsManager(viper.GetString("limedbHome"))
+	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
 
 	if exists, err := relFs.FileExists("stores", fileName); err != nil {
 		return err

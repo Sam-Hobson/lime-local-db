@@ -63,8 +63,8 @@ Provide comma separated list of configuration options:
 ```sh
 limedb [Any command] --with-config key:value
 # Eg:
-limedb [Any command] --with-config softDeletion:false
-limedb rm-db pets --confirm --with-config softDeletion:false,limedbHome:/etc/limedb/
+limedb [Any command] --with-config soft_deletion:false
+limedb rm-db pets --confirm --with-config soft_deletion:false,limedb_home:/etc/limedb/
 ```
 
 ## Features to add

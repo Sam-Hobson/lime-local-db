@@ -15,8 +15,8 @@ func RemoveDatabase(databaseName string) error {
 
 	fileName := databaseName + ".db"
 
-	relFs := util.NewRelativeFsManager(viper.GetString("limedbHome"))
-	softDelete := viper.GetBool("softDeletion")
+	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
+	softDelete := viper.GetBool("soft_deletion")
 
 	if softDelete {
 		newDbName := fmt.Sprintf("%s-%s", fileName, strconv.FormatInt(time.Now().Unix(), 10))

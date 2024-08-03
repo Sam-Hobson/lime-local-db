@@ -67,21 +67,21 @@ func InsertIntoSqliteTable(tableName string, entries map[string]string) (string,
 
 func SqliteDatabaseExists(databaseName string) (bool, error) {
 	fileName := databaseName + ".db"
-	relFs := NewRelativeFsManager(viper.GetString("limedbHome"))
+	relFs := NewRelativeFsManager(viper.GetString("limedb_home"))
 	slog.Info("Checking if database exists.", "log_code", "e75f8412", "dbName", databaseName)
 	return relFs.FileExists("stores", fileName)
 }
 
 func OpenSqliteDatabase(databaseName string) (*sql.DB, error) {
 	fileName := databaseName + ".db"
-	dbPath := filepath.Join(viper.GetString("limedbHome"), "stores", fileName)
+	dbPath := filepath.Join(viper.GetString("limedb_home"), "stores", fileName)
 	slog.Info("Opening database file.", "log_code", "34503562", "db_path", dbPath)
 	return sql.Open("sqlite3", dbPath)
 }
 
 // TODO: This should be refactored into a struct
 func AllExistingDatabaseNames() ([]string, error) {
-	relFs := NewRelativeFsManager(viper.GetString("limedbHome"))
+	relFs := NewRelativeFsManager(viper.GetString("limedb_home"))
 	files, err := relFs.ReadDir("stores")
 
 	if err != nil {

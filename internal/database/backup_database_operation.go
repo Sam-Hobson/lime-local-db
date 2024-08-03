@@ -38,7 +38,7 @@ func BackupDatabase(databaseName string) error {
 
 	var fileName = databaseName + ".db"
 
-	relFs := util.NewRelativeFsManager(viper.GetString("limedbHome"))
+	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
 	newDbName := fmt.Sprintf("%s-%s", fileName, strconv.FormatInt(time.Now().Unix(), 10))
 	relFs.CopyFile("stores", fileName, filepath.Join("backups", databaseName), newDbName)
 
@@ -71,13 +71,17 @@ func BackupDatabase(databaseName string) error {
 		return err
 	}
 
-	return RemoveOrphanBackups(databaseName)
+	if viper.GetBool("remove_orphan_backups") {
+		return RemoveOrphanBackups(databaseName)
+	}
+
+	return nil
 }
 
 func RemoveOrphanBackups(databaseName string) error {
 	slog.Info("Removing backup orphans.", "log_code", "7df13463", "Database-name", databaseName)
 
-	relFs := util.NewRelativeFsManager(viper.GetString("limedbHome"), "backups", databaseName)
+	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"), "backups", databaseName)
 
 	dir, err := relFs.ReadDir("")
 	if err != nil {
@@ -93,7 +97,7 @@ func RemoveOrphanBackups(databaseName string) error {
 	}
 	defer db.Close()
 
-    slog.Info("Querying backups in database.", "log_code", "de8e5d3d", "Database-name", databaseName, "SQL", selStr, "Args", args)
+	slog.Info("Querying backups in database.", "log_code", "de8e5d3d", "Database-name", databaseName, "SQL", selStr, "Args", args)
 
 	res, err := db.Query(selStr, args...)
 	if err != nil {

@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const ConfigFileName = "limerc"
+const ConfigFileName = ".limerc"
 const ConfigFileExt = "yaml"
 
 func ReadConfigFile() {
@@ -31,9 +31,10 @@ func ReadConfigFile() {
 
 		slog.Warn("Could not find config file, creating new one", "log_code", "d44bb577")
 
-		viper.SetDefault("limedbHome", filepath.Join(homeDir, ".limedb"))
-		viper.SetDefault("softDeletion", true)
-		viper.SetDefault("defaultDb", "")
+		viper.SetDefault("limedb_home", filepath.Join(homeDir, ".limedb"))
+		viper.SetDefault("soft_deletion", true)
+		viper.SetDefault("default_db", "")
+        viper.SetDefault("remove_orphan_backups", true)
 
 		if err := viper.WriteConfigAs(filepath.Join(homeDir, ConfigFileName+"."+ConfigFileExt)); err != nil {
 			panic(errors.Errorf("Fatal error writing to config file: %w", err))
@@ -43,7 +44,7 @@ func ReadConfigFile() {
 		slog.Info("Successfully read config file", "log_code", "b040b5d9")
 	}
 
-	if db := viper.GetString("defaultDb"); db != "" {
+	if db := viper.GetString("default_db"); db != "" {
 		state.ApplicationState().SetSelectedDb(db)
 	}
 
