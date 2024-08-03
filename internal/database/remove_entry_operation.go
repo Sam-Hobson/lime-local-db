@@ -46,7 +46,7 @@ func RemoveEntries(where *sqlbuilder.WhereClause) (int64, error) {
 		return -1, err
 	}
 
-    rowsAffected := util.PanicIfErr(res.RowsAffected())
+	rowsAffected := util.PanicIfErr(res.RowsAffected())
 
 	slog.Info("Successfully removed entries.", "log_code", "aa8cd72c", "rows-affected", rowsAffected, "db", selectedDb)
 
