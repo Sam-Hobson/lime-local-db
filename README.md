@@ -36,7 +36,8 @@ Remove entries from a database:
 limedb --db pets rm-entries-all
 # Remove database entries conditionally
 limedb --db pets rm-entries-where name:like{W%}
-limedb --db pets rm-entries-where "age:>{5}" gender:!={F}
+# Adding multiple conditions will logically AND them together
+limedb --db pets rm-entries-where "age:>{5}" gender:!={F} height_cm:between{10:30} name:null
 ```
 
 
