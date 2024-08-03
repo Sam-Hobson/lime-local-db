@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-errors/errors"
 	addentry "github.com/sam-hobson/cmd/add-entry"
+	"github.com/sam-hobson/cmd/backup"
 	newdb "github.com/sam-hobson/cmd/new-db"
 	rmdb "github.com/sam-hobson/cmd/rm-db"
 	rmentriesall "github.com/sam-hobson/cmd/rm-entries-all"
@@ -35,6 +36,7 @@ func NewCommand(version, commit string) *cobra.Command {
         addentry.NewCommand(),
         rmentriesall.NewCommand(),
         rmentrieswhere.NewCommand(),
+        backup.NewCommand(),
     )
 
 	return cmd

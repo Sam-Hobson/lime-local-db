@@ -18,7 +18,9 @@ func SqliteDatabaseExists(dbName string) (bool, error) {
 
 	slog.Info("Checking if database exists.", "log_code", "e75f8412", "dbName", dbName)
 
-	return NewRelativeFsManager(viper.GetString("limedbHome")).FileExists("stores", fileName)
+    relFs := NewRelativeFsManager(viper.GetString("limedbHome"))
+
+	return relFs.FileExists("stores", fileName)
 }
 
 func OpenSqliteDatabase(dbName string) (*sql.DB, error) {
@@ -36,7 +38,8 @@ func OpenSqliteDatabase(dbName string) (*sql.DB, error) {
 
 // TODO: This should be refactored into a struct
 func AllExistingDatabaseNames() ([]string, error) {
-	files, err := NewRelativeFsManager(viper.GetString("limedbHome")).ReadDir("stores")
+    relFs := NewRelativeFsManager(viper.GetString("limedbHome"))
+	files, err := relFs.ReadDir("stores")
 
 	if err != nil {
 		return nil, err

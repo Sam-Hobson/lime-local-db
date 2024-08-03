@@ -26,10 +26,8 @@ func AddEntry(entries map[string]string) error {
     }
 
 	db, err := util.OpenSqliteDatabase(selectedDb)
-
 	if err != nil {
-		slog.Error("Could not open database file.", "log_code", "64a95833", "Database", selectedDb)
-		return errors.Errorf("Cannot add entry as no database is selected")
+		return err
 	}
 	defer db.Close()
 
