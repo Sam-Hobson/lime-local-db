@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"path/filepath"
 
+	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/sam-hobson/internal/types"
 	"github.com/spf13/viper"
@@ -63,6 +64,21 @@ func InsertIntoSqliteTable(tableName string, entries map[string]string) (string,
 	ib.Values(values...)
 
 	return ib.Build()
+}
+
+func OpenSqliteDatabaseIfExists(databaseName string) (*sql.DB, error) {
+    exists, err := SqliteDatabaseExists(databaseName)
+
+	if err != nil {
+		slog.Error("Cannot backup database as it does not exist.", "log_code", "94f1ece2")
+        return nil, err
+	}
+    if !exists {
+		slog.Error("Cannot backup database as it does not exist.", "log_code", "cbd713ec")
+		return nil, errors.Errorf("Cannot backup database as it does not exist")
+    }
+
+    return OpenSqliteDatabase(databaseName)
 }
 
 func SqliteDatabaseExists(databaseName string) (bool, error) {

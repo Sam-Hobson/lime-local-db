@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
@@ -36,22 +35,17 @@ var backupColumns = []*types.Column{
 func BackupDatabase(databaseName, comment string) error {
 	slog.Info("Beginning backup operation.", "log_code", "52b2d0a8", "Database-name", databaseName)
 
-	if exists, err := util.SqliteDatabaseExists(databaseName); !exists || err != nil {
-		slog.Error("Cannot backup database as it does not exist.", "log_code", "97fc0bd4")
-		return errors.Errorf("Cannot backup database as it does not exist")
-	}
-
-	var fileName = databaseName + ".db"
-
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
-	newDbName := fmt.Sprintf("%s-%s", fileName, strconv.FormatInt(time.Now().Unix(), 10))
-	relFs.CopyFile("stores", fileName, filepath.Join("backups", databaseName), newDbName)
-
-	db, err := util.OpenSqliteDatabase(databaseName)
+	db, err := util.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
+
+	fileName := databaseName + ".db"
+	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
+	newDbName := fmt.Sprintf("%s-%s", fileName, strconv.FormatInt(time.Now().Unix(), 10))
+
+	relFs.CopyFile("stores", fileName, filepath.Join("backups", databaseName), newDbName)
 
 	createTableStr, createTableArgs := util.CreateSqliteTable("backups", backupColumns)
 
@@ -97,7 +91,7 @@ func RemoveOrphanBackups(databaseName string) error {
 	sb := sqlbuilder.NewSelectBuilder().Distinct().Select("backupName").From("backups")
 	selStr, args := sb.Build()
 
-	db, err := util.OpenSqliteDatabase(databaseName)
+	db, err := util.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
 		return err
 	}

@@ -47,7 +47,7 @@ Create a backup of a database:
 limedb backup [Table name]
 # Eg:
 limedb backup pets
-limedb backup pets --with-config remove_orphan_backups:false
+limedb backup pets -m "Backup before risky operation" --with-config remove_orphan_backups:false
 ```
 
 
