@@ -44,10 +44,18 @@ limedb --db pets rm-entries-where "age:>{5}" gender:!={F} height_cm:between{10:3
 
 Create a backup of a database:
 ```sh
-limedb backup [Table name]
+limedb backup new [Table name]
 # Eg:
-limedb backup pets
-limedb backup pets -m "Backup before risky operation" --with-config remove_orphan_backups:false
+limedb backup new pets
+limedb backup new pets -m "Backup before risky operation" --with-config remove_orphan_backups:false
+```
+
+
+List all backups of a database:
+```sh
+limedb backup ls [Table name]
+# Eg:
+limedb backup ls pets
 ```
 
 
