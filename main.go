@@ -3,10 +3,12 @@ package main
 import (
 	"log/slog"
 	"os"
+	"time"
 
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/sam-hobson/cmd"
 	"github.com/sam-hobson/internal/config"
+	"github.com/sam-hobson/internal/util"
 )
 
 var (
@@ -19,6 +21,7 @@ var preConfigHandler = &slog.HandlerOptions{
 }
 
 func main() {
+	util.SetSessionId(time.Now().UnixMicro())
 	sqlbuilder.DefaultFlavor = sqlbuilder.SQLite
 
 	// The default logger is set up prior to reading config, as reading config

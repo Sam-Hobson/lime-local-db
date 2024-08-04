@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"log/slog"
 	"strconv"
 	"time"
 
@@ -11,7 +10,7 @@ import (
 )
 
 func RemoveDatabase(databaseName string) error {
-	slog.Info("Beginning rm-db operation.", "Log code", "49aaf185", "Database name", databaseName)
+	util.Log("49aaf185").Info("Beginning rm-db operation.", "Database name", databaseName)
 
 	fileName := databaseName + ".db"
 
@@ -29,7 +28,7 @@ func RemoveDatabase(databaseName string) error {
 		}
 	}
 
-	slog.Info("Successfully removed database.", "Log code", "d73a061e", "Db name", fileName, "Soft delete", softDelete)
+	util.Log("d73a061e").Info("Successfully removed database.", "Db name", fileName, "Soft delete", softDelete)
 	return nil
 
 }

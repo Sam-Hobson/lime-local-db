@@ -2,6 +2,7 @@ package backup
 
 import (
 	"github.com/sam-hobson/internal/database"
+	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
 )
@@ -27,7 +28,7 @@ func runNewBackupCommand(cmd *cobra.Command, args []string) error {
 }
 
 func dbNames() []string {
-	if names, err := util.AllExistingDatabaseNames(); err != nil {
+	if names, err := dbutil.AllExistingDatabaseNames(); err != nil {
 		return []string{}
 	} else {
 		return names

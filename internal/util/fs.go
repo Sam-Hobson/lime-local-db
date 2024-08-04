@@ -2,7 +2,6 @@ package util
 
 import (
 	"io"
-	"log/slog"
 	"os"
 	"path/filepath"
 )
@@ -23,7 +22,7 @@ func (relFs *relativeFsManager) FileExists(relPath string, fileName string) (boo
 			return false, nil
 		}
 
-		slog.Warn("Could not check if file exists.", "Log code", "d74bd3e7", "Path", relFs.FullPath(relPath, fileName))
+		Log("d74bd3e7").Warn("Could not check if file exists.", "Path", relFs.FullPath(relPath, fileName))
 		return false, err
 	}
 
@@ -31,26 +30,26 @@ func (relFs *relativeFsManager) FileExists(relPath string, fileName string) (boo
 }
 
 func (relFs *relativeFsManager) CreateFile(relPath string, fileName string) error {
-	slog.Info("Creating file.", "Log code", "12029083", "Path", relFs.FullPath(relPath, fileName))
+	Log("0c2f42ae").Info("Creating file.", "Path", relFs.FullPath(relPath, fileName))
 
 	if err := relFs.CreateDir(relPath); err != nil {
-		slog.Warn("Could not create directory.", "Log code", "ecdb8557", "Directory", relFs.FullPath(relPath))
+		Log("ecdb8557").Warn("Could not create directory.", "Directory", relFs.FullPath(relPath))
 		return err
 	}
 
 	if file, err := os.OpenFile(relFs.FullPath(relPath, fileName), os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm); err != nil {
-		slog.Warn("Could not create file.", "Log code", "3b5806d7", "File path", relFs.FullPath(relPath, fileName))
+		Log("3b5806d7").Warn("Could not create file.", "File path", relFs.FullPath(relPath, fileName))
 		return err
 	} else {
 		file.Close()
 	}
 
-	slog.Info("Successfully created file.", "Log code", "31512c87", "Path", relFs.FullPath(relPath, fileName))
+	Log("36bb70ce").Info("Successfully created file.", "Path", relFs.FullPath(relPath, fileName))
 	return nil
 }
 
 func (relFs *relativeFsManager) OpenFile(relPath string, fileName string) (io.Writer, error) {
-	slog.Info("Opening file.", "Log code", "6453d64c", "Path", relFs.FullPath(relPath, fileName))
+	Log("6453d64c").Info("Opening file.", "Path", relFs.FullPath(relPath, fileName))
 
 	if err := relFs.CreateFile(relPath, fileName); err != nil {
 		return nil, err
@@ -63,12 +62,12 @@ func (relFs *relativeFsManager) MoveFile(fromRelPath, fromFileName, toRelPath, t
 	from := relFs.FullPath(fromRelPath, fromFileName)
 	to := relFs.FullPath(toRelPath, toFileName)
 
-	slog.Info("Moving file.", "Log code", "628970f4", "From", from, "To", to)
+	Log("628970f4").Info("Moving file.", "From", from, "To", to)
 
 	if exists, err := relFs.FileExists(fromRelPath, fromFileName); err != nil {
 		return err
 	} else if !exists {
-		slog.Warn("Cannot move file as it doesn't exist.", "Log code", "80331077", "From", from)
+		Log("80331077").Warn("Cannot move file as it doesn't exist.", "From", from)
 		return os.ErrNotExist
 	}
 
@@ -77,11 +76,11 @@ func (relFs *relativeFsManager) MoveFile(fromRelPath, fromFileName, toRelPath, t
 	}
 
 	if err := os.Rename(from, to); err != nil {
-		slog.Warn("Could not rename file.", "Log code", "7213ca47", "From", from, "To", to)
+		Log("7213ca47").Warn("Could not rename file.", "From", from, "To", to)
 		return err
 	}
 
-	slog.Info("Successfully moved file.", "Log code", "f8d98f03", "From", from, "To", to)
+	Log("f8d98f03").Info("Successfully moved file.", "From", from, "To", to)
 	return nil
 }
 
@@ -89,61 +88,61 @@ func (relFs *relativeFsManager) CopyFile(fromRelPath, fromFileName, toRelPath, t
 	from := relFs.FullPath(fromRelPath, fromFileName)
 	to := relFs.FullPath(toRelPath, toFileName)
 
-	slog.Info("Copying file.", "Log code", "ec504e3f", "From", from, "To", to)
+	Log("ec504e3f").Info("Copying file.", "From", from, "To", to)
 
 	if err := relFs.CreateFile(toRelPath, toFileName); err != nil {
 		return err
 	}
 
 	if fromData, err := os.ReadFile(from); err != nil {
-		slog.Warn("Could not read data from file.", "Log code", "29ab2f4a", "From", from)
+		Log("29ab2f4a").Warn("Could not read data from file.", "From", from)
 		return err
 	} else if err := os.WriteFile(to, fromData, os.ModePerm); err != nil {
-		slog.Warn("Could not write data to file.", "Log code", "2448d274", "To", to)
+		Log("2448d274").Warn("Could not write data to file.", "To", to)
 		return err
 	}
 
-	slog.Info("Successfully copied file.", "Log code", "ad390e7b", "From", from, "To", to)
+	Log("ad390e7b").Info("Successfully copied file.", "From", from, "To", to)
 	return nil
 }
 
 func (relFs *relativeFsManager) RmFile(relPath string, fileName string) error {
-	slog.Info("Removing file.", "Log code", "017baa09", "Path", relFs.FullPath(relPath, fileName))
+	Log("017baa09").Info("Removing file.", "Path", relFs.FullPath(relPath, fileName))
 
 	err := os.Remove(relFs.FullPath(relPath, fileName))
 
 	if err != nil {
-		slog.Warn("Could not remove file.", "Log code", "8ee71301", "Path", relFs.FullPath(relPath, fileName))
+		Log("8ee71301").Warn("Could not remove file.", "Path", relFs.FullPath(relPath, fileName))
 		return err
 	}
 
-	slog.Info("Successfully removed file.", "Log code", "77a8feff", "Path", relFs.FullPath(relPath, fileName))
+	Log("77a8feff").Info("Successfully removed file.", "Path", relFs.FullPath(relPath, fileName))
 	return nil
 }
 
 func (relFs *relativeFsManager) CreateDir(relPath string) error {
-	slog.Info("Creating directory.", "Log code", "109b2abd", "Path", relFs.FullPath(relPath))
+	Log("109b2abd").Info("Creating directory.", "Path", relFs.FullPath(relPath))
 
 	path := relFs.FullPath(relPath)
 	err := os.MkdirAll(path, os.ModePerm)
 
 	if err != nil {
-		slog.Warn("Could not create directory.", "Log code", "791e81d6", "Directory", path)
+		Log("791e81d6").Warn("Could not create directory.", "Directory", path)
 		return err
 	}
 
-	slog.Info("Successfully created directory.", "Log code", "88a7b6fa", "Path", relFs.FullPath(relPath))
+	Log("88a7b6fa").Info("Successfully created directory.", "Path", relFs.FullPath(relPath))
 	return nil
 }
 
 func (relFs *relativeFsManager) ReadDir(relPath string) ([]os.DirEntry, error) {
-	slog.Info("Reading directory.", "Log code", "ca2b2793", "Path", relPath)
+	Log("ca2b2793").Info("Reading directory.", "Path", relPath)
 
 	path := relFs.FullPath(relPath)
 	res, err := os.ReadDir(path)
 
 	if err != nil {
-		slog.Warn("Could not read directory.", "Log code", "76a8af95", "Full path", path)
+		Log("76a8af95").Warn("Could not read directory.", "Full path", path)
 		return nil, err
 	}
 

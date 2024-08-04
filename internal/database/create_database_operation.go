@@ -2,28 +2,24 @@ package database
 
 import (
 	"database/sql"
-	"log/slog"
 
 	"github.com/go-errors/errors"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
+	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/spf13/viper"
 )
 
 func CreateDatabase(databaseName string, columns []*types.Column) error {
-	slog.Info("Beginning new-db operation.",
-		"Log code", "26cd37c1",
-		"Db name", databaseName,
-		"Columns", columns)
-
+	util.Log("26cd37c1").Info("Beginning new-db operation.", "Db name", databaseName, "Columns", columns)
 	fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
 
 	if exists, err := relFs.FileExists("stores", fileName); err != nil {
 		return err
 	} else if exists {
-		slog.Error("Cannot create a new database as it already exists.", "Log code", "6c95edf6", "Database name", databaseName)
+		util.Log("6c95edf6").Error("Cannot create a new database as it already exists.", "Database name", databaseName)
 		return errors.Errorf("Cannot create a new database as it already exists")
 	}
 
@@ -36,19 +32,19 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 	defer db.Close()
 
 	if err != nil {
-		slog.Error("Could not open sqlite database.", "Log code", "9494fc60", "Db path", dbPath)
+		util.Log("9494fc60").Error("Could not open sqlite database.", "Db path", dbPath)
 		return err
 	}
 
-	createTableStr, args := util.CreateSqliteTable(databaseName, columns)
+	createTableStr, args := dbutil.CreateSqliteTable(databaseName, columns)
 
-	slog.Info("Creating table with SQL command.", "Log code", "0cb6a54d", "SQL", createTableStr, "Args", args)
+	util.Log("0cb6a54d").Info("Creating table with SQL command.", "SQL", createTableStr, "Args", args)
 
 	if _, err = db.Exec(createTableStr, args...); err != nil {
-		slog.Error("Failed executing create table command.", "Log code", "fed4e102", "SQL", createTableStr)
+		util.Log("fed4e102").Error("Failed executing create table command.", "SQL", createTableStr)
 		return err
 	}
 
-	slog.Info("Successfully created a new database.", "Log code", "7bf9634b", "Db path", dbPath)
+	util.Log("7bf9634b").Info("Successfully created a new database.", "Db path", dbPath)
 	return nil
 }

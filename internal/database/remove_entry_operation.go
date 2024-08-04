@@ -1,34 +1,30 @@
 package database
 
 import (
-	"log/slog"
-
 	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
+	dbutil "github.com/sam-hobson/internal/database/util"
 )
 
 func RemoveEntries(where *sqlbuilder.WhereClause) (int64, error) {
-	slog.Info("Beginning remove-entries operation.",
-		"Log code", "406e55d9",
-		"Where", where)
-
+	util.Log("406e55d9").Info("Beginning remove-entries operation.", "Where", where)
 	selectedDb := state.ApplicationState().GetSelectedDb()
 
 	if selectedDb == "" {
-		slog.Error("Cannot add entry as no database is selected.", "Log code", "2bb83c3a")
+		util.Log("2bb83c3a").Error("Cannot add entry as no database is selected.")
 		return -1, errors.Errorf("Cannot add entry as no database is selected")
 	}
-	if exists, err := util.SqliteDatabaseExists(selectedDb); !exists || err != nil {
-		slog.Error("Cannot add entry as database does not exist.", "Log code", "5e42fedb")
+	if exists, err := dbutil.SqliteDatabaseExists(selectedDb); !exists || err != nil {
+		util.Log("5e42fedb").Error("Cannot add entry as database does not exist.")
 		return -1, errors.Errorf("Cannot add entry as database does not exist.")
 	}
 
-	db, err := util.OpenSqliteDatabase(selectedDb)
+	db, err := dbutil.OpenSqliteDatabase(selectedDb)
 
 	if err != nil {
-		slog.Error("Could not open database file.", "Log code", "64a95833", "Database", selectedDb)
+		util.Log("64a95833").Error("Could not open database file.", "Database", selectedDb)
 		return -1, errors.Errorf("Cannot add entry as no database is selected")
 	}
 	defer db.Close()
@@ -38,17 +34,17 @@ func RemoveEntries(where *sqlbuilder.WhereClause) (int64, error) {
 	delBuilder.AddWhereClause(where)
 
 	sql, args := delBuilder.Build()
-	slog.Info("remove-entries operation with SQL command.", "Log code", "8fc6aa55", "SQL", sql, "Args", args)
+	util.Log("8fc6aa55").Info("remove-entries operation with SQL command.", "SQL", sql, "Args", args)
 	res, err := db.Exec(sql, args...)
 
 	if err != nil {
-		slog.Error("Failed executing remove-entries command.", "Log code", "75d6eb60", "SQL", sql, "Args", args)
+		util.Log("75d6eb60").Error("Failed executing remove-entries command.", "SQL", sql, "Args", args)
 		return -1, err
 	}
 
 	rowsAffected := util.PanicIfErr(res.RowsAffected())
 
-	slog.Info("Successfully removed entries.", "Log code", "aa8cd72c", "Rows affected", rowsAffected, "Db", selectedDb)
+	util.Log("aa8cd72c").Info("Successfully removed entries.", "Rows affected", rowsAffected, "Db", selectedDb)
 
 	return rowsAffected, nil
 }

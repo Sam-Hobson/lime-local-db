@@ -1,9 +1,8 @@
 package rmdb
 
 import (
-	"log/slog"
-
 	"github.com/sam-hobson/internal/database"
+	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
 )
@@ -26,7 +25,7 @@ func NewCommand() *cobra.Command {
 
 func run(cmd *cobra.Command, args []string) error {
 	if !util.PanicIfErr(cmd.Flags().GetBool("confirm")) {
-		slog.Warn("rm-db rejected. Operation was not confirmed.", "Log code", "a28ce317")
+		util.Log("a28ce317").Warn("rm-db rejected. Operation was not confirmed.")
 		cmd.PrintErrln("Command rejected. Please use the --confirm flag if you are sure you want to proceed.")
 		return nil
 	}
@@ -35,7 +34,7 @@ func run(cmd *cobra.Command, args []string) error {
 }
 
 func dbNames() []string {
-	if names, err := util.AllExistingDatabaseNames(); err != nil {
+	if names, err := dbutil.AllExistingDatabaseNames(); err != nil {
 		return []string{}
 	} else {
 		return names

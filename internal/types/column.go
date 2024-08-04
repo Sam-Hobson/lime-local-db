@@ -1,11 +1,11 @@
 package types
 
 import (
-	"log/slog"
 	"strings"
 	"unicode"
 
 	"github.com/go-errors/errors"
+	"github.com/sam-hobson/internal/util"
 )
 
 type Column struct {
@@ -48,7 +48,7 @@ func ParseColumnString(col string) (*Column, error) {
 	parts := strings.Split(col, ":")
 
 	if len(parts) != 3 {
-		slog.Error("Column entry malformed.", "Log code", "b7144d7b", "Column", col)
+		util.Log("b7144d7b").Error("Column entry malformed.", "Column", col)
 		return nil, errors.Errorf("Found malformed column entry input: %s", col)
 	}
 
@@ -84,24 +84,24 @@ func parseColumnFlags(flags string, column *Column) error {
 		switch unicode.ToUpper(flag) {
 		case 'P':
 			if primaryKey {
-				slog.Error("Column entry malformed.", "Log code", "759534a7", "Flags", flags)
+				util.Log("759534a7").Error("Column entry malformed.", "Flags", flags)
 				return errors.Errorf("Found malformed column entry input (P used more than once): %s", flags)
 			}
 			primaryKey = true
 		case 'F':
 			if foreignKey {
-				slog.Error("Column entry malformed.", "Log code", "ec05b044", "Flags", flags)
+				util.Log("ec05b044").Error("Column entry malformed.", "Flags", flags)
 				return errors.Errorf("Found malformed column entry input (F used more than once): %s", flags)
 			}
 			foreignKey = true
 		case 'N':
 			if notNull {
-				slog.Error("Column entry malformed.", "Log code", "41383bf1", "Flags", flags)
+				util.Log("41383bf1").Error("Column entry malformed.", "Flags", flags)
 				return errors.Errorf("Found malformed column entry input (N used more than once): %s", flags)
 			}
 			notNull = true
 		default:
-			slog.Error("Column entry malformed.", "Log code", "9288e4b5", "Key flags", flags)
+			util.Log("9288e4b5").Error("Column entry malformed.", "Key flags", flags)
 			return errors.Errorf("Found malformed key flags on column entry input: %s", flags)
 		}
 	}
@@ -115,7 +115,7 @@ func parseColumnFlags(flags string, column *Column) error {
 
 func parseColumnDataType(dataType string, column *Column) error {
 	if dt, err := NewDataType(dataType); err != nil {
-		slog.Error("Failed to parse data type", "Log code", "7da9f304", "Data type", dataType)
+		util.Log("7da9f304").Error("Failed to parse data type", "Data type", dataType)
 		return err
 	} else {
 		column.DataType = dt
@@ -125,7 +125,7 @@ func parseColumnDataType(dataType string, column *Column) error {
 
 func parseColumnNameAndDefaultVal(nameAndDefaultVal string, column *Column) error {
 	if nameAndDefaultVal == "" {
-		slog.Error("Column entry malformed.", "Log code", "ea5cd3fa", "Name", nameAndDefaultVal)
+		util.Log("ea5cd3fa").Error("Column entry malformed.", "Name", nameAndDefaultVal)
 		return errors.Errorf("Found malformed column name input (a column name must be provided): %s", nameAndDefaultVal)
 	}
 
@@ -139,7 +139,7 @@ func parseColumnNameAndDefaultVal(nameAndDefaultVal string, column *Column) erro
 	endDefaultValIndex := strings.IndexRune(nameAndDefaultVal, '}')
 
 	if (startDefaultValIndex == 0) || (endDefaultValIndex != len(nameAndDefaultVal)-1) {
-		slog.Error("Column entry malformed.", "Log code", "d63efff4", "Name", nameAndDefaultVal)
+		util.Log("d63efff4").Error("Column entry malformed.", "Name", nameAndDefaultVal)
 		return errors.Errorf("Found malformed column name input: %s", nameAndDefaultVal)
 	}
 

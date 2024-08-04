@@ -1,6 +1,8 @@
 package state
 
-import "log/slog"
+import (
+	"github.com/sam-hobson/internal/util"
+)
 
 type state struct {
 	selectedDatabase string
@@ -11,7 +13,7 @@ func (s state) GetSelectedDb() string {
 }
 
 func (s *state) SetSelectedDb(db string) {
-	slog.Info("Setting selected database.", "Log code", "c863f749", "Db", db)
+    util.Log("5c4edaeb").Info("Setting selected database.", "Db", db)
 	s.selectedDatabase = db
 }
 

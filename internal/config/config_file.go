@@ -1,7 +1,6 @@
 package config
 
 import (
-	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -28,7 +27,7 @@ func ReadConfigFile() {
 			panic(errors.Errorf("Fatal error config file: %w", err))
 		}
 
-		slog.Warn("Could not find config file, creating new one", "Log code", "d44bb577")
+		util.Log("d44bb577").Warn("Could not find config file, creating new one")
 
 		viper.SetDefault("limedb_home", filepath.Join(homeDir, ".limedb"))
 		viper.SetDefault("log_mode", "stdout")
@@ -42,6 +41,6 @@ func ReadConfigFile() {
 		}
 
 	} else {
-		slog.Info("Successfully read config file", "Log code", "b040b5d9")
+		util.Log("0ddfa8ee").Info("Successfully read config file")
 	}
 }

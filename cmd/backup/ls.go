@@ -1,9 +1,8 @@
 package backup
 
 import (
-	"log/slog"
-
 	"github.com/huandu/go-sqlbuilder"
+	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
 )
@@ -25,7 +24,7 @@ func lsBackupCommand() *cobra.Command {
 func runLsBackupCommand(cmd *cobra.Command, args []string) error {
 	databaseName := args[0]
 
-	db, err := util.OpenSqliteDatabaseIfExists(databaseName)
+	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
 		return err
 	}
@@ -34,11 +33,11 @@ func runLsBackupCommand(cmd *cobra.Command, args []string) error {
 	sb := sqlbuilder.NewSelectBuilder().Select("rowid", "date", "comment").From("backups")
 	selStr, selArgs := sb.Build()
 
-	slog.Info("Querying database backups.", "Log code", "407f8430", "Database name", databaseName, "SQL", selStr, "Args", selArgs)
+	util.Log("6fac1254").Info("Querying database backups.", "Database name", databaseName, "SQL", selStr, "Args", selArgs)
 
 	res, err := db.Query(selStr, selArgs...)
 	if err != nil {
-		slog.Warn("Could not query database backups.", "Log code", "5cd94c57", "Database name", databaseName)
+		util.Log("5cd94c57").Warn("Could not query database backups.", "Database name", databaseName)
 		return err
 	}
 	defer res.Close()
@@ -53,6 +52,6 @@ func runLsBackupCommand(cmd *cobra.Command, args []string) error {
 		cmd.Printf("%d  %s  \"%s\"\n", rowid, date, comment)
 	}
 
-	slog.Info("Successfully ran backup ls command.", "Log code", "042af672")
+	util.Log("5dbf67eb").Info("Successfully ran backup ls command.")
 	return nil
 }

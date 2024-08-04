@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"log/slog"
 	"path/filepath"
 	"slices"
 	"strconv"
@@ -11,6 +10,7 @@ import (
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
+	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/spf13/viper"
 )
 
@@ -33,9 +33,9 @@ var backupColumns = []*types.Column{
 }
 
 func BackupDatabase(databaseName, comment string) error {
-	slog.Info("Beginning backup operation.", "Log code", "52b2d0a8", "Database name", databaseName)
+	util.Log("52b2d0a8").Info("Beginning backup operation.", "Database name", databaseName)
 
-	db, err := util.OpenSqliteDatabaseIfExists(databaseName)
+	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
 		return err
 	}
@@ -47,27 +47,27 @@ func BackupDatabase(databaseName, comment string) error {
 
 	relFs.CopyFile("stores", fileName, filepath.Join("backups", databaseName), newDbName)
 
-	createTableStr, createTableArgs := util.CreateSqliteTable("backups", backupColumns)
+	createTableStr, createTableArgs := dbutil.CreateSqliteTable("backups", backupColumns)
 
-	slog.Info("Creating backup table with SQL command.", "Log code", "8bc1e038", "SQL", createTableStr, "Args", createTableArgs)
+	util.Log("8bc1e038").Info("Creating backup table with SQL command.", "SQL", createTableStr, "Args", createTableArgs)
 
 	if _, err = db.Exec(createTableStr, createTableArgs...); err != nil {
-		slog.Error("Failed executing create table command.", "Log code", "f7d58d42", "SQL", createTableStr)
+		util.Log("f7d58d42").Error("Failed executing create table command.", "SQL", createTableStr)
 		return err
 	}
 
-	slog.Info("Successfully created a backup table.", "Log code", "91750756", "Database name", databaseName)
+	util.Log("91750756").Info("Successfully created a backup table.", "Database name", databaseName)
 
-	insertStr, insertArgs := util.InsertIntoSqliteTable("backups", map[string]string{
+	insertStr, insertArgs := dbutil.InsertIntoSqliteTable("backups", map[string]string{
 		"date":       time.Now().Format(time.RFC3339),
 		"backupName": newDbName,
 		"comment":    comment,
 	})
 
-	slog.Info("Inserting into backup table with SQL command.", "Log code", "83d9e967", "SQL", insertStr, "Args", insertArgs)
+	util.Log("83d9e967").Info("Inserting into backup table with SQL command.", "SQL", insertStr, "Args", insertArgs)
 
 	if _, err = db.Exec(insertStr, insertArgs...); err != nil {
-		slog.Error("Failed executing insert into table command.", "Log code", "5a80e34b", "SQL", insertStr)
+		util.Log("5a80e34b").Error("Failed executing insert into table command.", "SQL", insertStr)
 		return err
 	}
 
@@ -79,7 +79,7 @@ func BackupDatabase(databaseName, comment string) error {
 }
 
 func RemoveOrphanBackups(databaseName string) error {
-	slog.Info("Removing backup orphans.", "Log code", "7df13463", "Database name", databaseName)
+	util.Log("7df13463").Info("Removing backup orphans.", "Database name", databaseName)
 
 	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"), "backups", databaseName)
 
@@ -91,17 +91,17 @@ func RemoveOrphanBackups(databaseName string) error {
 	sb := sqlbuilder.NewSelectBuilder().Distinct().Select("backupName").From("backups")
 	selStr, args := sb.Build()
 
-	db, err := util.OpenSqliteDatabaseIfExists(databaseName)
+	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
 
-	slog.Info("Querying backups in database.", "Log code", "de8e5d3d", "Database name", databaseName, "SQL", selStr, "Args", args)
+	util.Log("de8e5d3d").Info("Querying backups in database.", "Database name", databaseName, "SQL", selStr, "Args", args)
 
 	res, err := db.Query(selStr, args...)
 	if err != nil {
-		slog.Warn("Could not query database backups.", "Log code", "8ddae9eb", "Database name", databaseName)
+		util.Log("8ddae9eb").Warn("Could not query database backups.", "Database name", databaseName)
 		return err
 	}
 	defer res.Close()
@@ -123,6 +123,6 @@ func RemoveOrphanBackups(databaseName string) error {
 		}
 	}
 
-	slog.Info("Successfully removed backup orphans.", "Log code", "02814e8c", "Database name", databaseName)
+	util.Log("02814e8c").Info("Successfully removed backup orphans.", "Database name", databaseName)
 	return nil
 }

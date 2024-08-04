@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
-	"time"
 
 	"github.com/go-errors/errors"
 	addentry "github.com/sam-hobson/cmd/add-entry"
@@ -49,13 +48,13 @@ func preRun(cmd *cobra.Command, args []string) error {
 
 	// Set single run config changes
 	if len(configChanges) != 0 {
-		slog.Info("--with-config provided.", "Log code", "4d720ec4", "Config changes", fmt.Sprintf("%v", configChanges))
+		util.Log("22331288").Info("--with-config provided.", "Config changes", fmt.Sprintf("%v", configChanges))
 
 		for _, change := range configChanges {
 			key, value, found := strings.Cut(change, ":")
 
 			if !found {
-				slog.Error("--with-config flag has malformed input.", "Log code", "d05c9983", "Changes", change)
+				util.Log("cf60a975").Error("--with-config flag has malformed input.", "Changes", change)
 				return errors.Errorf("--with-config flag has malformed input.")
 			}
 
@@ -66,12 +65,11 @@ func preRun(cmd *cobra.Command, args []string) error {
 	// Set the logger up based on config
 	writer := config.GetConfigLogWriter()
 	level := config.GetConfigLogLevel()
-	slog.SetDefault(slog.New(slog.NewJSONHandler(writer, &slog.HandlerOptions{
-		Level: level,
-	}).WithAttrs(
-        []slog.Attr{slog.Int64("Session", time.Now().UnixMicro())},
-    )))
-	slog.Info("New limedb session starting.", "Log code", "c2eeba5d")
+	handler := slog.NewJSONHandler(writer, &slog.HandlerOptions{Level: level})
+
+	slog.SetDefault(slog.New(handler))
+
+	util.Log("09b726e0").Info("New limedb session starting.")
 
 	if db := viper.GetString("default_db"); db != "" {
 		state.ApplicationState().SetSelectedDb(db)

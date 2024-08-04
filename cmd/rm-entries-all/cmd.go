@@ -1,8 +1,6 @@
 package rmentriesall
 
 import (
-	"log/slog"
-
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/sam-hobson/internal/database"
 	"github.com/sam-hobson/internal/util"
@@ -26,15 +24,15 @@ func NewCommand() *cobra.Command {
 
 func run(cmd *cobra.Command, args []string) error {
 	if !util.PanicIfErr(cmd.Flags().GetBool("confirm")) {
-		slog.Warn("rm-db rejected. Operation was not confirmed.", "Log code", "abf450ec")
+		util.Log("abf450ec").Warn("rm-db rejected. Operation was not confirmed.")
 		cmd.PrintErrln("Command rejected. Please use the --confirm flag if you are sure you want to proceed.")
 		return nil
 	}
 
-    if rowsEffected, err := database.RemoveEntries(sqlbuilder.NewWhereClause()); err != nil {
-        return err
-    } else {
-        cmd.Printf("%d rows affected\n", rowsEffected)
-        return nil
-    }
+	if rowsEffected, err := database.RemoveEntries(sqlbuilder.NewWhereClause()); err != nil {
+		return err
+	} else {
+		cmd.Printf("%d rows affected\n", rowsEffected)
+		return nil
+	}
 }
