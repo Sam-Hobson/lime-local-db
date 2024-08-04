@@ -9,7 +9,7 @@ import (
 )
 
 func RemoveDatabaseBackup(databaseName string, rowid int) error {
-	util.Log("01fcf023").Info("Beginning remove backup operation.", "Database name", databaseName)
+	util.Log("01fcf023").Info("Beginning remove backup operation.", "Database name", databaseName, "Row id", rowid)
 
 	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {

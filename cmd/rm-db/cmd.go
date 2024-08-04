@@ -26,7 +26,7 @@ func NewCommand() *cobra.Command {
 func run(cmd *cobra.Command, args []string) error {
 	if !util.PanicIfErr(cmd.Flags().GetBool("confirm")) {
 		util.Log("a28ce317").Warn("rm-db rejected. Operation was not confirmed.")
-		cmd.PrintErrln("Command rejected. Please use the --confirm flag if you are sure you want to proceed.")
+		cmd.PrintErrln("Command rejected. Please use the --confirm flag if you are sure you want to proceed")
 		return nil
 	}
 

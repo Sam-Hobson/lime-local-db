@@ -21,6 +21,7 @@ func NewCommand() *cobra.Command {
 		createNewBackupCommand(),
 		lsBackupCommand(),
 		rmBackupCommand(),
+        restoreBackupCommand(),
 	)
 
 	return cmd

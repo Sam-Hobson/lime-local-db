@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"path/filepath"
 	"slices"
@@ -41,22 +42,15 @@ func BackupDatabase(databaseName, comment string) (int64, error) {
 	}
 	defer db.Close()
 
+    if err := createBackupsTable(db); err != nil {
+        return -1, err
+    }
+
 	fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
 	newDbName := fmt.Sprintf("%s-%s", fileName, strconv.FormatInt(time.Now().Unix(), 10))
 
 	relFs.CopyFile("stores", fileName, filepath.Join("backups", databaseName), newDbName)
-
-	createTableStr, createTableArgs := dbutil.CreateSqliteTable("backups", backupColumns)
-
-	util.Log("8bc1e038").Info("Creating backup table with SQL command.", "SQL", createTableStr, "Args", createTableArgs)
-
-	if _, err = db.Exec(createTableStr, createTableArgs...); err != nil {
-		util.Log("f7d58d42").Error("Failed executing create table command.", "SQL", createTableStr)
-		return -1, err
-	}
-
-	util.Log("91750756").Info("Successfully created a backup table.", "Database name", databaseName)
 
 	insertStr, insertArgs := dbutil.InsertIntoSqliteTable("backups", map[string]string{
 		"date":       time.Now().Format(time.RFC3339),
@@ -125,5 +119,18 @@ func RemoveOrphanBackups(databaseName string) error {
 	}
 
 	util.Log("02814e8c").Info("Successfully removed backup orphans.", "Database name", databaseName, "Orphan databases deleted", numOrphansDeleted)
+	return nil
+}
+
+func createBackupsTable(db *sql.DB) error {
+	createTableStr, createTableArgs := dbutil.CreateSqliteTable("backups", backupColumns)
+	util.Log("8bc1e038").Info("Creating backup table with SQL command.", "SQL", createTableStr, "Args", createTableArgs)
+
+	if _, err := db.Exec(createTableStr, createTableArgs...); err != nil {
+		util.Log("f7d58d42").Error("Failed executing create table command.", "SQL", createTableStr)
+		return err
+	}
+
+	util.Log("91750756").Info("Successfully created a backup table.")
 	return nil
 }
