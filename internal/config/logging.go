@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -12,8 +11,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func GetConfigLogWriter() io.Writer {
-	var writer io.Writer
+func GetConfigLogWriter() *os.File {
+	var writer *os.File
 
 	switch strings.ToUpper(viper.GetString("log_mode")) {
 	case "STDOUT":

@@ -12,7 +12,7 @@ func SetSessionId(id int64) {
 	sessionId = id
 }
 
-func GroupLogId(logHash string) slog.Attr {
+func groupLogId(logHash string) slog.Attr {
 	if sessionId == -1 {
 		fatal("Cannot proceed as session id was not initialised.")
 	}
@@ -21,7 +21,7 @@ func GroupLogId(logHash string) slog.Attr {
 }
 
 func Log(logHash string) *slog.Logger {
-    return slog.With(GroupLogId(logHash))
+    return slog.With(groupLogId(logHash))
 }
 
 func fatal(s string, args ...any) {

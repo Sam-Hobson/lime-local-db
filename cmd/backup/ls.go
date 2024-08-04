@@ -1,18 +1,20 @@
 package backup
 
 import (
+	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
 	dbutil "github.com/sam-hobson/internal/database/util"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
 )
 
 func lsBackupCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:       "ls [Database name]",
-		Short:     "List backups for a given database",
-		Example:   "limedb backup ls pets",
-		Args:      cobra.ExactArgs(1),
+		Use:       "ls",
+		Short:     "List backups for a selected database",
+		Example:   "limedb backup ls",
+		Args:      cobra.ExactArgs(0),
 		ValidArgs: dbNames(),
 
 		RunE: runLsBackupCommand,
@@ -22,15 +24,27 @@ func lsBackupCommand() *cobra.Command {
 }
 
 func runLsBackupCommand(cmd *cobra.Command, args []string) error {
-	databaseName := args[0]
+	databaseName := state.ApplicationState().GetSelectedDb()
 
+	if databaseName == "" {
+		util.Log("7ddeeaef").Error("Cannot list backups if no database selected.")
+		return errors.Errorf("Cannot list backups if no database selected")
+	}
+
+    printBackupRowsWhere(cmd, databaseName, sqlbuilder.NewWhereClause())
+
+	util.Log("5dbf67eb").Info("Successfully ran backup ls command.")
+	return nil
+}
+
+func printBackupRowsWhere(cmd *cobra.Command, databaseName string, where *sqlbuilder.WhereClause) error {
 	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
 		return err
 	}
 	defer db.Close()
 
-	sb := sqlbuilder.NewSelectBuilder().Select("rowid", "date", "comment").From("backups")
+	sb := sqlbuilder.NewSelectBuilder().Select("rowid", "date", "comment").From("backups").AddWhereClause(where)
 	selStr, selArgs := sb.Build()
 
 	util.Log("6fac1254").Info("Querying database backups.", "Database name", databaseName, "SQL", selStr, "Args", selArgs)
@@ -52,6 +66,5 @@ func runLsBackupCommand(cmd *cobra.Command, args []string) error {
 		cmd.Printf("%d  %s  \"%s\"\n", rowid, date, comment)
 	}
 
-	util.Log("5dbf67eb").Info("Successfully ran backup ls command.")
-	return nil
+    return nil
 }

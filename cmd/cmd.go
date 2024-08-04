@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log/slog"
+	"os"
 	"strings"
 
 	"github.com/go-errors/errors"
@@ -19,6 +20,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+var logWriter *os.File
+
 func NewCommand(version, commit string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "limedb",
@@ -26,6 +29,7 @@ func NewCommand(version, commit string) *cobra.Command {
 		Long:              "TODO: This",
 		Version:           buildVersion(version, commit),
 		PersistentPreRunE: preRun,
+        PersistentPostRun: postRun,
 	}
 
 	cmd.PersistentFlags().StringSlice("with-config", nil, "Override a configuration option during the execution of this command.")
@@ -63,9 +67,9 @@ func preRun(cmd *cobra.Command, args []string) error {
 	}
 
 	// Set the logger up based on config
-	writer := config.GetConfigLogWriter()
+	logWriter = config.GetConfigLogWriter()
 	level := config.GetConfigLogLevel()
-	handler := slog.NewJSONHandler(writer, &slog.HandlerOptions{Level: level})
+	handler := slog.NewJSONHandler(logWriter, &slog.HandlerOptions{Level: level})
 
 	slog.SetDefault(slog.New(handler))
 
@@ -81,6 +85,10 @@ func preRun(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+func postRun(cmd *cobra.Command, args []string) {
+    logWriter.Close()
 }
 
 func buildVersion(version, commit string) string {

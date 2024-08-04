@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/huandu/go-sqlbuilder"
+	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
-	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/spf13/viper"
 )
 
@@ -32,12 +32,12 @@ var backupColumns = []*types.Column{
 	},
 }
 
-func BackupDatabase(databaseName, comment string) error {
+func BackupDatabase(databaseName, comment string) (int64, error) {
 	util.Log("52b2d0a8").Info("Beginning backup operation.", "Database name", databaseName)
 
 	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
-		return err
+		return -1, err
 	}
 	defer db.Close()
 
@@ -53,7 +53,7 @@ func BackupDatabase(databaseName, comment string) error {
 
 	if _, err = db.Exec(createTableStr, createTableArgs...); err != nil {
 		util.Log("f7d58d42").Error("Failed executing create table command.", "SQL", createTableStr)
-		return err
+		return -1, err
 	}
 
 	util.Log("91750756").Info("Successfully created a backup table.", "Database name", databaseName)
@@ -66,16 +66,13 @@ func BackupDatabase(databaseName, comment string) error {
 
 	util.Log("83d9e967").Info("Inserting into backup table with SQL command.", "SQL", insertStr, "Args", insertArgs)
 
-	if _, err = db.Exec(insertStr, insertArgs...); err != nil {
+	res, err := db.Exec(insertStr, insertArgs...)
+	if err != nil {
 		util.Log("5a80e34b").Error("Failed executing insert into table command.", "SQL", insertStr)
-		return err
+		return -1, err
 	}
 
-	if viper.GetBool("remove_orphan_backups") {
-		return RemoveOrphanBackups(databaseName)
-	}
-
-	return nil
+	return util.PanicIfErr(res.LastInsertId()), nil
 }
 
 func RemoveOrphanBackups(databaseName string) error {
@@ -114,15 +111,19 @@ func RemoveOrphanBackups(databaseName string) error {
 		backupNames = append(backupNames, val)
 	}
 
+	var numOrphansDeleted = 0
+
 	// TODO: This is inefficient but it should be fine... How often do people backup anyway...
 	for _, file := range dir {
 		if !slices.Contains(backupNames, file.Name()) {
+			util.Log("e4802e8e").Info("Deleting orphaned database backup.", "Database name", file.Name())
+			numOrphansDeleted++
 			if err := relFs.RmFile("", file.Name()); err != nil {
 				return err
 			}
 		}
 	}
 
-	util.Log("02814e8c").Info("Successfully removed backup orphans.", "Database name", databaseName)
+	util.Log("02814e8c").Info("Successfully removed backup orphans.", "Database name", databaseName, "Orphan databases deleted", numOrphansDeleted)
 	return nil
 }

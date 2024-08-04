@@ -1,18 +1,21 @@
 package backup
 
 import (
+	"github.com/go-errors/errors"
+	"github.com/huandu/go-sqlbuilder"
 	"github.com/sam-hobson/internal/database"
 	dbutil "github.com/sam-hobson/internal/database/util"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
 )
 
 func createNewBackupCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:       "new [Database name]",
+		Use:       "new",
 		Short:     "Backup a database",
-		Example:   "limedb backup new pets",
-		Args:      cobra.ExactArgs(1),
+		Example:   "limedb backup new",
+		Args:      cobra.ExactArgs(0),
 		ValidArgs: dbNames(),
 
 		RunE: runNewBackupCommand,
@@ -24,7 +27,23 @@ func createNewBackupCommand() *cobra.Command {
 }
 
 func runNewBackupCommand(cmd *cobra.Command, args []string) error {
-	return database.BackupDatabase(args[0], util.PanicIfErr(cmd.Flags().GetString("message")))
+	databaseName := state.ApplicationState().GetSelectedDb()
+
+	if databaseName == "" {
+		util.Log("d6eda884").Error("Cannot list backups if no database selected.")
+		return errors.Errorf("Cannot list backups if no database selected")
+	}
+
+	if lastId, err := database.BackupDatabase(databaseName, util.PanicIfErr(cmd.Flags().GetString("message"))); err != nil {
+		return err
+	} else {
+		cond := sqlbuilder.NewCond()
+		where := sqlbuilder.NewWhereClause()
+		where.AddWhereExpr(cond.Args, cond.Equal("rowid", lastId))
+		printBackupRowsWhere(cmd, databaseName, where)
+	}
+
+	return nil
 }
 
 func dbNames() []string {

@@ -1,7 +1,6 @@
 package util
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 )
@@ -48,7 +47,7 @@ func (relFs *relativeFsManager) CreateFile(relPath string, fileName string) erro
 	return nil
 }
 
-func (relFs *relativeFsManager) OpenFile(relPath string, fileName string) (io.Writer, error) {
+func (relFs *relativeFsManager) OpenFile(relPath string, fileName string) (*os.File, error) {
 	Log("6453d64c").Info("Opening file.", "Path", relFs.FullPath(relPath, fileName))
 
 	if err := relFs.CreateFile(relPath, fileName); err != nil {
