@@ -11,7 +11,7 @@ import (
 )
 
 func RemoveDatabase(databaseName string) error {
-	slog.Info("Beginning rm-db operation.", "log_code", "49aaf185", "Database_name", databaseName)
+	slog.Info("Beginning rm-db operation.", "Log code", "49aaf185", "Database name", databaseName)
 
 	fileName := databaseName + ".db"
 
@@ -29,7 +29,7 @@ func RemoveDatabase(databaseName string) error {
 		}
 	}
 
-	slog.Info("Successfully removed database.", "log_code", "d73a061e", "db-name", fileName, "soft-delete", softDelete)
+	slog.Info("Successfully removed database.", "Log code", "d73a061e", "Db name", fileName, "Soft delete", softDelete)
 	return nil
 
 }

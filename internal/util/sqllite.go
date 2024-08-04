@@ -12,7 +12,7 @@ import (
 )
 
 func CreateSqliteTable(tableName string, columns []*types.Column) (string, []interface{}) {
-	slog.Info("Creating sqlite to create table.", "log_code", "19529bb3", "Table-name", tableName, "Columns", columns)
+	slog.Info("Creating sqlite to create table.", "Log code", "19529bb3", "Table name", tableName, "Columns", columns)
 
 	ctb := sqlbuilder.NewCreateTableBuilder()
 	ctb.CreateTable(tableName).IfNotExists()
@@ -45,7 +45,7 @@ func CreateSqliteTable(tableName string, columns []*types.Column) (string, []int
 }
 
 func InsertIntoSqliteTable(tableName string, entries map[string]string) (string, []interface{}) {
-	slog.Info("Creating sqlite to insert into table.", "log_code", "9391c009", "Table-name", tableName, "Entries", entries)
+	slog.Info("Creating sqlite to insert into table.", "Log code", "9391c009", "Table name", tableName, "Entries", entries)
 
 	ib := sqlbuilder.NewInsertBuilder()
 	ib.InsertInto(tableName)
@@ -70,11 +70,11 @@ func OpenSqliteDatabaseIfExists(databaseName string) (*sql.DB, error) {
     exists, err := SqliteDatabaseExists(databaseName)
 
 	if err != nil {
-		slog.Error("Cannot backup database as it does not exist.", "log_code", "94f1ece2")
+		slog.Error("Cannot backup database as it does not exist.", "Log code", "94f1ece2")
         return nil, err
 	}
     if !exists {
-		slog.Error("Cannot backup database as it does not exist.", "log_code", "cbd713ec")
+		slog.Error("Cannot backup database as it does not exist.", "Log code", "cbd713ec")
 		return nil, errors.Errorf("Cannot backup database as it does not exist")
     }
 
@@ -84,14 +84,14 @@ func OpenSqliteDatabaseIfExists(databaseName string) (*sql.DB, error) {
 func SqliteDatabaseExists(databaseName string) (bool, error) {
 	fileName := databaseName + ".db"
 	relFs := NewRelativeFsManager(viper.GetString("limedb_home"))
-	slog.Info("Checking if database exists.", "log_code", "e75f8412", "dbName", databaseName)
+	slog.Info("Checking if database exists.", "Log code", "e75f8412", "Db name", databaseName)
 	return relFs.FileExists("stores", fileName)
 }
 
 func OpenSqliteDatabase(databaseName string) (*sql.DB, error) {
 	fileName := databaseName + ".db"
 	dbPath := filepath.Join(viper.GetString("limedb_home"), "stores", fileName)
-	slog.Info("Opening database file.", "log_code", "34503562", "db_path", dbPath)
+	slog.Info("Opening database file.", "Log code", "34503562", "Db path", dbPath)
 	return sql.Open("sqlite3", dbPath)
 }
 

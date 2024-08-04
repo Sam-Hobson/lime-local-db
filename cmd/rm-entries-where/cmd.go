@@ -45,7 +45,7 @@ func parseColOperation(where *sqlbuilder.WhereClause, arg string) error {
 	colNameEnd := strings.Index(arg, ":")
 
 	if (colNameEnd == -1) || (colNameEnd == 0) {
-		slog.Error("Could not parse operation value.", "log_code", "5d769bb", "arg", arg)
+		slog.Error("Could not parse operation value.", "Log code", "5d769bb", "Arg", arg)
 		return errors.Errorf("Invalid rm-entries-where operation in %s", arg)
 	}
 
@@ -75,11 +75,11 @@ func parseColOperation(where *sqlbuilder.WhereClause, arg string) error {
 	endCond := strings.Index(arg, "}")
 
 	if (startCond == -1) || (endCond == -1) {
-		slog.Error("Could not parse operation value.", "log_code", "5f46ddba", "arg", arg)
+		slog.Error("Could not parse operation value.", "Log code", "5f46ddba", "Arg", arg)
 		return errors.Errorf("Invalid rm-entries-where operation in %s", arg)
 	}
 	if (startCond == 0) || (endCond != len(arg)-1) {
-		slog.Error("Could not parse operation value.", "log_code", "75378d9d", "arg", arg)
+		slog.Error("Could not parse operation value.", "Log code", "75378d9d", "Arg", arg)
 		return errors.Errorf("Invalid rm-entries-where operation in %s", arg)
 	}
 
@@ -104,20 +104,20 @@ func parseColOperation(where *sqlbuilder.WhereClause, arg string) error {
 		where.AddWhereExpr(sqlCond.Args, sqlCond.NotLike(colName, opArg))
 	case "BETWEEN":
 		if l, r, found := strings.Cut(opArg, ":"); !found {
-			slog.Error("Could not parse operation.", "log_code", "040c7040", "arg", arg, "op", op)
+			slog.Error("Could not parse operation.", "Log code", "040c7040", "Arg", arg, "Op", op)
 			return errors.Errorf("Invalid rm-entries-where operation in %s", arg)
 		} else {
 			where.AddWhereExpr(sqlCond.Args, sqlCond.Between(colName, l, r))
 		}
 	case "NOTBETWEEN":
 		if l, r, found := strings.Cut(opArg, ":"); !found {
-			slog.Error("Could not parse operation.", "log_code", "98006b55", "arg", arg, "op", op)
+			slog.Error("Could not parse operation.", "Log code", "98006b55", "Arg", arg, "Op", op)
 			return errors.Errorf("Invalid rm-entries-where operation in %s", arg)
 		} else {
 			where.AddWhereExpr(sqlCond.Args, sqlCond.NotBetween(colName, l, r))
 		}
 	default:
-		slog.Error("Could not parse operation.", "log_code", "75d191b9", "arg", arg, "op", op)
+		slog.Error("Could not parse operation.", "Log code", "75d191b9", "Arg", arg, "Op", op)
 		return errors.Errorf("Invalid rm-entries-where operation in %s", arg)
 	}
 

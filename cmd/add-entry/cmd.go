@@ -33,7 +33,7 @@ func run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	slog.Info("Parsed add-entry arguments.", "log_code", "7a8f5e35", "Args", entryValues)
+	slog.Info("Parsed add-entry arguments.", "Log code", "7a8f5e35", "Args", entryValues)
     return database.AddEntry(entryValues)
 }
 
@@ -42,11 +42,11 @@ func parseColValue(value string) (string, string, error) {
 	endVal := strings.Index(value, "}")
 
 	if (startVal == -1) || (endVal == -1) {
-		slog.Error("Could not parse entry value.", "log_code", "1361631e", "value", value)
+		slog.Error("Could not parse entry value.", "Log code", "1361631e", "Value", value)
 		return "", "", errors.Errorf("Invalid add-entry value in %s, value not present", value)
 	}
 	if (startVal == 0) || (endVal != len(value)-1) {
-		slog.Error("Could not parse entry value.", "log_code", "f6fa2b05", "value", value)
+		slog.Error("Could not parse entry value.", "Log code", "f6fa2b05", "Value", value)
 		return "", "", errors.Errorf("Invalid add-entry value in %s, malformed input", value)
 	}
 

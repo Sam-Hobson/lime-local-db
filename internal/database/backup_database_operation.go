@@ -33,7 +33,7 @@ var backupColumns = []*types.Column{
 }
 
 func BackupDatabase(databaseName, comment string) error {
-	slog.Info("Beginning backup operation.", "log_code", "52b2d0a8", "Database-name", databaseName)
+	slog.Info("Beginning backup operation.", "Log code", "52b2d0a8", "Database name", databaseName)
 
 	db, err := util.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
@@ -49,14 +49,14 @@ func BackupDatabase(databaseName, comment string) error {
 
 	createTableStr, createTableArgs := util.CreateSqliteTable("backups", backupColumns)
 
-	slog.Info("Creating backup table with SQL command.", "log_code", "8bc1e038", "SQL", createTableStr, "Args", createTableArgs)
+	slog.Info("Creating backup table with SQL command.", "Log code", "8bc1e038", "SQL", createTableStr, "Args", createTableArgs)
 
 	if _, err = db.Exec(createTableStr, createTableArgs...); err != nil {
-		slog.Error("Failed executing create table command.", "log_code", "f7d58d42", "SQL", createTableStr)
+		slog.Error("Failed executing create table command.", "Log code", "f7d58d42", "SQL", createTableStr)
 		return err
 	}
 
-	slog.Info("Successfully created a backup table.", "log_code", "91750756", "Database-name", databaseName)
+	slog.Info("Successfully created a backup table.", "Log code", "91750756", "Database name", databaseName)
 
 	insertStr, insertArgs := util.InsertIntoSqliteTable("backups", map[string]string{
 		"date":       time.Now().Format(time.RFC3339),
@@ -64,10 +64,10 @@ func BackupDatabase(databaseName, comment string) error {
 		"comment":    comment,
 	})
 
-	slog.Info("Inserting into backup table with SQL command.", "log_code", "83d9e967", "SQL", insertStr, "Args", insertArgs)
+	slog.Info("Inserting into backup table with SQL command.", "Log code", "83d9e967", "SQL", insertStr, "Args", insertArgs)
 
 	if _, err = db.Exec(insertStr, insertArgs...); err != nil {
-		slog.Error("Failed executing insert into table command.", "log_code", "5a80e34b", "SQL", insertStr)
+		slog.Error("Failed executing insert into table command.", "Log code", "5a80e34b", "SQL", insertStr)
 		return err
 	}
 
@@ -79,7 +79,7 @@ func BackupDatabase(databaseName, comment string) error {
 }
 
 func RemoveOrphanBackups(databaseName string) error {
-	slog.Info("Removing backup orphans.", "log_code", "7df13463", "Database-name", databaseName)
+	slog.Info("Removing backup orphans.", "Log code", "7df13463", "Database name", databaseName)
 
 	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"), "backups", databaseName)
 
@@ -97,11 +97,11 @@ func RemoveOrphanBackups(databaseName string) error {
 	}
 	defer db.Close()
 
-	slog.Info("Querying backups in database.", "log_code", "de8e5d3d", "Database-name", databaseName, "SQL", selStr, "Args", args)
+	slog.Info("Querying backups in database.", "Log code", "de8e5d3d", "Database name", databaseName, "SQL", selStr, "Args", args)
 
 	res, err := db.Query(selStr, args...)
 	if err != nil {
-		slog.Warn("Could not query database backups.", "log_code", "8ddae9eb", "databaseName", databaseName)
+		slog.Warn("Could not query database backups.", "Log code", "8ddae9eb", "Database name", databaseName)
 		return err
 	}
 	defer res.Close()
@@ -123,6 +123,6 @@ func RemoveOrphanBackups(databaseName string) error {
 		}
 	}
 
-	slog.Info("Successfully removed backup orphans.", "log_code", "02814e8c", "Database-name", databaseName)
+	slog.Info("Successfully removed backup orphans.", "Log code", "02814e8c", "Database name", databaseName)
 	return nil
 }

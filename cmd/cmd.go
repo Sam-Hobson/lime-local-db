@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/go-errors/errors"
 	addentry "github.com/sam-hobson/cmd/add-entry"
@@ -12,6 +13,7 @@ import (
 	rmdb "github.com/sam-hobson/cmd/rm-db"
 	rmentriesall "github.com/sam-hobson/cmd/rm-entries-all"
 	rmentrieswhere "github.com/sam-hobson/cmd/rm-entries-where"
+	"github.com/sam-hobson/internal/config"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
@@ -31,13 +33,13 @@ func NewCommand(version, commit string) *cobra.Command {
 	cmd.PersistentFlags().StringP("db", "d", "", "Choose the database to perform operations on.")
 
 	cmd.AddCommand(
-        newdb.NewCommand(),
-        rmdb.NewCommand(),
-        addentry.NewCommand(),
-        rmentriesall.NewCommand(),
-        rmentrieswhere.NewCommand(),
-        backup.NewCommand(),
-    )
+		newdb.NewCommand(),
+		rmdb.NewCommand(),
+		addentry.NewCommand(),
+		rmentriesall.NewCommand(),
+		rmentrieswhere.NewCommand(),
+		backup.NewCommand(),
+	)
 
 	return cmd
 }
@@ -45,14 +47,15 @@ func NewCommand(version, commit string) *cobra.Command {
 func preRun(cmd *cobra.Command, args []string) error {
 	configChanges := util.PanicIfErr(cmd.Flags().GetStringSlice("with-config"))
 
+	// Set single run config changes
 	if len(configChanges) != 0 {
-		slog.Info("--with-config provided.", "log_code", "4d720ec4", "Config-changes", fmt.Sprintf("%v", configChanges))
+		slog.Info("--with-config provided.", "Log code", "4d720ec4", "Config changes", fmt.Sprintf("%v", configChanges))
 
 		for _, change := range configChanges {
 			key, value, found := strings.Cut(change, ":")
 
 			if !found {
-				slog.Error("--with-config flag has malformed input.", "log_code", "d05c9983", "Changes", change)
+				slog.Error("--with-config flag has malformed input.", "Log code", "d05c9983", "Changes", change)
 				return errors.Errorf("--with-config flag has malformed input.")
 			}
 
@@ -60,6 +63,21 @@ func preRun(cmd *cobra.Command, args []string) error {
 		}
 	}
 
+	// Set the logger up based on config
+	writer := config.GetConfigLogWriter()
+	level := config.GetConfigLogLevel()
+	slog.SetDefault(slog.New(slog.NewJSONHandler(writer, &slog.HandlerOptions{
+		Level: level,
+	}).WithAttrs(
+        []slog.Attr{slog.Int64("Session", time.Now().UnixMicro())},
+    )))
+	slog.Info("New limedb session starting.", "Log code", "c2eeba5d")
+
+	if db := viper.GetString("default_db"); db != "" {
+		state.ApplicationState().SetSelectedDb(db)
+	}
+
+	// Process flags
 	if selectedDb := util.PanicIfErr(cmd.Flags().GetString("db")); selectedDb != "" {
 		state.ApplicationState().SetSelectedDb(selectedDb)
 	}

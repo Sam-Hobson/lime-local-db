@@ -11,7 +11,7 @@ func (s state) GetSelectedDb() string {
 }
 
 func (s *state) SetSelectedDb(db string) {
-	slog.Info("Setting selected database.", "log_code", "c863f749", "Db", db)
+	slog.Info("Setting selected database.", "Log code", "c863f749", "Db", db)
 	s.selectedDatabase = db
 }
 

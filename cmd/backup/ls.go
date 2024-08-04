@@ -34,11 +34,11 @@ func runLsBackupCommand(cmd *cobra.Command, args []string) error {
 	sb := sqlbuilder.NewSelectBuilder().Select("rowid", "date", "comment").From("backups")
 	selStr, selArgs := sb.Build()
 
-	slog.Info("Querying database backups.", "log_code", "407f8430", "databaseName", databaseName, "SQL", selStr, "Args", selArgs)
+	slog.Info("Querying database backups.", "Log code", "407f8430", "Database name", databaseName, "SQL", selStr, "Args", selArgs)
 
 	res, err := db.Query(selStr, selArgs...)
 	if err != nil {
-		slog.Warn("Could not query database backups.", "log_code", "5cd94c57", "databaseName", databaseName)
+		slog.Warn("Could not query database backups.", "Log code", "5cd94c57", "Database name", databaseName)
 		return err
 	}
 	defer res.Close()
@@ -53,6 +53,6 @@ func runLsBackupCommand(cmd *cobra.Command, args []string) error {
 		cmd.Printf("%d  %s  \"%s\"\n", rowid, date, comment)
 	}
 
-	slog.Info("Successfully ran backup ls command.", "log_code", "042af672")
+	slog.Info("Successfully ran backup ls command.", "Log code", "042af672")
 	return nil
 }
