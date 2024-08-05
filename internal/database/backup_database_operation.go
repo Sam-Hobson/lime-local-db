@@ -1,50 +1,26 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
 	"path/filepath"
-	"slices"
 	"strconv"
 	"time"
 
-	"github.com/huandu/go-sqlbuilder"
 	dbutil "github.com/sam-hobson/internal/database/util"
-	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/viper"
 )
 
-var backupColumns = []*types.Column{
-	{
-		ColName:  "date",
-		DataType: types.ColumnTextDataType,
-		NotNull:  true,
-	},
-	{
-		ColName:  "backupName",
-		DataType: types.ColumnTextDataType,
-		NotNull:  true,
-	},
-	{
-		ColName:  "comment",
-		DataType: types.ColumnTextDataType,
-		NotNull:  false,
-	},
-}
-
 func BackupDatabase(databaseName, comment string) (int64, error) {
 	util.Log("52b2d0a8").Info("Beginning backup operation.", "Database name", databaseName)
 
-	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
+	persistentDatabaseName := dbutil.PersistentDatabaseName(databaseName)
+
+	db, err := dbutil.OpenSqliteDatabaseIfExists(persistentDatabaseName)
 	if err != nil {
 		return -1, err
 	}
 	defer db.Close()
-
-    if err := createBackupsTable(db); err != nil {
-        return -1, err
-    }
 
 	fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
@@ -67,70 +43,4 @@ func BackupDatabase(databaseName, comment string) (int64, error) {
 	}
 
 	return util.PanicIfErr(res.LastInsertId()), nil
-}
-
-func RemoveOrphanBackups(databaseName string) error {
-	util.Log("7df13463").Info("Removing backup orphans.", "Database name", databaseName)
-
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"), "backups", databaseName)
-
-	dir, err := relFs.ReadDir("")
-	if err != nil {
-		return err
-	}
-
-	sb := sqlbuilder.NewSelectBuilder().Distinct().Select("backupName").From("backups")
-	selStr, args := sb.Build()
-
-	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	util.Log("de8e5d3d").Info("Querying backups in database.", "Database name", databaseName, "SQL", selStr, "Args", args)
-
-	res, err := db.Query(selStr, args...)
-	if err != nil {
-		util.Log("8ddae9eb").Warn("Could not query database backups.", "Database name", databaseName)
-		return err
-	}
-	defer res.Close()
-
-	backupNames := make([]string, 0, 1024)
-
-	for res.Next() {
-		var val string
-		res.Scan(&val)
-		backupNames = append(backupNames, val)
-	}
-
-	var numOrphansDeleted = 0
-
-	// TODO: This is inefficient but it should be fine... How often do people backup anyway...
-	for _, file := range dir {
-		if !slices.Contains(backupNames, file.Name()) {
-			util.Log("e4802e8e").Info("Deleting orphaned database backup.", "Database name", file.Name())
-			numOrphansDeleted++
-			if err := relFs.RmFile("", file.Name()); err != nil {
-				return err
-			}
-		}
-	}
-
-	util.Log("02814e8c").Info("Successfully removed backup orphans.", "Database name", databaseName, "Orphan databases deleted", numOrphansDeleted)
-	return nil
-}
-
-func createBackupsTable(db *sql.DB) error {
-	createTableStr, createTableArgs := dbutil.CreateSqliteTable("backups", backupColumns)
-	util.Log("8bc1e038").Info("Creating backup table with SQL command.", "SQL", createTableStr, "Args", createTableArgs)
-
-	if _, err := db.Exec(createTableStr, createTableArgs...); err != nil {
-		util.Log("f7d58d42").Error("Failed executing create table command.", "SQL", createTableStr)
-		return err
-	}
-
-	util.Log("91750756").Info("Successfully created a backup table.")
-	return nil
 }

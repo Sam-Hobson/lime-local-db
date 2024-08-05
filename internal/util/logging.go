@@ -17,7 +17,7 @@ func groupLogId(logHash string) slog.Attr {
 		fatal("Cannot proceed as session id was not initialised.")
 	}
 
-	return slog.Group("Id", slog.Int64("Session", sessionId), slog.String("Log code", logHash))
+	return slog.Group("Id", slog.Int64("Session", sessionId), slog.String("Log", logHash))
 }
 
 func Log(logHash string) *slog.Logger {

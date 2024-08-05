@@ -38,7 +38,8 @@ func runLsBackupCommand(cmd *cobra.Command, args []string) error {
 }
 
 func printBackupRowsWhere(cmd *cobra.Command, databaseName string, where *sqlbuilder.WhereClause) error {
-	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
+    PersistentDatabaseName := dbutil.PersistentDatabaseName(databaseName)
+	db, err := dbutil.OpenSqliteDatabaseIfExists(PersistentDatabaseName)
 	if err != nil {
 		return err
 	}

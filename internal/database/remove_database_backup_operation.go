@@ -11,7 +11,9 @@ import (
 func RemoveDatabaseBackup(databaseName string, rowid int) error {
 	util.Log("01fcf023").Info("Beginning remove backup operation.", "Database name", databaseName, "Row id", rowid)
 
-	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
+	persistentDatabaseName := dbutil.PersistentDatabaseName(databaseName)
+
+	db, err := dbutil.OpenSqliteDatabaseIfExists(persistentDatabaseName)
 	if err != nil {
 		return err
 	}
@@ -67,6 +69,6 @@ func RemoveDatabaseBackup(databaseName string, rowid int) error {
 		return err
 	}
 
-	util.Log("f1fe1bdb").Info("Successfully removed backup.", "Database name", databaseName, "Row id", rowid, "Backup name", backupName)
+	util.Log("f1fe1bdb").Info("Successfully removed backup.", "Persistent database name", persistentDatabaseName, "Row id", rowid, "Backup name", backupName)
 	return nil
 }

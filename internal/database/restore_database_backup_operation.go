@@ -13,12 +13,14 @@ import (
 func RestoreFromBackup(databaseName string, rowid int) error {
 	util.Log("f68180a2").Info("Beginning restore from backup operation.", "Database name", databaseName, "Row id", rowid)
 
-	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
+	persistentDatabaseName := dbutil.PersistentDatabaseName(databaseName)
+
+	db, err := dbutil.OpenSqliteDatabaseIfExists(persistentDatabaseName)
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
-    fileName := databaseName + ".db"
 	cond := sqlbuilder.NewCond()
 
 	selWhere := sqlbuilder.NewWhereClause()
@@ -34,7 +36,7 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 		util.Log("e9290919").Error("Failed executing restore-from-backup command.", "SQL", selStr, "Args", selArgs)
 		return err
 	}
-	db.Close()
+	defer res.Close()
 
 	var date string
 	var backupName string
@@ -52,8 +54,7 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 		return errors.Errorf("Failed restore-from-backup, too many backup field records")
 	}
 
-	res.Close()
-
+    fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
 	if err := relFs.CopyFile(filepath.Join("backups", databaseName), backupName, "stores", fileName); err != nil {
 		return err
@@ -65,21 +66,6 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 		return err
 	}
 	defer db.Close()
-
-    // This will do nothing if the table exists, and create it if it doesn't
-    createBackupsTable(db)
-
-    insertStr, insertArgs := dbutil.InsertIntoSqliteTable("backups", map[string]string{
-		"date":       date,
-		"backupName": backupName,
-		"comment":    comment,
-	})
-
-	util.Log("18d476ff").Info("Inserting with SQL Command.", "SQL", insertStr, "Args", insertArgs)
-	if _, err = db.Exec(insertStr, insertArgs...); err != nil {
-		util.Log("424e959d").Error("Failed inserting restored backup into table.", "SQL", insertStr, "Args", insertArgs)
-		return err
-	}
 
     util.Log("e2ab58c3").Info("Successfully restored backup.", "Database name", databaseName, "Row id", rowid)
 
