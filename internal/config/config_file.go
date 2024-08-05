@@ -34,7 +34,6 @@ func ReadConfigFile() {
 		viper.SetDefault("log_level", "info")
 		viper.SetDefault("soft_deletion", true)
 		viper.SetDefault("default_db", "")
-		viper.SetDefault("remove_orphan_backups", true)
 
 		if err := viper.WriteConfigAs(filepath.Join(homeDir, ConfigFileName+"."+ConfigFileExt)); err != nil {
 			panic(errors.Errorf("Fatal error writing to config file: %w", err))
