@@ -1,26 +1,26 @@
-package newdb
+package db
 
 import (
-	database "github.com/sam-hobson/internal/database"
-	types "github.com/sam-hobson/internal/types"
+	"github.com/sam-hobson/internal/database"
+	"github.com/sam-hobson/internal/types"
 	"github.com/spf13/cobra"
 )
 
 // TODO: Flesh out use/examples documentation.
-func NewCommand() *cobra.Command {
+func newDbCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:       "new-db DatabaseName DatabaseColumns",
-		Short:     "Create a new database.",
-		Example:   "limedb new-db pets PN:TEXT:name :INT:age{0} :TEXT:gender{F}",
-		Args:      cobra.MinimumNArgs(2),
+		Use:     "new [DatabaseName] [DatabaseColumns]",
+		Short:   "Create a new database.",
+		Example: "limedb db new pets PN:TEXT:name :INT:age{0} :TEXT:gender{F}",
+		Args:    cobra.MinimumNArgs(2),
 
-		RunE: run,
+		RunE: runNewDbCommand,
 	}
 
 	return cmd
 }
 
-func run(cmd *cobra.Command, args []string) error {
+func runNewDbCommand(cmd *cobra.Command, args []string) error {
 	name := args[0]
 	colStrings := args[1:]
 

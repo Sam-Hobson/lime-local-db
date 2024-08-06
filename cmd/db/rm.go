@@ -1,4 +1,4 @@
-package rmdb
+package db
 
 import (
 	"github.com/sam-hobson/internal/database"
@@ -7,15 +7,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCommand() *cobra.Command {
+func rmDbCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:       "rm-db [Database name]",
+		Use:       "rm [Database name]",
 		Short:     "Delete a database",
-		Example:   "limedb rm-db petdb",
+		Example:   "limedb db rm petdb",
 		Args:      cobra.ExactArgs(1),
 		ValidArgs: dbNames(),
 
-		RunE: run,
+		RunE: runRmDbCommand,
 	}
 
 	cmd.Flags().Bool("confirm", false, "Confirm that you want to take the current risky action")
@@ -23,7 +23,7 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-func run(cmd *cobra.Command, args []string) error {
+func runRmDbCommand(cmd *cobra.Command, args []string) error {
 	if !util.PanicIfErr(cmd.Flags().GetBool("confirm")) {
 		util.Log("a28ce317").Warn("rm-db rejected. Operation was not confirmed.")
 		cmd.PrintErrln("Command rejected. Please use the --confirm flag if you are sure you want to proceed")

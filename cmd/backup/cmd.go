@@ -4,15 +4,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// TODO: Better documentation
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "backup [Subcommand]",
-		Short:   "Backup a database",
-		Example: "limedb backup petdb",
+		Short:   "Backup databases",
+		Example: "limedb --db pets backup new",
 	}
 
 	cmd.AddCommand(
-		createNewBackupCommand(),
+		newBackupCommand(),
 		lsBackupCommand(),
 		rmBackupCommand(),
 		restoreBackupCommand(),

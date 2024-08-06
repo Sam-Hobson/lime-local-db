@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func createNewBackupCommand() *cobra.Command {
+func newBackupCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:       "new",
 		Short:     "Backup a database",

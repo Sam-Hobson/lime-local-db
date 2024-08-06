@@ -8,7 +8,6 @@ import (
 	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
-	"github.com/spf13/viper"
 )
 
 func RestoreFromBackup(databaseName string, rowid int) error {

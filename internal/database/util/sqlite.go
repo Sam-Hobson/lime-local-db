@@ -9,7 +9,6 @@ import (
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
-	"github.com/spf13/viper"
 )
 
 func CreateSqliteTable(tableName string, columns []*types.Column) (string, []interface{}) {
