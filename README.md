@@ -24,18 +24,18 @@ but with more flexibility.
 
 #### Create a new database:
 ```sh
-limedb [DB-name] [Key flags][Not null]:[Column type]:[Column name]{[Default value]}
+limedb db new [DB-name] [Key flags][Not null]:[Column type]:[Column name]{[Default value]}
 # Eg:
-limedb new-db pets P:TEXT:name{default} N:TEXT:gender{F} N::breed{Dog}
-limedb new-db pets P:TEXT:name{default} N:TEXT:gender{F} N:INT:age :REAL:height_cm
+limedb db new pets P:TEXT:name{default} N:TEXT:gender{F} N::breed{Dog}
+limedb db new pets P:TEXT:name{default} N:TEXT:gender{F} N:INT:age :REAL:height_cm
 ```
 
 #### Remove a database:
 By default, this will soft delete a database.
 ```sh
-limedb rm-db [DB-NAME]
+limedb db rm [DB-NAME]
 # Eg:
-limedb rm-db pets
+limedb db rm pets
 ```
 
 #### Add an entry to a database:
