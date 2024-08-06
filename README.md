@@ -5,10 +5,24 @@ with the database easier, to eventually provide similar functionality to Notion 
 but with more flexibility.
 
 
+## Limedb table of contents
+- [Getting started](#getting-started)
+- [Usage](#usage)
+- [Commands](#commands)
+- [Global flags](#global-flags)
+- [Configuration](#configuration)
+- [Features in progress](#features-in-progress)
+
+
+## Getting started
+
+
+## Usage
+
+
 ## Commands
 
-
-Create a new database:
+#### Create a new database:
 ```sh
 limedb [DB-name] [Key flags][Not null]:[Column type]:[Column name]{[Default value]}
 # Eg:
@@ -16,21 +30,22 @@ limedb new-db pets P:TEXT:name{default} N:TEXT:gender{F} N::breed{Dog}
 limedb new-db pets P:TEXT:name{default} N:TEXT:gender{F} N:INT:age :REAL:height_cm
 ```
 
-Remove a database:
+#### Remove a database:
+By default, this will soft delete a database.
 ```sh
 limedb rm-db [DB-NAME]
 # Eg:
 limedb rm-db pets
 ```
 
-Add an entry to a database:
+#### Add an entry to a database:
 ```sh
 limedb add-entry [column names and values]...
 # Eg:
 limedb --db pets add-entry name{Woofy} age{5} gender{M} breed{Beagle}
 ```
 
-Remove entries from a database:
+#### Remove entries from a database:
 ```sh
 limedb rm-entries-all
 limedb rm-entries-where [Column name]:[Operation]{[Value]}
@@ -42,41 +57,69 @@ limedb --db pets rm-entries-where name:like{W%}
 limedb --db pets rm-entries-where "age:>{5}" gender:!={F} height_cm:between{10:30} name:null
 ```
 
-Create a backup of a database:
+#### Create a backup of a database:
+This will create a backup of the database in its current state.
 ```sh
-limedb backup new [Table name]
+limedb backup new
 # Eg:
-limedb backup new pets
-limedb backup new pets -m "Backup before risky operation"
+limedb --db pets backup new
+limedb --db pets backup new -m "Backup before risky operation"
+```
+
+#### List all backups of a database:
+```sh
+limedb backup ls
+# Eg:
+limedb --db pets backup ls
+```
+
+#### Remove a backup of a database:
+```sh
+limedb backup rm [Backup id]
+# A backup id can be obtained through the `limedb backup ls` command. Eg:
+limedb --db pets backup ls
+limedb --db pets backup rm 1
+```
+
+#### Restore to the backup
+This will restore the selected database to its state at the time of the backup.
+```sh
+limedb backup restore [Backup id]
+# A backup id can be obtained through the `limedb backup ls` command. Eg:
+limedb --db pets backup ls
+limedb --db pets backup restore 1
 ```
 
 
-List all backups of a database:
+## Configuration
+
+| Flag                | Action                                                                        |
+| ------------------- | ----------------------------------------------------------------------------- |
+| `--db`              | Provide the database that operations will operate on.                         |
+| `--with-config`     | Provide comma separated list of configuration options.                        |
+
+#### Example
 ```sh
-limedb backup ls [Table name]
-# Eg:
-limedb backup ls pets
-```
-
-
-## Flags
-
-Provide the database that operations will operate on:
-```sh
-limedb --db [db name] [Any command]
-# Eg:
+# Use --db to select the `pets` database.
 limedb --db pets add-entry name{Woofy} age{5} gender{M}
-```
 
-Provide comma separated list of configuration options:
-```sh
-limedb [Any command] --with-config key:value
-# Eg:
-limedb [Any command] --with-config soft_deletion:false
+# --with-config to set the `soft_deletion` and `limedb_home` options in the current run of limedb.
 limedb rm-db pets --confirm --with-config soft_deletion:false,limedb_home:/etc/limedb/
 ```
 
-## Features to add
+
+## Configuration
+
+| Config option       | Action                                                                        |
+| ------------------- | ----------------------------------------------------------------------------- |
+| `limedb_home`       | Set the home directory limedb. (Default `$HOME/.limedb/`).                    |
+| `log_mode`          | Set how logs should be reported. (Default `file`). `file`, `stdout`, `stderr` |
+| `log_level`         | The level of logging. (Default `info`). `info`, `warn`, `debug`, `error`      |
+| `soft_deletion`     | Soft delete databases. (Default `true`). `true`, `false`                      |
+| `default_db`        | Default db used for operations, (Default ` `).                                |
+
+
+## Features in progress
 - Proper support for foreign keys
 - Add option in where clauses to input raw sqlite
 - Operations
