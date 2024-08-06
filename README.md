@@ -81,7 +81,7 @@ limedb --db pets backup ls
 limedb --db pets backup rm 1
 ```
 
-#### Restore to the backup
+#### Restore to a database backup:
 This will restore the selected database to its state at the time of the backup.
 ```sh
 limedb backup restore [Backup id]
@@ -91,7 +91,7 @@ limedb --db pets backup restore 1
 ```
 
 
-## Configuration
+## Global flags
 
 | Flag                | Action                                                                        |
 | ------------------- | ----------------------------------------------------------------------------- |
@@ -110,13 +110,13 @@ limedb rm-db pets --confirm --with-config soft_deletion:false,limedb_home:/etc/l
 
 ## Configuration
 
-| Config option       | Action                                                                        |
-| ------------------- | ----------------------------------------------------------------------------- |
-| `limedb_home`       | Set the home directory limedb. (Default `$HOME/.limedb/`).                    |
-| `log_mode`          | Set how logs should be reported. (Default `file`). `file`, `stdout`, `stderr` |
-| `log_level`         | The level of logging. (Default `info`). `info`, `warn`, `debug`, `error`      |
-| `soft_deletion`     | Soft delete databases. (Default `true`). `true`, `false`                      |
-| `default_db`        | Default db used for operations, (Default ` `).                                |
+| Config option       | Action                                                      | Valid args                           |
+| ------------------- | ------------------------------------------------------------|------------------------------------- |
+| `limedb_home`       | Set the home directory limedb. (Default `$HOME/.limedb/`).  |                                      |
+| `log_mode`          | Set how logs should be reported. (Default `file`).          | `file`, `stdout`, `stderr`           |
+| `log_level`         | The level of logging. (Default `info`).                     | `info`, `warn`, `debug`, `error`     |
+| `soft_deletion`     | Soft delete databases. (Default `true`).                    | `true`, `false`                      |
+| `default_db`        | Default db used for operations, (Default ` `).              |                                      |
 
 
 ## Features in progress
