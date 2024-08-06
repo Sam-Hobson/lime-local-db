@@ -1,4 +1,4 @@
-# lime-local-db
+# 🍋‍🟩 lime-local-db
 
 Limedb is a local wrapper for a sqlite database. It is designed to make interacting
 with the database easier, to eventually provide similar functionality to Notion or Obsidian,
