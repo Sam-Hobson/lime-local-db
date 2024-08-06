@@ -4,6 +4,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
 	dbutil "github.com/sam-hobson/internal/database/util"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/viper"
 )
@@ -63,7 +64,7 @@ func RemoveDatabaseBackup(databaseName string, rowid int) error {
 		return errors.Errorf("Failed remove-database-backup, could not delete backup")
 	}
 
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"), "backups")
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome(), "backups")
 
 	if err := relFs.RmFile(databaseName, backupName); err != nil {
 		return err

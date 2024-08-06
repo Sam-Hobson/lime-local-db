@@ -29,7 +29,7 @@ func NewCommand(version, commit string) *cobra.Command {
 		Long:              "TODO: This",
 		Version:           buildVersion(version, commit),
 		PersistentPreRunE: preRun,
-        PersistentPostRun: postRun,
+		PersistentPostRun: postRun,
 	}
 
 	cmd.PersistentFlags().StringSlice("with-config", nil, "Override a configuration option during the execution of this command.")
@@ -78,6 +78,9 @@ func preRun(cmd *cobra.Command, args []string) error {
 	if db := viper.GetString("default_db"); db != "" {
 		state.ApplicationState().SetSelectedDb(db)
 	}
+	if limedbHome := viper.GetString("limedb_home"); limedbHome != "" {
+		state.ApplicationState().SetLimedbHome(limedbHome)
+	}
 
 	// Process flags
 	if selectedDb := util.PanicIfErr(cmd.Flags().GetString("db")); selectedDb != "" {
@@ -88,7 +91,7 @@ func preRun(cmd *cobra.Command, args []string) error {
 }
 
 func postRun(cmd *cobra.Command, args []string) {
-    logWriter.Close()
+	logWriter.Close()
 }
 
 func buildVersion(version, commit string) string {

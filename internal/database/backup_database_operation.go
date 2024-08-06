@@ -7,8 +7,8 @@ import (
 	"time"
 
 	dbutil "github.com/sam-hobson/internal/database/util"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
-	"github.com/spf13/viper"
 )
 
 func BackupDatabase(databaseName, comment string) (int64, error) {
@@ -23,7 +23,7 @@ func BackupDatabase(databaseName, comment string) (int64, error) {
 	defer db.Close()
 
 	fileName := databaseName + ".db"
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
 	newDbName := fmt.Sprintf("%s-%s", fileName, strconv.FormatInt(time.Now().Unix(), 10))
 
 	relFs.CopyFile("stores", fileName, filepath.Join("backups", databaseName), newDbName)

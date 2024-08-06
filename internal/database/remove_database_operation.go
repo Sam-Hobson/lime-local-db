@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/viper"
 )
@@ -14,7 +15,7 @@ func RemoveDatabase(databaseName string) error {
 
 	fileName := databaseName + ".db"
 
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
 	softDelete := viper.GetBool("soft_deletion")
 
 	if softDelete {

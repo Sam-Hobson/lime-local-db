@@ -3,13 +3,13 @@ package util
 import (
 	"fmt"
 
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
-	"github.com/spf13/viper"
 )
 
 // TODO: This should be refactored into a struct
 func AllExistingDatabaseNames() ([]string, error) {
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
 	files, err := relFs.ReadDir("stores")
 
 	if err != nil {

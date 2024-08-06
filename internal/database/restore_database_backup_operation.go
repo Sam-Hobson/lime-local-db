@@ -6,6 +6,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
 	dbutil "github.com/sam-hobson/internal/database/util"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/viper"
 )
@@ -55,7 +56,7 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 	}
 
     fileName := databaseName + ".db"
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
 	if err := relFs.CopyFile(filepath.Join("backups", databaseName), backupName, "stores", fileName); err != nil {
 		return err
 	}

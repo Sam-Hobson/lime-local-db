@@ -6,9 +6,9 @@ import (
 	"github.com/go-errors/errors"
 	_ "github.com/mattn/go-sqlite3"
 	dbutil "github.com/sam-hobson/internal/database/util"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
-	"github.com/spf13/viper"
 )
 
 var backupColumns = []*types.Column{
@@ -32,7 +32,7 @@ var backupColumns = []*types.Column{
 func CreateDatabase(databaseName string, columns []*types.Column) error {
 	util.Log("26cd37c1").Info("Beginning new-db operation.", "Db name", databaseName, "Columns", columns)
 	fileName := databaseName + ".db"
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
 
 	if exists, err := relFs.FileExists("stores", fileName); err != nil {
 		return err
@@ -65,19 +65,19 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 
 	util.Log("7bf9634b").Info("Successfully created a new database.", "Db path", dbPath)
 
-    if err := CreatePersistentDatabase(databaseName); err != nil {
-        relFs.RmFile("stores", fileName)
-        return err
-    }
+	if err := CreatePersistentDatabase(databaseName); err != nil {
+		relFs.RmFile("stores", fileName)
+		return err
+	}
 
 	return nil
 }
 
 func CreatePersistentDatabase(databaseName string) error {
-    persistentDatabaseFileName := dbutil.PersistentDatabaseName(databaseName) + ".db"
-    util.Log("3e55ef45").Info("Beginning create persistent database operation.", "Database name", databaseName, "Persistent database file name", persistentDatabaseFileName)
+	persistentDatabaseFileName := dbutil.PersistentDatabaseName(databaseName) + ".db"
+	util.Log("3e55ef45").Info("Beginning create persistent database operation.", "Database name", databaseName, "Persistent database file name", persistentDatabaseFileName)
 
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
 
 	if exists, err := relFs.FileExists("stores", persistentDatabaseFileName); err != nil {
 		return err
@@ -88,7 +88,7 @@ func CreatePersistentDatabase(databaseName string) error {
 
 	if err := relFs.CreateFile("stores", persistentDatabaseFileName); err != nil {
 		return err
-    }
+	}
 
 	dbPath := relFs.FullPath("stores", persistentDatabaseFileName)
 
@@ -110,5 +110,5 @@ func CreatePersistentDatabase(databaseName string) error {
 
 	util.Log("91750756").Info("Successfully created a backup table.")
 
-    return nil
+	return nil
 }

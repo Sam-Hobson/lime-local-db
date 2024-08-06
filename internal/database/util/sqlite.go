@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/viper"
@@ -83,14 +84,14 @@ func OpenSqliteDatabaseIfExists(databaseName string) (*sql.DB, error) {
 
 func SqliteDatabaseExists(databaseName string) (bool, error) {
 	fileName := databaseName + ".db"
-	relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
 	util.Log("e75f8412").Info("Checking if database exists.", "Db name", databaseName)
 	return relFs.FileExists("stores", fileName)
 }
 
 func OpenSqliteDatabase(databaseName string) (*sql.DB, error) {
 	fileName := databaseName + ".db"
-	dbPath := filepath.Join(viper.GetString("limedb_home"), "stores", fileName)
+	dbPath := filepath.Join(state.ApplicationState().GetLimedbHome(), "stores", fileName)
 	util.Log("34503562").Info("Opening database file.", "Db path", dbPath)
 	return sql.Open("sqlite3", dbPath)
 }
