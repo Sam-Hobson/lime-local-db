@@ -104,7 +104,7 @@ limedb --db pets backup restore 1
 limedb --db pets add-entry name{Woofy} age{5} gender{M}
 
 # --with-config to set the `soft_deletion` and `limedb_home` options in the current run of limedb.
-limedb rm-db pets --confirm --with-config soft_deletion:false,limedb_home:/etc/limedb/
+limedb db rm pets --confirm --with-config soft_deletion:false,limedb_home:/etc/limedb/
 ```
 
 
