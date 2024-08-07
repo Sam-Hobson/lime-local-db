@@ -12,7 +12,7 @@ import (
 )
 
 func RemoveDatabase(databaseName string) error {
-	util.Log("49aaf185").Info("Beginning rm-db operation.", "Database name", databaseName)
+	util.Log("49aaf185").Info("Beginning db rm operation.", "Database name", databaseName)
 
 	fileName := databaseName + ".db"
 	persistentFileName := dbutil.PersistentDatabaseName(databaseName) + ".db"
@@ -24,6 +24,7 @@ func RemoveDatabase(databaseName string) error {
 		currentTimestamp := strconv.FormatInt(time.Now().Unix(), 10)
 		newDbName := fmt.Sprintf("%s-%s", fileName, currentTimestamp)
 		newPersistentDbName := fmt.Sprintf("%s-%s", persistentFileName, currentTimestamp)
+
 		if err := relFs.MoveFile("stores", fileName, "deleted", newDbName); err != nil {
 			util.Log("53913fa0").Warn("Could not soft delete database.", "Database name", fileName)
 		}
@@ -39,7 +40,7 @@ func RemoveDatabase(databaseName string) error {
 		}
 	}
 
-	util.Log("d73a061e").Info("Successfully removed database.", "Db name", fileName, "Soft delete", softDelete)
+	util.Log("d73a061e").Info("db rm operation executed successfully.", "Db name", fileName, "Soft delete", softDelete)
 	return nil
 
 }
