@@ -40,7 +40,7 @@ func RemoveDatabase(databaseName string) error {
 		}
 	}
 
-	util.Log("d73a061e").Info("db rm operation executed successfully.", "Db name", fileName, "Soft delete", softDelete)
+	util.Log("d73a061e").Info("db rm operation executed successfully.", "Database name", fileName, "Soft delete", softDelete)
 	return nil
 
 }

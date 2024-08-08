@@ -27,7 +27,7 @@ var backupColumns = []*types.Column{
 }
 
 func CreateDatabase(databaseName string, columns []*types.Column) error {
-	util.Log("26cd37c1").Info("Beginning new-db operation.", "Db name", databaseName, "Columns", columns)
+	util.Log("26cd37c1").Info("Beginning db new operation.", "Database name", databaseName, "Columns", columns)
 
 	if exists, err := dbutil.SqliteDatabaseExists(databaseName); err != nil {
 		return err

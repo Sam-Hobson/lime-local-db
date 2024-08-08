@@ -84,14 +84,14 @@ func OpenSqliteDatabaseIfExists(databaseName string) (*sql.DB, error) {
 func SqliteDatabaseExists(databaseName string) (bool, error) {
 	fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome(), "stores")
-	util.Log("e75f8412").Info("Checking if database exists.", "Db name", databaseName)
+	util.Log("e75f8412").Info("Checking if database exists.", "Database name", databaseName)
 	return relFs.FileExists("", fileName)
 }
 
 func OpenSqliteDatabase(databaseName string) (*sql.DB, error) {
 	fileName := databaseName + ".db"
 	dbPath := filepath.Join(state.ApplicationState().GetLimedbHome(), "stores", fileName)
-	util.Log("34503562").Info("Opening database file.", "Db path", dbPath)
+	util.Log("34503562").Info("Opening database file.", "Database path", dbPath)
 	return sql.Open("sqlite3", dbPath)
 }
 
