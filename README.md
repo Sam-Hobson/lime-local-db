@@ -116,7 +116,7 @@ limedb db rm pets --confirm --with-config soft_deletion:false,limedb_home:/etc/l
 | `log_mode`          | Set how logs should be reported. (Default `file`).          | `file`, `stdout`, `stderr`           |
 | `log_level`         | The level of logging. (Default `info`).                     | `info`, `warn`, `debug`, `error`     |
 | `soft_deletion`     | Soft delete databases. (Default `true`).                    | `true`, `false`                      |
-| `default_db`        | Default db used for operations, (Default ` `).              |                                      |
+| `default_db`        | Default db used for operations, (Default None).              |                                      |
 
 
 ## Features in progress
