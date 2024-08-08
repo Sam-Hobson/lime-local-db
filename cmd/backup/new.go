@@ -40,7 +40,7 @@ func runNewBackupCommand(cmd *cobra.Command, args []string) error {
 		cond := sqlbuilder.NewCond()
 		where := sqlbuilder.NewWhereClause()
 		where.AddWhereExpr(cond.Args, cond.Equal("rowid", lastId))
-		printBackupRowsWhere(cmd, databaseName, where)
+		printBackupRowsWhere(cmd.OutOrStdout(), databaseName, where)
 	}
 
 	return nil

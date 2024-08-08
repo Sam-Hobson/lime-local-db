@@ -67,25 +67,25 @@ func InsertIntoSqliteTable(tableName string, entries map[string]string) (string,
 }
 
 func OpenSqliteDatabaseIfExists(databaseName string) (*sql.DB, error) {
-    exists, err := SqliteDatabaseExists(databaseName)
+	exists, err := SqliteDatabaseExists(databaseName)
 
 	if err != nil {
-		util.Log("94f1ece2").Error("Cannot backup database as it does not exist.")
-        return nil, err
+		util.Log("94f1ece2").Error("Cannot open database as it does not exist.")
+		return nil, err
 	}
-    if !exists {
-		util.Log("cbd713ec").Error("Cannot backup database as it does not exist.")
-		return nil, errors.Errorf("Cannot backup database as it does not exist")
-    }
+	if !exists {
+		util.Log("cbd713ec").Error("Cannot open database as it does not exist.")
+		return nil, errors.Errorf("Cannot open database as it does not exist")
+	}
 
-    return OpenSqliteDatabase(databaseName)
+	return OpenSqliteDatabase(databaseName)
 }
 
 func SqliteDatabaseExists(databaseName string) (bool, error) {
 	fileName := databaseName + ".db"
-	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome(), "stores")
 	util.Log("e75f8412").Info("Checking if database exists.", "Db name", databaseName)
-	return relFs.FileExists("stores", fileName)
+	return relFs.FileExists("", fileName)
 }
 
 func OpenSqliteDatabase(databaseName string) (*sql.DB, error) {
@@ -93,4 +93,11 @@ func OpenSqliteDatabase(databaseName string) (*sql.DB, error) {
 	dbPath := filepath.Join(state.ApplicationState().GetLimedbHome(), "stores", fileName)
 	util.Log("34503562").Info("Opening database file.", "Db path", dbPath)
 	return sql.Open("sqlite3", dbPath)
+}
+
+func RemoveSqliteDatabase(databaseName string) error {
+	fileName := databaseName + ".db"
+	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome(), "stores")
+	util.Log("cb25f7f8").Info("Removing database file.", "Database name", databaseName)
+	return relFs.RmFile("", fileName)
 }

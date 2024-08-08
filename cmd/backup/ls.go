@@ -1,6 +1,10 @@
 package backup
 
 import (
+	"fmt"
+	"io"
+	"text/tabwriter"
+
 	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
 	dbutil "github.com/sam-hobson/internal/database/util"
@@ -31,14 +35,16 @@ func runLsBackupCommand(cmd *cobra.Command, args []string) error {
 		return errors.Errorf("Cannot list backups if no database selected")
 	}
 
-    printBackupRowsWhere(cmd, databaseName, sqlbuilder.NewWhereClause())
+	if err := printBackupRowsWhere(cmd.OutOrStdout(), databaseName, sqlbuilder.NewWhereClause()); err != nil {
+		return err
+	}
 
 	util.Log("5dbf67eb").Info("Successfully ran backup ls command.")
 	return nil
 }
 
-func printBackupRowsWhere(cmd *cobra.Command, databaseName string, where *sqlbuilder.WhereClause) error {
-    PersistentDatabaseName := dbutil.PersistentDatabaseName(databaseName)
+func printBackupRowsWhere(iowriter io.Writer, databaseName string, where *sqlbuilder.WhereClause) error {
+	PersistentDatabaseName := dbutil.PersistentDatabaseName(databaseName)
 	db, err := dbutil.OpenSqliteDatabaseIfExists(PersistentDatabaseName)
 	if err != nil {
 		return err
@@ -57,15 +63,19 @@ func printBackupRowsWhere(cmd *cobra.Command, databaseName string, where *sqlbui
 	}
 	defer res.Close()
 
+	w := tabwriter.NewWriter(iowriter, 2, 0, 2, ' ', 0)
+	fmt.Fprintf(w, "Id\tDate\tComment\n")
+
 	for res.Next() {
 		var rowid int
 		var date string
 		var comment string
 
 		res.Scan(&rowid, &date, &comment)
-
-		cmd.Printf("%d  %s  \"%s\"\n", rowid, date, comment)
+		fmt.Fprintf(w, "%d\t%s\t%s\n", rowid, date, comment)
 	}
 
-    return nil
+	w.Flush()
+
+	return nil
 }

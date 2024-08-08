@@ -1,6 +1,7 @@
 package addentry
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/go-errors/errors"
@@ -34,7 +35,13 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	util.Log("7a8f5e35").Info("Parsed add-entry arguments.", "Args", entryValues)
-	return database.AddEntry(entryValues)
+
+    if err := database.AddEntry(entryValues); err != nil {
+        return err
+    }
+
+    fmt.Fprintln(cmd.OutOrStdout(), "Successfully added entry")
+	return nil
 }
 
 func parseColValue(value string) (string, string, error) {
