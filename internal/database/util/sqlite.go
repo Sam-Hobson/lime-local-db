@@ -11,7 +11,7 @@ import (
 	"github.com/sam-hobson/internal/util"
 )
 
-func CreateSqliteTable(tableName string, columns []*types.Column) (string, []interface{}) {
+func CreateTableSql(tableName string, columns []*types.Column) (string, []interface{}) {
 	util.Log("19529bb3").Info("Creating sqlite to create table.", "Table name", tableName, "Columns", columns)
 
 	ctb := sqlbuilder.NewCreateTableBuilder()
@@ -44,7 +44,7 @@ func CreateSqliteTable(tableName string, columns []*types.Column) (string, []int
 	return ctb.Build()
 }
 
-func InsertIntoSqliteTable(tableName string, entries map[string]string) (string, []interface{}) {
+func InsertIntoTableSql(tableName string, entries map[string]string) (string, []interface{}) {
 	util.Log("9391c009").Info("Creating sqlite to insert into table.", "Table name", tableName, "Entries", entries)
 
 	ib := sqlbuilder.NewInsertBuilder()

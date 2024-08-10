@@ -21,7 +21,7 @@ func groupLogId(logHash string) slog.Attr {
 }
 
 func Log(logHash string) *slog.Logger {
-    return slog.With(groupLogId(logHash)).WithGroup("Context data")
+	return slog.With(groupLogId(logHash)).WithGroup("Context data")
 }
 
 func fatal(s string, args ...any) {

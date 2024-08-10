@@ -28,7 +28,7 @@ func BackupDatabase(databaseName, comment string) (int64, error) {
 
 	relFs.CopyFile("stores", fileName, filepath.Join("backups", databaseName), newDbName)
 
-	insertStr, insertArgs := dbutil.InsertIntoSqliteTable("backups", map[string]string{
+	insertStr, insertArgs := dbutil.InsertIntoTableSql("backups", map[string]string{
 		"date":       time.Now().Format(time.RFC3339),
 		"backupName": newDbName,
 		"comment":    comment,

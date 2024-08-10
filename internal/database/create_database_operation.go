@@ -42,7 +42,7 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 	}
 	defer db.Close()
 
-	createTableStr, args := dbutil.CreateSqliteTable(databaseName, columns)
+	createTableStr, args := dbutil.CreateTableSql(databaseName, columns)
 
 	util.Log("0cb6a54d").Info("Creating table with SQL command.", "SQL", createTableStr, "Args", args)
 
@@ -79,7 +79,7 @@ func CreatePersistentDatabase(databaseName string) error {
 	}
 	defer db.Close()
 
-	createTableStr, createTableArgs := dbutil.CreateSqliteTable("backups", backupColumns)
+	createTableStr, createTableArgs := dbutil.CreateTableSql("backups", backupColumns)
 	util.Log("8bc1e038").Info("Creating backup table with SQL command.", "SQL", createTableStr, "Args", createTableArgs)
 
 	if _, err := db.Exec(createTableStr, createTableArgs...); err != nil {

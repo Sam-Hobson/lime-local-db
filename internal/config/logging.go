@@ -27,7 +27,7 @@ func GetConfigLogWriter() *os.File {
 			writer = w
 		}
 	default:
-		fatal("Invalid log_mode in config file. Not one of \"stdout\", \"stderr\", \"file\".")
+		fatal("Invalid log_mode. Not one of \"stdout\", \"stderr\", \"file\".")
 	}
 
 	return writer
@@ -44,7 +44,7 @@ func GetConfigLogLevel() slog.Level {
 	case "ERROR":
 		return slog.LevelError
 	default:
-		fatal("Invalid log_level in config file. Not one of \"info\", \"warn\", \"debug\", \"error\".")
+		fatal("Invalid log_level. Not one of \"info\", \"warn\", \"debug\", \"error\".")
 	}
 
 	return slog.LevelInfo

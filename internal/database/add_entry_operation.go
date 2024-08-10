@@ -15,18 +15,14 @@ func AddEntry(entries map[string]string) error {
 		util.Log("c40be9f9").Error("Cannot add entry as no database is selected.")
 		return errors.Errorf("Cannot add entry as no database is selected")
 	}
-	if exists, err := dbutil.SqliteDatabaseExists(selectedDb); !exists || err != nil {
-		util.Log("765a9254").Error("Cannot add entry as database does not exist.")
-		return errors.Errorf("Cannot add entry as database does not exist.")
-	}
 
-	db, err := dbutil.OpenSqliteDatabase(selectedDb)
+    db, err := dbutil.OpenSqliteDatabaseIfExists(selectedDb)
 	if err != nil {
-		return err
+        return err
 	}
 	defer db.Close()
 
-	insertStr, args := dbutil.InsertIntoSqliteTable(selectedDb, entries)
+	insertStr, args := dbutil.InsertIntoTableSql(selectedDb, entries)
 
 	util.Log("01809774").Info("Inserting with SQL Command.", "SQL", insertStr, "Args", args)
 
