@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/sam-hobson/internal/database/masterdatabase"
 	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
@@ -32,8 +31,6 @@ func RemoveDatabase(databaseName string) error {
 		relFs.RmFile("stores", fileName)
 		relFs.RmFile("stores", persistentFileName)
 	}
-
-	masterdatabase.RemoveDatabaseRecord(databaseName, softDelete)
 
 	util.Log("d73a061e").Info("db rm operation executed successfully.", "Database name", fileName, "Soft delete", softDelete)
 	return nil

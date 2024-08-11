@@ -1,9 +1,9 @@
 package db
 
 import (
-	"github.com/huandu/go-sqlbuilder"
-	"github.com/sam-hobson/internal/database/masterdatabase"
+	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/state"
+	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
 )
 
@@ -18,34 +18,30 @@ func lsDbCommand() *cobra.Command {
 		RunE: runLsDbCommand,
 	}
 
+	// TODO: Implement this
 	cmd.Flags().Bool("all", false, "Show all details about databases")
 
 	return cmd
 }
 
 func runLsDbCommand(cmd *cobra.Command, _ []string) error {
-    databaseName := state.ApplicationState().GetSelectedDb()
+	util.Log("7b1030a2").Info("Listing all databases in /store.")
+	names, err := dbutil.AllExistingDatabaseNames()
+	if err != nil {
+		return nil
+	}
 
-	cond := sqlbuilder.NewCond()
-	where := sqlbuilder.NewWhereClause()
+	selectedDb := state.ApplicationState().GetSelectedDb()
 
-    if databaseName != "" {
-        where.AddWhereExpr(cond.Args, cond.Equal("name", databaseName))
-    }
-    where.AddWhereExpr(cond.Args, cond.IsNull("softdeleted"))
-    where.AddWhereExpr(cond.Args, cond.IsNull("harddeleted"))
+	for _, name := range names {
+		if selectedDb != "" {
+			if name == selectedDb {
+				cmd.Println(name)
+			}
+		} else {
+			cmd.Println(name)
+		}
+	}
 
-    res, err := masterdatabase.QueryTables(where, "name")
-    if err != nil {
-        return err
-    }
-    defer res.Close()
-
-    for res.Next() {
-        var name string
-        res.Scan(&name)
-        cmd.Println(name)
-    }
-
-    return nil
+	return nil
 }

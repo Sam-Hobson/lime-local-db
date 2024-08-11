@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
@@ -16,15 +17,23 @@ func AllExistingDatabaseNames() ([]string, error) {
 		return nil, err
 	}
 
-	dbNames := make([]string, len(files))
+	dbNames := make([]string, 0)
 
-	for i, file := range files {
-		dbNames[i] = file.Name()
+	for _, file := range files {
+		name := file.Name()
+
+		if !strings.HasPrefix(name, ".") {
+			if strings.HasSuffix(name, ".db") {
+				dbNames = append(dbNames, name[:len(name)-3])
+			} else {
+				dbNames = append(dbNames, name)
+			}
+		}
 	}
 
 	return dbNames, nil
 }
 
 func PersistentDatabaseName(databaseName string) string {
-    return fmt.Sprintf(".%s_persistent", databaseName)
+	return fmt.Sprintf(".%s_persistent", databaseName)
 }

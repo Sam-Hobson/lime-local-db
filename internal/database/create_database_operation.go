@@ -1,11 +1,8 @@
 package database
 
 import (
-	"time"
-
 	"github.com/go-errors/errors"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/sam-hobson/internal/database/masterdatabase"
 	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
@@ -13,17 +10,17 @@ import (
 
 var backupColumns = []*types.Column{
 	{
-		Name:  "date",
+		Name:     "date",
 		DataType: types.ColumnTextDataType,
 		NotNull:  true,
 	},
 	{
-		Name:  "backupName",
+		Name:     "backupName",
 		DataType: types.ColumnTextDataType,
 		NotNull:  true,
 	},
 	{
-		Name:  "comment",
+		Name:     "comment",
 		DataType: types.ColumnTextDataType,
 		NotNull:  false,
 	},
@@ -60,17 +57,6 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 		dbutil.RemoveSqliteDatabase(databaseName)
 		return err
 	}
-
-    err = masterdatabase.AddNewDatabaseRecord(map[string]string{
-        "name": databaseName,
-        "created": time.Now().Format(time.RFC3339),
-    })
-
-    if err != nil {
-		dbutil.RemoveSqliteDatabase(databaseName)
-		dbutil.RemoveSqliteDatabase(dbutil.PersistentDatabaseName(databaseName))
-        return err
-    }
 
 	return nil
 }
