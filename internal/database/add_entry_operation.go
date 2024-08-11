@@ -31,7 +31,7 @@ func AddEntry(entries map[string]string) error {
 		return err
 	}
 
-	util.Log("3e11ab9a").Info("Successfully inserted into database.", "Selected db", selectedDb)
+	util.Log("3e11ab9a").Info("Successfully inserted into database.", "Selected database", selectedDb)
 
 	return nil
 }

@@ -35,7 +35,7 @@ func NewCommand(version, commit string) *cobra.Command {
 	cmd.PersistentFlags().StringP("db", "d", "", "Choose the database to perform operations on.")
 
 	cmd.AddCommand(
-        db.NewCommand(),
+		db.NewCommand(),
 		addentry.NewCommand(),
 		rmentriesall.NewCommand(),
 		rmentrieswhere.NewCommand(),
@@ -50,13 +50,10 @@ func preRun(cmd *cobra.Command, args []string) error {
 
 	// Set single run config changes
 	if len(configChanges) != 0 {
-		util.Log("22331288").Info("--with-config provided.", "Config changes", fmt.Sprintf("%v", configChanges))
-
 		for _, change := range configChanges {
 			key, value, found := strings.Cut(change, ":")
 
 			if !found {
-				util.Log("cf60a975").Error("--with-config flag has malformed input.", "Changes", change)
 				return errors.Errorf("--with-config flag has malformed input.")
 			}
 
@@ -68,10 +65,13 @@ func preRun(cmd *cobra.Command, args []string) error {
 	logWriter = config.GetConfigLogWriter()
 	level := config.GetConfigLogLevel()
 	handler := slog.NewJSONHandler(logWriter, &slog.HandlerOptions{Level: level})
-
 	slog.SetDefault(slog.New(handler))
 
 	util.Log("09b726e0").Info("New limedb session starting.")
+
+	if len(configChanges) != 0 {
+		util.Log("3943d45c").Info("Successfully applied --with-config configuration.", "Config changes", configChanges)
+	}
 
 	if db := viper.GetString("default_db"); db != "" {
 		state.ApplicationState().SetSelectedDb(db)

@@ -13,6 +13,7 @@ func NewCommand() *cobra.Command {
 	cmd.AddCommand(
         newDbCommand(),
         rmDbCommand(),
+        lsDbCommand(),
     )
 
 	return cmd

@@ -19,20 +19,21 @@ func CreateTableSql(tableName string, columns []*types.Column) (string, []interf
 
 	for _, col := range columns {
 		opts := make([]string, 10)
-		opts = append(opts, col.ColName)
+		opts = append(opts, col.Name)
 		opts = append(opts, col.DataType.String())
 
 		if col.DefaultVal != "" {
 			opts = append(opts, "DEFAULT "+col.DefaultVal)
 		}
-
 		if col.NotNull {
 			opts = append(opts, "NOT NULL")
 		}
-
 		if col.PrimaryKey {
 			opts = append(opts, "PRIMARY KEY")
 		}
+        if col.AutoIncrememnt {
+            opts = append(opts, "AUTOINCREMENT")
+        }
 
 		// if col.ForeignKey {
 		// 	opts = append(opts, "FOREIGN KEY")

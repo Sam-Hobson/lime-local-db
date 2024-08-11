@@ -1,8 +1,11 @@
 package database
 
 import (
+	"time"
+
 	"github.com/go-errors/errors"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/sam-hobson/internal/database/masterdatabase"
 	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
@@ -10,17 +13,17 @@ import (
 
 var backupColumns = []*types.Column{
 	{
-		ColName:  "date",
+		Name:  "date",
 		DataType: types.ColumnTextDataType,
 		NotNull:  true,
 	},
 	{
-		ColName:  "backupName",
+		Name:  "backupName",
 		DataType: types.ColumnTextDataType,
 		NotNull:  true,
 	},
 	{
-		ColName:  "comment",
+		Name:  "comment",
 		DataType: types.ColumnTextDataType,
 		NotNull:  false,
 	},
@@ -47,7 +50,7 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 	util.Log("0cb6a54d").Info("Creating table with SQL command.", "SQL", createTableStr, "Args", args)
 
 	if _, err = db.Exec(createTableStr, args...); err != nil {
-		util.Log("fed4e102").Error("Failed executing create table command.", "SQL", createTableStr)
+		util.Log("fed4e102").Error("Failed executing create table command.", "SQL", createTableStr, "Args", args)
 		return err
 	}
 
@@ -58,12 +61,23 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 		return err
 	}
 
+    err = masterdatabase.AddNewDatabaseRecord(map[string]string{
+        "name": databaseName,
+        "created": time.Now().Format(time.RFC3339),
+    })
+
+    if err != nil {
+		dbutil.RemoveSqliteDatabase(databaseName)
+		dbutil.RemoveSqliteDatabase(dbutil.PersistentDatabaseName(databaseName))
+        return err
+    }
+
 	return nil
 }
 
 func CreatePersistentDatabase(databaseName string) error {
 	persistentDatabaseName := dbutil.PersistentDatabaseName(databaseName)
-	util.Log("3e55ef45").Info("Beginning create persistent database operation.", "Database name", databaseName, "Persistent database name", persistentDatabaseName)
+	util.Log("3e55ef45").Info("Create persistent database operation.", "Database name", databaseName, "Persistent database name", persistentDatabaseName)
 
 	if exists, err := dbutil.SqliteDatabaseExists(persistentDatabaseName); err != nil {
 		return err

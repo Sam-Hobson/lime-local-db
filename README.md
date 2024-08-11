@@ -94,7 +94,7 @@ limedb --db pets backup restore 1
 ## Global flags
 
 | Flag                | Action                                                                        |
-| ------------------- | ----------------------------------------------------------------------------- |
+| :------------------ | :---------------------------------------------------------------------------- |
 | `--db`              | Provide the database that operations will operate on.                         |
 | `--with-config`     | Provide comma separated list of configuration options.                        |
 
@@ -111,21 +111,20 @@ limedb db rm pets --confirm --with-config soft_deletion:false,limedb_home:/etc/l
 ## Configuration
 
 | Config option       | Action                                                      | Valid args                           |
-| ------------------- | ------------------------------------------------------------|------------------------------------- |
+| :------------------ | :-----------------------------------------------------------|:------------------------------------ |
 | `limedb_home`       | Set the home directory limedb. (Default `$HOME/.limedb/`).  |                                      |
 | `log_mode`          | Set how logs should be reported. (Default `file`).          | `file`, `stdout`, `stderr`           |
 | `log_level`         | The level of logging. (Default `info`).                     | `info`, `warn`, `debug`, `error`     |
 | `soft_deletion`     | Soft delete databases. (Default `true`).                    | `true`, `false`                      |
-| `default_db`        | Default db used for operations, (Default None).              |                                      |
+| `default_db`        | Default db used for operations, (Default None).             |                                      |
 
 
 ## Features in progress
 - Proper support for foreign keys
 - Add option in where clauses to input raw sqlite
 - Operations
-    - Backup db
-    - Restore db
     - alter
+    - restore soft deleted db and update master db
     - List databases and properties
     - Command templates
     - Sub document creation (eg. Adding a html file to a row)

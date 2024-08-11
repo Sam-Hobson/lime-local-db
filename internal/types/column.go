@@ -9,12 +9,13 @@ import (
 )
 
 type Column struct {
-	ColName    string
-	DataType   ColumnDataType
-	PrimaryKey bool
-	ForeignKey bool
-	NotNull    bool
-	DefaultVal string
+	Name           string
+	DataType       ColumnDataType
+	PrimaryKey     bool
+	ForeignKey     bool
+	NotNull        bool
+	AutoIncrememnt bool
+	DefaultVal     string
 }
 
 func (c *Column) String() string {
@@ -26,6 +27,9 @@ func (c *Column) String() string {
 	if c.ForeignKey {
 		sb.WriteRune('F')
 	}
+	if c.AutoIncrememnt {
+		sb.WriteRune('A')
+	}
 	if c.NotNull {
 		sb.WriteRune('N')
 	}
@@ -33,7 +37,7 @@ func (c *Column) String() string {
 	sb.WriteRune(':')
 	sb.WriteString(c.DataType.String())
 	sb.WriteRune(':')
-	sb.WriteString(c.ColName)
+	sb.WriteString(c.Name)
 
 	if c.DefaultVal != "" {
 		sb.WriteRune('{')
@@ -79,27 +83,34 @@ func parseColumnFlags(flags string, column *Column) error {
 	var primaryKey = false
 	var foreignKey = false
 	var notNull = false
+	var autoIncrememnt = false
 
 	for _, flag := range flags {
 		switch unicode.ToUpper(flag) {
 		case 'P':
 			if primaryKey {
-				util.Log("759534a7").Error("Column entry malformed.", "Flags", flags)
+				util.Log("759534a7").Warn("Column entry malformed.", "Flags", flags)
 				return errors.Errorf("Found malformed column entry input (P used more than once): %s", flags)
 			}
 			primaryKey = true
 		case 'F':
 			if foreignKey {
-				util.Log("ec05b044").Error("Column entry malformed.", "Flags", flags)
+				util.Log("ec05b044").Warn("Column entry malformed.", "Flags", flags)
 				return errors.Errorf("Found malformed column entry input (F used more than once): %s", flags)
 			}
 			foreignKey = true
 		case 'N':
 			if notNull {
-				util.Log("41383bf1").Error("Column entry malformed.", "Flags", flags)
+				util.Log("41383bf1").Warn("Column entry malformed.", "Flags", flags)
 				return errors.Errorf("Found malformed column entry input (N used more than once): %s", flags)
 			}
 			notNull = true
+		case 'A':
+			if autoIncrememnt {
+				util.Log("98fccd5e").Warn("Column entry malformed.", "Flags", flags)
+				return errors.Errorf("Found malformed column entry input (A used more than once): %s", flags)
+			}
+			autoIncrememnt = true
 		default:
 			util.Log("9288e4b5").Error("Column entry malformed.", "Key flags", flags)
 			return errors.Errorf("Found malformed key flags on column entry input: %s", flags)
@@ -109,6 +120,7 @@ func parseColumnFlags(flags string, column *Column) error {
 	column.PrimaryKey = primaryKey
 	column.ForeignKey = foreignKey
 	column.NotNull = notNull
+	column.AutoIncrememnt = autoIncrememnt
 
 	return nil
 }
@@ -132,7 +144,7 @@ func parseColumnNameAndDefaultVal(nameAndDefaultVal string, column *Column) erro
 	startDefaultValIndex := strings.IndexRune(nameAndDefaultVal, '{')
 
 	if startDefaultValIndex == -1 {
-		column.ColName = nameAndDefaultVal
+		column.Name = nameAndDefaultVal
 		return nil
 	}
 
@@ -143,7 +155,7 @@ func parseColumnNameAndDefaultVal(nameAndDefaultVal string, column *Column) erro
 		return errors.Errorf("Found malformed column name input: %s", nameAndDefaultVal)
 	}
 
-	column.ColName = nameAndDefaultVal[:startDefaultValIndex]
+	column.Name = nameAndDefaultVal[:startDefaultValIndex]
 	column.DefaultVal = nameAndDefaultVal[startDefaultValIndex+1 : endDefaultValIndex]
 
 	return nil

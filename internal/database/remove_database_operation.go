@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/sam-hobson/internal/database/masterdatabase"
 	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
@@ -25,20 +26,14 @@ func RemoveDatabase(databaseName string) error {
 		newDbName := fmt.Sprintf("%s-%s", fileName, currentTimestamp)
 		newPersistentDbName := fmt.Sprintf("%s-%s", persistentFileName, currentTimestamp)
 
-		if err := relFs.MoveFile("stores", fileName, "deleted", newDbName); err != nil {
-			util.Log("53913fa0").Warn("Could not soft delete database.", "Database name", fileName)
-		}
-		if err := relFs.MoveFile("stores", persistentFileName, "deleted", newPersistentDbName); err != nil {
-			util.Log("3269a471").Warn("Could not soft delete persistent database.", "Persistent database name", persistentFileName)
-		}
+		relFs.MoveFile("stores", fileName, "deleted", newDbName)
+		relFs.MoveFile("stores", persistentFileName, "deleted", newPersistentDbName)
 	} else {
-		if err := relFs.RmFile("stores", fileName); err != nil {
-			util.Log("5d32fcdd").Warn("Could not delete database.", "Database name", fileName)
-		}
-		if err := relFs.RmFile("stores", persistentFileName); err != nil {
-			util.Log("2560d564").Warn("Could not delete persistent database.", "Persistent database name", persistentFileName)
-		}
+		relFs.RmFile("stores", fileName)
+		relFs.RmFile("stores", persistentFileName)
 	}
+
+	masterdatabase.RemoveDatabaseRecord(databaseName, softDelete)
 
 	util.Log("d73a061e").Info("db rm operation executed successfully.", "Database name", fileName, "Soft delete", softDelete)
 	return nil
