@@ -43,7 +43,6 @@ func (relFs *relativeFsManager) CreateFile(relPath string, fileName string) erro
 		file.Close()
 	}
 
-	Log("36bb70ce").Info("Successfully created file.", "Path", relFs.FullPath(relPath, fileName))
 	return nil
 }
 
@@ -79,7 +78,6 @@ func (relFs *relativeFsManager) MoveFile(fromRelPath, fromFileName, toRelPath, t
 		return err
 	}
 
-	Log("f8d98f03").Info("Successfully moved file.", "From", from, "To", to)
 	return nil
 }
 
@@ -101,7 +99,6 @@ func (relFs *relativeFsManager) CopyFile(fromRelPath, fromFileName, toRelPath, t
 		return err
 	}
 
-	Log("ad390e7b").Info("Successfully copied file.", "From", from, "To", to)
 	return nil
 }
 
@@ -115,7 +112,6 @@ func (relFs *relativeFsManager) RmFile(relPath string, fileName string) error {
 		return err
 	}
 
-	Log("77a8feff").Info("Successfully removed file.", "Path", relFs.FullPath(relPath, fileName))
 	return nil
 }
 
@@ -130,7 +126,6 @@ func (relFs *relativeFsManager) CreateDir(relPath string) error {
 		return err
 	}
 
-	Log("88a7b6fa").Info("Successfully created directory.", "Path", relFs.FullPath(relPath))
 	return nil
 }
 
@@ -146,6 +141,19 @@ func (relFs *relativeFsManager) ReadDir(relPath string) ([]os.DirEntry, error) {
 	}
 
 	return res, nil
+}
+
+func (relFs *relativeFsManager) ReadFileIntoMemry(relPath string, fileName string) (string, error) {
+	path := relFs.FullPath(relPath, fileName)
+	Log("2133dd24").Info("Reading file.", "Path", path)
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		Log("cc1e0022").Warn("Could not read file into memory.", "Path", path)
+		return "", err
+	}
+
+	return string(data), nil
 }
 
 func (relFs *relativeFsManager) FullPath(relPath ...string) string {

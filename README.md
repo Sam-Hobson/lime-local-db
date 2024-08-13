@@ -38,6 +38,13 @@ limedb db rm [DB-NAME]
 limedb db rm pets
 ```
 
+
+#### List all databases:
+```sh
+limedb db ls
+```
+
+
 #### Add an entry to a database:
 ```sh
 limedb add-entry [column names and values]...

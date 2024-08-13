@@ -71,11 +71,11 @@ func OpenSqliteDatabaseIfExists(databaseName string) (*sql.DB, error) {
 	exists, err := SqliteDatabaseExists(databaseName)
 
 	if err != nil {
-		util.Log("94f1ece2").Error("Cannot open database as it does not exist.")
+		util.Log("94f1ece2").Warn("Cannot open database as it does not exist.")
 		return nil, err
 	}
 	if !exists {
-		util.Log("cbd713ec").Error("Cannot open database as it does not exist.")
+		util.Log("cbd713ec").Warn("Cannot open database as it does not exist.")
 		return nil, errors.Errorf("Cannot open database as it does not exist")
 	}
 

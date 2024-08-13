@@ -12,6 +12,7 @@ import (
 	"github.com/sam-hobson/cmd/db"
 	rmentriesall "github.com/sam-hobson/cmd/rm-entries-all"
 	rmentrieswhere "github.com/sam-hobson/cmd/rm-entries-where"
+	"github.com/sam-hobson/cmd/trigger"
 	"github.com/sam-hobson/internal/config"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
@@ -40,6 +41,7 @@ func NewCommand(version, commit string) *cobra.Command {
 		rmentriesall.NewCommand(),
 		rmentrieswhere.NewCommand(),
 		backup.NewCommand(),
+        trigger.NewCommand(),
 	)
 
 	return cmd

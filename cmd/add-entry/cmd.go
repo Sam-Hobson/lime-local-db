@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-errors/errors"
 	"github.com/sam-hobson/internal/database"
+	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
 )
@@ -36,7 +37,13 @@ func run(cmd *cobra.Command, args []string) error {
 
 	util.Log("7a8f5e35").Info("Parsed add-entry arguments.", "Args", entryValues)
 
-    if err := database.AddEntry(entryValues); err != nil {
+    databaseName := state.ApplicationState().GetSelectedDb()
+    if databaseName == "" {
+        util.Log("0562d5bb").Error("Cannot add entry if not database is specified.")
+        return errors.Errorf("Cannot add entry if not database is specified")
+    }
+
+    if err := database.AddEntry(databaseName, entryValues); err != nil {
         return err
     }
 
