@@ -44,6 +44,9 @@ func NewCommand(version, commit string) *cobra.Command {
         trigger.NewCommand(),
 	)
 
+    // Not sure why this is necessary, but output goes to stderr by default if this isn't here
+    cmd.SetOut(os.Stdout)
+
 	return cmd
 }
 

@@ -2,7 +2,6 @@ package trigger
 
 import (
 	"github.com/go-errors/errors"
-	"github.com/sam-hobson/internal/database"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
 	"github.com/spf13/cobra"
@@ -33,7 +32,7 @@ func runNewTriggerCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	if fileName != "" {
-		return database.NewTriggerFromFile(databaseName, fileName)
+		// return database.NewTriggerFromFile(databaseName, fileName)
 	}
 
 	return nil

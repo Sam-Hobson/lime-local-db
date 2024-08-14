@@ -15,14 +15,35 @@ var backupColumns = []*types.Column{
 		NotNull:  true,
 	},
 	{
-		Name:     "backupName",
+		Name:     "backup_name",
 		DataType: types.ColumnTextDataType,
 		NotNull:  true,
 	},
 	{
 		Name:     "comment",
 		DataType: types.ColumnTextDataType,
-		NotNull:  false,
+	},
+}
+
+var triggerColumns = []*types.Column{
+	{
+		Name:       "name",
+		DataType:   types.ColumnIntDataType,
+		NotNull:    true,
+		PrimaryKey: true,
+	},
+	{
+		Name:     "date_created",
+		DataType: types.ColumnTextDataType,
+		NotNull:  true,
+	},
+	{
+		Name:     "trigger_type",
+		DataType: types.ColumnTextDataType,
+	},
+	{
+		Name:     "comment",
+		DataType: types.ColumnTextDataType,
 	},
 }
 
@@ -42,8 +63,8 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 	}
 	defer db.Close()
 
+    // Create data table for db
 	createTableStr, args := dbutil.CreateTableSql(databaseName, columns)
-
 	util.Log("0cb6a54d").Info("Creating table with SQL command.", "SQL", createTableStr, "Args", args)
 
 	if _, err = db.Exec(createTableStr, args...); err != nil {
@@ -53,6 +74,17 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 
 	util.Log("7bf9634b").Info("Successfully created a new database.", "Database name", databaseName)
 
+    // Create triggers table
+	createTriggersStr, triggersArgs := dbutil.CreateTableSql("triggers", triggerColumns)
+	util.Log("eadfbde6").Info("Creating trigger table with SQL.", "SQL", createTriggersStr, "Args", triggersArgs)
+
+	if _, err := db.Exec(createTriggersStr, triggersArgs...); err != nil {
+		util.Log("605f11a0").Error("Failed creating trigger table.", "SQL", createTriggersStr, "Args", triggersArgs)
+		dbutil.RemoveSqliteDatabase(databaseName)
+		return err
+	}
+
+    // Create accompanying persistent database
 	if err := CreatePersistentDatabase(databaseName); err != nil {
 		dbutil.RemoveSqliteDatabase(databaseName)
 		return err

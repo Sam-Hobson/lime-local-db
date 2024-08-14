@@ -12,7 +12,7 @@ func templateTriggerCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "template [Trigger name]",
 		Short:   "Prints a template for a sqlite trigger.",
-		Example: "limedb trigger template",
+		Example: "limedb trigger template my_trigger",
 		Args:    cobra.ExactArgs(1),
 
 		RunE: runTemplateTriggerCommand,
@@ -29,7 +29,7 @@ func runTemplateTriggerCommand(cmd *cobra.Command, args []string) error {
 		return errors.Errorf("Cannot create trigger template if database is not selected")
 	}
 
-    template, err := database.TriggerTemplate(databaseName, args[0])
+    template, err := database.TriggerTemplate(databaseName, args[0], "[TRIGGER TYPE]", "[BODY]")
     if err != nil {
         return err
     }

@@ -7,12 +7,13 @@ func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "trigger [Subcommand]",
 		Short:   "Operate on database triggers",
-		Example: "limedb trigger new -f mytrigger.sqlite",
+		Example: "limedb trigger",
 	}
 
 	cmd.AddCommand(
 		newTriggerCommand(),
         templateTriggerCommand(),
+        lsTriggerCommand(),
 	)
 
 	return cmd
