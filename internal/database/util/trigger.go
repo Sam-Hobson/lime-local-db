@@ -6,8 +6,11 @@ import (
 )
 
 type Trigger struct {
-	Name string
-	Sql  string
+	Name        string
+	Sql         string
+	DateCreated string
+	TriggerType string
+	Comment     string
 }
 
 func DefinedTriggers(databaseName string) ([]*Trigger, error) {
