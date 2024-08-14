@@ -86,7 +86,7 @@ func SqliteDatabaseExists(databaseName string) (bool, error) {
 	fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome(), "stores")
 	util.Log("e75f8412").Info("Checking if database exists.", "Database name", databaseName)
-	return relFs.FileExists("", fileName)
+	return relFs.FileExists(fileName)
 }
 
 func OpenSqliteDatabase(databaseName string) (*sql.DB, error) {
@@ -100,5 +100,5 @@ func RemoveSqliteDatabase(databaseName string) error {
 	fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome(), "stores")
 	util.Log("cb25f7f8").Info("Removing database file.", "Database name", databaseName)
-	return relFs.RmFile("", fileName)
+	return relFs.RmFile(fileName)
 }

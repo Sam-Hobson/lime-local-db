@@ -31,9 +31,16 @@ func runNewTriggerCommand(cmd *cobra.Command, args []string) error {
 		return errors.Errorf("Cannot add trigger if database is not selected")
 	}
 
+    var triggerContents string
+
 	if fileName != "" {
-		// return database.NewTriggerFromFile(databaseName, fileName)
-	}
+        relFs := util.NewRelativeFsManager()
+        if triggerContents, err := relFs.ReadFileIntoMemry(fileName); err != nil {
+            return err
+        }
+	} else {
+
+    }
 
 	return nil
 }

@@ -56,7 +56,7 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 
     fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
-	if err := relFs.CopyFile(filepath.Join("backups", databaseName), backupName, "stores", fileName); err != nil {
+	if err := relFs.CopyFile(filepath.Join("backups", databaseName, backupName), filepath.Join("stores", fileName)); err != nil {
 		return err
 	}
 

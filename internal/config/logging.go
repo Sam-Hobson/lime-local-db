@@ -21,7 +21,7 @@ func GetConfigLogWriter() *os.File {
 		writer = os.Stderr
 	case "FILE":
 		relFs := util.NewRelativeFsManager(viper.GetString("limedb_home"))
-		if w, err := relFs.OpenFile("", "limedb.log"); err != nil {
+		if w, err := relFs.OpenFile("limedb.log"); err != nil {
 			fatal("Unable open/create log file at %s", filepath.Join(viper.GetString("limedb_home"), "limedb.log"))
 		} else {
 			writer = w

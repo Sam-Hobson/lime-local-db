@@ -26,7 +26,7 @@ func BackupDatabase(databaseName, comment string) (int64, error) {
 	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
 	newDbName := fmt.Sprintf("%s-%s", fileName, strconv.FormatInt(time.Now().Unix(), 10))
 
-	relFs.CopyFile("stores", fileName, filepath.Join("backups", databaseName), newDbName)
+	relFs.CopyFile(filepath.Join("stores", fileName), filepath.Join("backups", databaseName, newDbName))
 
 	insertStr, insertArgs := dbutil.InsertIntoTableSql("backups", map[string]string{
 		"date":       time.Now().Format(time.RFC3339),

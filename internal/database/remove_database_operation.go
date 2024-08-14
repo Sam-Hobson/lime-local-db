@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -25,8 +26,8 @@ func RemoveDatabase(databaseName string) error {
 		newDbName := fmt.Sprintf("%s-%s", fileName, currentTimestamp)
 		newPersistentDbName := fmt.Sprintf("%s-%s", persistentFileName, currentTimestamp)
 
-		relFs.MoveFile("stores", fileName, "deleted", newDbName)
-		relFs.MoveFile("stores", persistentFileName, "deleted", newPersistentDbName)
+		relFs.MoveFile(filepath.Join("stores", fileName), filepath.Join("deleted", newDbName))
+		relFs.MoveFile(filepath.Join("stores", persistentFileName), filepath.Join("deleted", newPersistentDbName))
 	} else {
 		relFs.RmFile("stores", fileName)
 		relFs.RmFile("stores", persistentFileName)

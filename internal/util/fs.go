@@ -10,34 +10,40 @@ type relativeFsManager struct {
 }
 
 func NewRelativeFsManager(path ...string) relativeFsManager {
+	if path == nil {
+		return relativeFsManager{path: ""}
+	}
 	return relativeFsManager{path: filepath.Join(path...)}
 }
 
-func (relFs *relativeFsManager) FileExists(relPath string, fileName string) (bool, error) {
-	_, err := os.Stat(relFs.FullPath(relPath, fileName))
+func (relFs *relativeFsManager) FileExists(relFilepath ...string) (bool, error) {
+	fullpath := relFs.FullPath(relFilepath...)
+	_, err := os.Stat(fullpath)
+
+	Log("255b1802").Info("Checking if file exists.", "File", fullpath)
 
 	if err != nil {
 		if os.IsNotExist(err) {
 			return false, nil
 		}
 
-		Log("d74bd3e7").Warn("Could not check if file exists.", "Path", relFs.FullPath(relPath, fileName))
+		Log("d74bd3e7").Warn("Could not check if file exists.", "Path", fullpath)
 		return false, err
 	}
 
 	return true, nil
 }
 
-func (relFs *relativeFsManager) CreateFile(relPath string, fileName string) error {
-	Log("0c2f42ae").Info("Creating file.", "Path", relFs.FullPath(relPath, fileName))
+func (relFs *relativeFsManager) CreateFile(relFilepath ...string) error {
+	fullpath := relFs.FullPath(relFilepath...)
+	Log("0c2f42ae").Info("Creating file.", "File", fullpath)
 
-	if err := relFs.CreateDir(relPath); err != nil {
-		Log("ecdb8557").Warn("Could not create directory.", "Directory", relFs.FullPath(relPath))
+	if err := relFs.CreateDir(relFs.Dir(relFilepath...)); err != nil {
 		return err
 	}
 
-	if file, err := os.OpenFile(relFs.FullPath(relPath, fileName), os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm); err != nil {
-		Log("3b5806d7").Warn("Could not create file.", "File path", relFs.FullPath(relPath, fileName))
+	if file, err := os.OpenFile(fullpath, os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm); err != nil {
+		Log("3b5806d7").Warn("Could not create file.", "File path", fullpath)
 		return err
 	} else {
 		file.Close()
@@ -46,30 +52,31 @@ func (relFs *relativeFsManager) CreateFile(relPath string, fileName string) erro
 	return nil
 }
 
-func (relFs *relativeFsManager) OpenFile(relPath string, fileName string) (*os.File, error) {
-	Log("6453d64c").Info("Opening file.", "Path", relFs.FullPath(relPath, fileName))
+func (relFs *relativeFsManager) OpenFile(relFilepath ...string) (*os.File, error) {
+	fullpath := relFs.FullPath(relFilepath...)
+	Log("6453d64c").Info("Opening file.", "Path", fullpath)
 
-	if err := relFs.CreateFile(relPath, fileName); err != nil {
+	if err := relFs.CreateFile(relFilepath...); err != nil {
 		return nil, err
 	}
 
-	return os.OpenFile(relFs.FullPath(relPath, fileName), os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
+	return os.OpenFile(fullpath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 }
 
-func (relFs *relativeFsManager) MoveFile(fromRelPath, fromFileName, toRelPath, toFileName string) error {
-	from := relFs.FullPath(fromRelPath, fromFileName)
-	to := relFs.FullPath(toRelPath, toFileName)
+func (relFs *relativeFsManager) MoveFile(relFrompath, relTopath string) error {
+	from := relFs.FullPath(relFrompath)
+	to := relFs.FullPath(relTopath)
 
 	Log("628970f4").Info("Moving file.", "From", from, "To", to)
 
-	if exists, err := relFs.FileExists(fromRelPath, fromFileName); err != nil {
+	if exists, err := relFs.FileExists(relFrompath); err != nil {
 		return err
 	} else if !exists {
 		Log("80331077").Warn("Cannot move file as it doesn't exist.", "From", from)
 		return os.ErrNotExist
 	}
 
-	if err := relFs.CreateDir(toRelPath); err != nil {
+	if err := relFs.CreateDir(relFs.Dir(relTopath)); err != nil {
 		return err
 	}
 
@@ -81,13 +88,13 @@ func (relFs *relativeFsManager) MoveFile(fromRelPath, fromFileName, toRelPath, t
 	return nil
 }
 
-func (relFs *relativeFsManager) CopyFile(fromRelPath, fromFileName, toRelPath, toFileName string) error {
-	from := relFs.FullPath(fromRelPath, fromFileName)
-	to := relFs.FullPath(toRelPath, toFileName)
+func (relFs *relativeFsManager) CopyFile(relFrompath, relTopath string) error {
+	from := relFs.FullPath(relFrompath)
+	to := relFs.FullPath(relTopath)
 
 	Log("ec504e3f").Info("Copying file.", "From", from, "To", to)
 
-	if err := relFs.CreateFile(toRelPath, toFileName); err != nil {
+	if err := relFs.CreateFile(relTopath); err != nil {
 		return err
 	}
 
@@ -102,58 +109,67 @@ func (relFs *relativeFsManager) CopyFile(fromRelPath, fromFileName, toRelPath, t
 	return nil
 }
 
-func (relFs *relativeFsManager) RmFile(relPath string, fileName string) error {
-	Log("017baa09").Info("Removing file.", "Path", relFs.FullPath(relPath, fileName))
+func (relFs *relativeFsManager) RmFile(relFilepath ...string) error {
+	fullpath := relFs.FullPath(relFilepath...)
+	Log("017baa09").Info("Removing file.", "Path", fullpath)
 
-	err := os.Remove(relFs.FullPath(relPath, fileName))
+	err := os.Remove(fullpath)
 
 	if err != nil {
-		Log("8ee71301").Warn("Could not remove file.", "Path", relFs.FullPath(relPath, fileName))
+		Log("8ee71301").Warn("Could not remove file.", "Path", fullpath)
 		return err
 	}
 
 	return nil
 }
 
-func (relFs *relativeFsManager) CreateDir(relPath string) error {
-	Log("109b2abd").Info("Creating directory.", "Path", relFs.FullPath(relPath))
+func (relFs *relativeFsManager) CreateDir(relPath ...string) error {
+	fullpath := relFs.FullPath(relPath...)
+	Log("109b2abd").Info("Creating directory.", "Path", fullpath)
 
-	path := relFs.FullPath(relPath)
-	err := os.MkdirAll(path, os.ModePerm)
+	err := os.MkdirAll(fullpath, os.ModePerm)
 
 	if err != nil {
-		Log("791e81d6").Warn("Could not create directory.", "Directory", path)
+		Log("791e81d6").Warn("Could not create directory.", "Directory", fullpath)
 		return err
 	}
 
 	return nil
 }
 
-func (relFs *relativeFsManager) ReadDir(relPath string) ([]os.DirEntry, error) {
-	Log("ca2b2793").Info("Reading directory.", "Path", relPath)
+func (relFs *relativeFsManager) ReadDir(relPath ...string) ([]os.DirEntry, error) {
+	fullpath := relFs.FullPath(relPath...)
+	Log("ca2b2793").Info("Reading directory.", "Path", fullpath)
 
-	path := relFs.FullPath(relPath)
-	res, err := os.ReadDir(path)
+	res, err := os.ReadDir(fullpath)
 
 	if err != nil {
-		Log("76a8af95").Warn("Could not read directory.", "Full path", path)
+		Log("76a8af95").Warn("Could not read directory.", "Full path", fullpath)
 		return nil, err
 	}
 
 	return res, nil
 }
 
-func (relFs *relativeFsManager) ReadFileIntoMemry(relPath string, fileName string) (string, error) {
-	path := relFs.FullPath(relPath, fileName)
-	Log("2133dd24").Info("Reading file.", "Path", path)
+func (relFs *relativeFsManager) ReadFileIntoMemry(relFilepath ...string) (string, error) {
+	fullpath := relFs.FullPath(relFilepath...)
+	Log("2133dd24").Info("Reading file.", "Path", fullpath)
 
-	data, err := os.ReadFile(path)
+	data, err := os.ReadFile(fullpath)
 	if err != nil {
-		Log("cc1e0022").Warn("Could not read file into memory.", "Path", path)
+		Log("cc1e0022").Warn("Could not read file into memory.", "Path", fullpath)
 		return "", err
 	}
 
 	return string(data), nil
+}
+
+func (relFs *relativeFsManager) Dir(relPath ...string) string {
+	return filepath.Dir(filepath.Join(relPath...))
+}
+
+func (relFs *relativeFsManager) FullDir(relPath ...string) string {
+	return filepath.Dir(relFs.FullPath(relPath...))
 }
 
 func (relFs *relativeFsManager) FullPath(relPath ...string) string {
