@@ -29,21 +29,15 @@ func CreateTrigger(databaseName string, triggerName string, ttype types.TriggerT
 		return err
 	}
 
-	return CreateTriggerRaw(databaseName, triggerStr)
+	return CreateTriggerRaw(databaseName, triggerName, triggerStr)
 }
 
-func CreateTriggerRaw(databaseName, triggerStr string) error {
+func CreateTriggerRaw(databaseName, triggerName, triggerStr string) error {
 	util.Log("79915c34").Info("Beginning create trigger from string operation.", "Database name", databaseName, "Trigger string", triggerStr)
-	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
 
-	if _, err := db.Exec(triggerStr); err != nil {
-		util.Log("e9ff0e9e").Error("Could not execute trigger contents on database.", "Database name", databaseName)
-		return err
-	}
+    if _, err := ExecRawSql(databaseName, triggerStr); err != nil {
+        return err
+    }
 
 	util.Log("27afb04c").Info("Successfully created trigger from string.", "Database name", databaseName)
 	return nil

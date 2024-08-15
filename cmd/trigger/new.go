@@ -19,6 +19,7 @@ func newTriggerCommand() *cobra.Command {
 	}
 
 	cmd.Flags().StringP("from-file", "f", "", "Add a trigger from the specified file")
+	cmd.Flags().StringP("name", "n", "", "Specify a name for the provided trigger")
 	cmd.Flags().StringP("message", "m", "", "Add a message/note associated with the trigger")
 
 	return cmd
@@ -26,6 +27,7 @@ func newTriggerCommand() *cobra.Command {
 
 func runNewTriggerCommand(cmd *cobra.Command, args []string) error {
 	fileName := util.PanicIfErr(cmd.Flags().GetString("from-file"))
+    name := util.PanicIfErr(cmd.Flags().GetString("name"))
     // message := util.PanicIfErr(cmd.Flags().GetString("message"))
 	databaseName := state.ApplicationState().GetSelectedDb()
 
@@ -35,11 +37,16 @@ func runNewTriggerCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	if fileName != "" {
+        if name == "" {
+            util.Log("01fb5ce7").Error("Cannot add a trigger from a file if a name is not provided for the trigger.", "File name", fileName)
+            return errors.Errorf("Cannot add a trigger from a file if a name is not provided using --name, -n")
+        }
+
 		relFs := util.NewRelativeFsManager()
 		if contents, err := relFs.ReadFileIntoMemry(fileName); err != nil {
 			return err
 		} else {
-            err := database.CreateTriggerRaw(databaseName, contents)
+            err := database.CreateTriggerRaw(databaseName, name, contents)
             return err
 		}
 	}

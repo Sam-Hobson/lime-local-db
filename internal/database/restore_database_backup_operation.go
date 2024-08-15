@@ -22,12 +22,7 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 	defer db.Close()
 
 	cond := sqlbuilder.NewCond()
-
-	selWhere := sqlbuilder.NewWhereClause()
-	selWhere.AddWhereExpr(cond.Args, cond.Equal("rowid", rowid))
-
-	sb := sqlbuilder.NewSelectBuilder().Select("*").From("backups").AddWhereClause(selWhere)
-	selStr, selArgs := sb.Build()
+	selStr, selArgs := dbutil.EntriesInTableWhereSql("backups", []string{"*"}, cond.Args, cond.Equal("rowid", rowid))
 
 	util.Log("1005f8f8").Info("restore-from-backup operation with SQL command.", "SQL", selStr, "Args", selArgs)
 

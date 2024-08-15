@@ -20,12 +20,7 @@ func RemoveDatabaseBackup(databaseName string, rowid int) error {
 	defer db.Close()
 
 	cond := sqlbuilder.NewCond()
-
-	selWhere := sqlbuilder.NewWhereClause()
-	selWhere.AddWhereExpr(cond.Args, cond.Equal("rowid", rowid))
-
-	sb := sqlbuilder.NewSelectBuilder().Select("backupName").From("backups").AddWhereClause(selWhere)
-	selStr, selArgs := sb.Build()
+	selStr, selArgs := dbutil.EntriesInTableWhereSql("backups", []string{"backup_name"}, cond.Args, cond.Equal("rowid", rowid))
 
 	util.Log("b5636cf9").Info("remove-database-backup operation with SQL command.", "SQL", selStr, "Args", selArgs)
 

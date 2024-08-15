@@ -22,11 +22,7 @@ func DefinedTriggers(databaseName string) ([]*Trigger, error) {
 	}
 
 	cond := sqlbuilder.NewCond()
-	selWhere := sqlbuilder.NewWhereClause()
-	selWhere.AddWhereExpr(cond.Args, cond.Equal("type", "trigger"))
-
-	sb := sqlbuilder.NewSelectBuilder().Select("name", "sql").From("sqlite_master").AddWhereClause(selWhere)
-	selStr, args := sb.Build()
+	selStr, args := EntriesInTableWhereSql("sqlite_master", []string{"name", "sql"}, cond.Args, cond.Equal("type", "trigger"))
 
 	util.Log("c5de02bb").Info("Querying defined triggers.", "Database name", databaseName, "SQL", selStr, "Args", args)
 

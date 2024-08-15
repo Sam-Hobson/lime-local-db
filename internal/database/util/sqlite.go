@@ -1,12 +1,7 @@
 package util
 
 import (
-	"database/sql"
-	"path/filepath"
-
-	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
-	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/types"
 	"github.com/sam-hobson/internal/util"
 )
@@ -31,9 +26,9 @@ func CreateTableSql(tableName string, columns []*types.Column) (string, []interf
 		if col.PrimaryKey {
 			opts = append(opts, "PRIMARY KEY")
 		}
-        if col.AutoIncrememnt {
-            opts = append(opts, "AUTOINCREMENT")
-        }
+		if col.AutoIncrememnt {
+			opts = append(opts, "AUTOINCREMENT")
+		}
 
 		// if col.ForeignKey {
 		// 	opts = append(opts, "FOREIGN KEY")
@@ -67,38 +62,14 @@ func InsertIntoTableSql(tableName string, entries map[string]string) (string, []
 	return ib.Build()
 }
 
-func OpenSqliteDatabaseIfExists(databaseName string) (*sql.DB, error) {
-	exists, err := SqliteDatabaseExists(databaseName)
+func EntriesInTableWhereSql(tableName string, columns []string, args *sqlbuilder.Args, conditions ...string) (string, []interface{}) {
+	util.Log("be384016").Info("Creating sqlite to check if entry exists in table.", "Table name", tableName, "Conditions", conditions)
 
-	if err != nil {
-		util.Log("94f1ece2").Warn("Cannot open database as it does not exist.")
-		return nil, err
-	}
-	if !exists {
-		util.Log("cbd713ec").Warn("Cannot open database as it does not exist.")
-		return nil, errors.Errorf("Cannot open database as it does not exist")
+	where := sqlbuilder.NewWhereClause()
+	for _, cond := range conditions {
+		where.AddWhereExpr(args, cond)
 	}
 
-	return OpenSqliteDatabase(databaseName)
-}
-
-func SqliteDatabaseExists(databaseName string) (bool, error) {
-	fileName := databaseName + ".db"
-	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome(), "stores")
-	util.Log("e75f8412").Info("Checking if database exists.", "Database name", databaseName)
-	return relFs.FileExists(fileName)
-}
-
-func OpenSqliteDatabase(databaseName string) (*sql.DB, error) {
-	fileName := databaseName + ".db"
-	dbPath := filepath.Join(state.ApplicationState().GetLimedbHome(), "stores", fileName)
-	util.Log("34503562").Info("Opening database file.", "Database path", dbPath)
-	return sql.Open("sqlite3", dbPath)
-}
-
-func RemoveSqliteDatabase(databaseName string) error {
-	fileName := databaseName + ".db"
-	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome(), "stores")
-	util.Log("cb25f7f8").Info("Removing database file.", "Database name", databaseName)
-	return relFs.RmFile(fileName)
+	sb := sqlbuilder.NewSelectBuilder().Select(columns...).From(tableName).AddWhereClause(where)
+	return sb.Build()
 }
