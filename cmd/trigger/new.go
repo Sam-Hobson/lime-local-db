@@ -27,8 +27,8 @@ func newTriggerCommand() *cobra.Command {
 
 func runNewTriggerCommand(cmd *cobra.Command, args []string) error {
 	fileName := util.PanicIfErr(cmd.Flags().GetString("from-file"))
-    name := util.PanicIfErr(cmd.Flags().GetString("name"))
-    message := util.PanicIfErr(cmd.Flags().GetString("message"))
+	name := util.PanicIfErr(cmd.Flags().GetString("name"))
+	message := util.PanicIfErr(cmd.Flags().GetString("message"))
 	databaseName := state.ApplicationState().GetSelectedDb()
 
 	if databaseName == "" {
@@ -37,17 +37,17 @@ func runNewTriggerCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	if fileName != "" {
-        if name == "" {
-            util.Log("01fb5ce7").Error("Cannot add a trigger from a file if a name is not provided for the trigger.", "File name", fileName)
-            return errors.Errorf("Cannot add a trigger from a file if a name is not provided using --name, -n")
-        }
+		if name == "" {
+			util.Log("01fb5ce7").Error("Cannot add a trigger from a file if a name is not provided for the trigger.", "File name", fileName)
+			return errors.Errorf("Cannot add a trigger from a file if a name is not provided using --name, -n")
+		}
 
 		relFs := util.NewRelativeFsManager()
 		if contents, err := relFs.ReadFileIntoMemry(fileName); err != nil {
 			return err
 		} else {
-            err := database.CreateTriggerRaw(databaseName, name, contents, message)
-            return err
+			err := database.CreateTriggerRaw(databaseName, name, contents, message)
+			return err
 		}
 	}
 

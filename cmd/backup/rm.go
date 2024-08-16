@@ -12,10 +12,10 @@ import (
 
 func rmBackupCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:       "rm [Backup id]",
-		Short:     "Remove a database backup",
-		Example:   "limedb backup rm 1",
-		Args:      cobra.ExactArgs(1),
+		Use:     "rm [Backup id]",
+		Short:   "Remove a database backup",
+		Example: "limedb backup rm 1",
+		Args:    cobra.ExactArgs(1),
 
 		RunE: runRmBackupCommand,
 	}
@@ -31,5 +31,5 @@ func runRmBackupCommand(cmd *cobra.Command, args []string) error {
 		return errors.Errorf("Cannot list backups if no database selected")
 	}
 
-    return database.RemoveDatabaseBackup(databaseName, util.PanicIfErr(strconv.Atoi(args[0])))
+	return database.RemoveDatabaseBackup(databaseName, util.PanicIfErr(strconv.Atoi(args[0])))
 }

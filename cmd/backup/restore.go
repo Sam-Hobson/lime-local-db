@@ -12,10 +12,10 @@ import (
 
 func restoreBackupCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:       "restore [Backup id]",
-		Short:     "Restore a database",
-		Example:   "limedb backup restore [Backup id]",
-		Args:      cobra.ExactArgs(1),
+		Use:     "restore [Backup id]",
+		Short:   "Restore a database",
+		Example: "limedb backup restore [Backup id]",
+		Args:    cobra.ExactArgs(1),
 
 		RunE: runRestoreBackupCommand,
 	}
@@ -39,7 +39,7 @@ func runRestoreBackupCommand(cmd *cobra.Command, args []string) error {
 		return errors.Errorf("Cannot restore from backups if no database selected")
 	}
 
-    database.RestoreFromBackup(databaseName, util.PanicIfErr(strconv.Atoi(args[0])))
+	database.RestoreFromBackup(databaseName, util.PanicIfErr(strconv.Atoi(args[0])))
 
 	return nil
 }

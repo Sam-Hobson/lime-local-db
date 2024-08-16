@@ -1,16 +1,16 @@
 package database
 
 import (
-	"github.com/sam-hobson/internal/util"
 	dbutil "github.com/sam-hobson/internal/database/util"
+	"github.com/sam-hobson/internal/util"
 )
 
 func AddEntry(databaseName string, entries map[string]string) error {
 	util.Log("f3f1b8df").Info("Beginning add-entry operation.", "Entries", entries)
 
-    db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
+	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
-        return err
+		return err
 	}
 	defer db.Close()
 

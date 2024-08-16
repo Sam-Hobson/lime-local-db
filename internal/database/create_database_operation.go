@@ -63,7 +63,7 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 	}
 	defer db.Close()
 
-    // Create data table for db
+	// Create data table for db
 	createTableStr, args := dbutil.CreateTableSql(databaseName, columns)
 	util.Log("0cb6a54d").Info("Creating table with SQL command.", "SQL", createTableStr, "Args", args)
 
@@ -74,7 +74,7 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 
 	util.Log("7bf9634b").Info("Successfully created a new database.", "Database name", databaseName)
 
-    // Create triggers table
+	// Create triggers table
 	createTriggersStr, triggersArgs := dbutil.CreateTableSql("triggers", triggerColumns)
 	util.Log("eadfbde6").Info("Creating trigger table with SQL.", "SQL", createTriggersStr, "Args", triggersArgs)
 
@@ -84,7 +84,7 @@ func CreateDatabase(databaseName string, columns []*types.Column) error {
 		return err
 	}
 
-    // Create accompanying persistent database
+	// Create accompanying persistent database
 	if err := CreatePersistentDatabase(databaseName); err != nil {
 		dbutil.RemoveSqliteDatabase(databaseName)
 		return err

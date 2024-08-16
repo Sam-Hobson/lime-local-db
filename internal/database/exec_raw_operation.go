@@ -16,7 +16,7 @@ func ExecRawSql(databaseName, sql string) (sql.Result, error) {
 	}
 	defer db.Close()
 
-    util.Log("5698ba36").Info("Executing SQL on database.", "Database name", databaseName, "SQL", sql)
+	util.Log("5698ba36").Info("Executing SQL on database.", "Database name", databaseName, "SQL", sql)
 
 	res, err := db.Exec(sql)
 	if err != nil {

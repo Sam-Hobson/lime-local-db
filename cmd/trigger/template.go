@@ -29,12 +29,12 @@ func runTemplateTriggerCommand(cmd *cobra.Command, args []string) error {
 		return errors.Errorf("Cannot create trigger template if database is not selected")
 	}
 
-    template, err := database.TriggerTemplate(databaseName, args[0], "[TRIGGER TYPE]", "[BODY]")
-    if err != nil {
-        return err
-    }
+	template, err := database.TriggerTemplate(databaseName, args[0], "[TRIGGER TYPE]", "[BODY]")
+	if err != nil {
+		return err
+	}
 
-    cmd.Println(template)
+	cmd.Println(template)
 
-    return nil
+	return nil
 }

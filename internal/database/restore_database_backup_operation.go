@@ -49,7 +49,7 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 		return errors.Errorf("Failed restore-from-backup, too many backup field records")
 	}
 
-    fileName := databaseName + ".db"
+	fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
 	if err := relFs.CopyFile(filepath.Join("backups", databaseName, backupName), filepath.Join("stores", fileName)); err != nil {
 		return err
@@ -62,7 +62,7 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 	}
 	defer db.Close()
 
-    util.Log("e2ab58c3").Info("Successfully restored backup.", "Database name", databaseName, "Row id", rowid)
+	util.Log("e2ab58c3").Info("Successfully restored backup.", "Database name", databaseName, "Row id", rowid)
 
 	return nil
 }

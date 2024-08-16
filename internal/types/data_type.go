@@ -53,10 +53,10 @@ func ParseType(dataType ColumnDataType, data string) (interface{}, error) {
 		return ParseInt(data)
 	case ColumnRealDataType:
 		return ParseReal(data)
-    case ColumnTextDataType:
-        return data, nil
-    case ColumnNullDataType:
-        return "NULL", nil
+	case ColumnTextDataType:
+		return data, nil
+	case ColumnNullDataType:
+		return "NULL", nil
 	}
 
 	return nil, nil

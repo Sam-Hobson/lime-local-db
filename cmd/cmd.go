@@ -41,11 +41,11 @@ func NewCommand(version, commit string) *cobra.Command {
 		rmentriesall.NewCommand(),
 		rmentrieswhere.NewCommand(),
 		backup.NewCommand(),
-        trigger.NewCommand(),
+		trigger.NewCommand(),
 	)
 
-    // Not sure why this is necessary, but output goes to stderr by default if this isn't here
-    cmd.SetOut(os.Stdout)
+	// Not sure why this is necessary, but output goes to stderr by default if this isn't here
+	cmd.SetOut(os.Stdout)
 
 	return cmd
 }

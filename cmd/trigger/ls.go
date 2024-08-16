@@ -28,20 +28,20 @@ func lsTriggerCommand() *cobra.Command {
 
 func runLsTriggerCommand(cmd *cobra.Command, args []string) error {
 	databaseName := state.ApplicationState().GetSelectedDb()
-    util.Log("bd1477f3").Info("Listing all database triggers.", "Database name", databaseName)
+	util.Log("bd1477f3").Info("Listing all database triggers.", "Database name", databaseName)
 	if databaseName == "" {
 		util.Log("1c822e6d").Error("Cannot ls triggers if database is not selected.")
 		return errors.Errorf("Cannot ls triggers if database is not selected")
 	}
 
-    triggers, err := dbutil.DefinedTriggers(databaseName)
-    if err != nil {
-        return err
-    }
+	triggers, err := dbutil.DefinedTriggers(databaseName)
+	if err != nil {
+		return err
+	}
 
-    for _, trigger := range triggers {
-        fmt.Println(trigger.Name)
-    }
+	for _, trigger := range triggers {
+		fmt.Println(trigger.Name)
+	}
 
 	return nil
 }

@@ -37,17 +37,17 @@ func run(cmd *cobra.Command, args []string) error {
 
 	util.Log("7a8f5e35").Info("Parsed add-entry arguments.", "Args", entryValues)
 
-    databaseName := state.ApplicationState().GetSelectedDb()
-    if databaseName == "" {
-        util.Log("0562d5bb").Error("Cannot add entry if not database is specified.")
-        return errors.Errorf("Cannot add entry if not database is specified")
-    }
+	databaseName := state.ApplicationState().GetSelectedDb()
+	if databaseName == "" {
+		util.Log("0562d5bb").Error("Cannot add entry if not database is specified.")
+		return errors.Errorf("Cannot add entry if not database is specified")
+	}
 
-    if err := database.AddEntry(databaseName, entryValues); err != nil {
-        return err
-    }
+	if err := database.AddEntry(databaseName, entryValues); err != nil {
+		return err
+	}
 
-    fmt.Fprintln(cmd.OutOrStdout(), "Successfully added entry")
+	fmt.Fprintln(cmd.OutOrStdout(), "Successfully added entry")
 	return nil
 }
 

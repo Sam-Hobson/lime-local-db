@@ -12,8 +12,8 @@ func NewCommand() *cobra.Command {
 
 	cmd.AddCommand(
 		newTriggerCommand(),
-        templateTriggerCommand(),
-        lsTriggerCommand(),
+		templateTriggerCommand(),
+		lsTriggerCommand(),
 	)
 
 	return cmd
