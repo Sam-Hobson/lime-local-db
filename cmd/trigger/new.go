@@ -28,7 +28,7 @@ func newTriggerCommand() *cobra.Command {
 func runNewTriggerCommand(cmd *cobra.Command, args []string) error {
 	fileName := util.PanicIfErr(cmd.Flags().GetString("from-file"))
     name := util.PanicIfErr(cmd.Flags().GetString("name"))
-    // message := util.PanicIfErr(cmd.Flags().GetString("message"))
+    message := util.PanicIfErr(cmd.Flags().GetString("message"))
 	databaseName := state.ApplicationState().GetSelectedDb()
 
 	if databaseName == "" {
@@ -46,7 +46,7 @@ func runNewTriggerCommand(cmd *cobra.Command, args []string) error {
 		if contents, err := relFs.ReadFileIntoMemry(fileName); err != nil {
 			return err
 		} else {
-            err := database.CreateTriggerRaw(databaseName, name, contents)
+            err := database.CreateTriggerRaw(databaseName, name, contents, message)
             return err
 		}
 	}

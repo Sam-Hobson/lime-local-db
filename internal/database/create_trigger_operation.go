@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"slices"
+	"time"
 
 	"github.com/go-errors/errors"
 	dbutil "github.com/sam-hobson/internal/database/util"
@@ -17,7 +18,7 @@ BEGIN
 END;
 `
 
-func CreateTrigger(databaseName string, triggerName string, ttype types.TriggerType, body string) error {
+func CreateTrigger(databaseName string, triggerName string, ttype types.TriggerType, body string, comment string) error {
 	util.Log("e805a489").Info("Beginning create trigger operation.",
 		"Database name", databaseName,
 		"Trigger name", triggerName,
@@ -29,17 +30,39 @@ func CreateTrigger(databaseName string, triggerName string, ttype types.TriggerT
 		return err
 	}
 
-	return CreateTriggerRaw(databaseName, triggerName, triggerStr)
+	return CreateTriggerRaw(databaseName, triggerName, triggerStr, comment)
 }
 
-func CreateTriggerRaw(databaseName, triggerName, triggerStr string) error {
-	util.Log("79915c34").Info("Beginning create trigger from string operation.", "Database name", databaseName, "Trigger string", triggerStr)
+func CreateTriggerRaw(databaseName, triggerName, triggerStr, comment string) error {
+	util.Log("79915c34").Info("Creating trigger from string operation.", "Database name", databaseName, "Trigger string", triggerStr)
 
-    if _, err := ExecRawSql(databaseName, triggerStr); err != nil {
-        return err
-    }
+	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
 
-	util.Log("27afb04c").Info("Successfully created trigger from string.", "Database name", databaseName)
+	if exists, err := dbutil.TriggerNameExists(db, triggerName); err != nil {
+		return err
+	} else if exists {
+		util.Log("add8b5cf").Error("Cannot create trigger as a trigger by name already exists.", "Database name", databaseName, "Trigger name", triggerName)
+		return errors.Errorf("Cannot create trigger as a trigger by provided name already exists")
+	}
+
+	insertStr, args := dbutil.InsertIntoTableSql("triggers", map[string]string{
+		"name":         triggerName,
+		"date_created": time.Now().Format(time.RFC3339),
+		"comment":      comment,
+	})
+	if _, err := db.Exec(insertStr, args...); err != nil {
+		util.Log("465dca8d").Error("Could not create entry in triggers table.", "Database name", databaseName, "Trigger name", triggerName)
+		return errors.Errorf("Could not create entry in triggers table")
+	}
+
+	if _, err := ExecRawSql(databaseName, triggerStr); err != nil {
+		return err
+	}
+
 	return nil
 }
 
