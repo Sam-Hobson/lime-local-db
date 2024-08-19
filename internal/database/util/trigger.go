@@ -40,7 +40,10 @@ func DefinedTriggers(databaseName string) ([]*Trigger, error) {
 
 	for res.Next() {
 		trigger := Trigger{}
-		res.Scan(&trigger.Name, &trigger.Sql)
+		if err := res.Scan(&trigger.Name, &trigger.Sql); err != nil {
+			util.Log("b9de1e73").Warn("Error while reading triggers from database.", "Database name", databaseName)
+			return nil, errors.Errorf("Error while reading triggers from database")
+		}
 		triggers = append(triggers, &trigger)
 	}
 

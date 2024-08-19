@@ -42,7 +42,10 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 		return errors.Errorf("Failed restore-from-backup, no matching backup")
 	}
 
-	res.Scan(&date, &backupName, &comment)
+	if err := res.Scan(&date, &backupName, &comment); err != nil {
+		util.Log("4c99a9f6").Error("Error while reading backups.", "Database name", databaseName)
+		return errors.Errorf("Error while reading backups")
+	}
 
 	if res.Next() {
 		util.Log("16fc100d").Error("Failed restore-from-backup, too many backup field records.", "Backup name retrieved", backupName)
@@ -54,13 +57,6 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 	if err := relFs.CopyFile(filepath.Join("backups", databaseName, backupName), filepath.Join("stores", fileName)); err != nil {
 		return err
 	}
-
-	// Open the newly restored database
-	db, err = dbutil.OpenSqliteDatabaseIfExists(databaseName)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
 
 	util.Log("e2ab58c3").Info("Successfully restored backup.", "Database name", databaseName, "Row id", rowid)
 

@@ -71,7 +71,10 @@ func printBackupRowsWhere(iowriter io.Writer, databaseName string, where *sqlbui
 		var date string
 		var comment string
 
-		res.Scan(&rowid, &date, &comment)
+		if err := res.Scan(&rowid, &date, &comment); err != nil {
+			util.Log("d92e36ce").Warn("Error while reading backup results from database.", "Database name", databaseName)
+			return errors.Errorf("Error while reading backup results from database")
+		}
 		fmt.Fprintf(w, "%d\t%s\t%s\n", rowid, date, comment)
 	}
 

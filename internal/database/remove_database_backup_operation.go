@@ -34,11 +34,14 @@ func RemoveDatabaseBackup(databaseName string, rowid int) error {
 	var backupName string
 
 	if !res.Next() {
-		util.Log("e8f55bfc").Error("Failed remove-database-backup, no matching backup.")
+		util.Log("e8f55bfc").Error("Failed remove-database-backup, no matching backup.", "Database name", databaseName)
 		return errors.Errorf("Failed remove-database-backup, no matching backup")
 	}
 
-	res.Scan(&backupName)
+	if err := res.Scan(&backupName); err != nil {
+		util.Log("c09db96f").Error("Error while reading backup from database.", "Database name", databaseName)
+		return errors.Errorf("Error while reading backup from database")
+	}
 
 	if res.Next() {
 		util.Log("734c3115").Error("Failed remove-database-backup, too many backup field records.", "Backup name retrieved", backupName)
