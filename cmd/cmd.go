@@ -33,7 +33,7 @@ func NewCommand(version, commit string) *cobra.Command {
 	}
 
 	cmd.PersistentFlags().StringSlice("with-config", nil, "Override a configuration option during the execution of this command.")
-	cmd.PersistentFlags().StringP("db", "d", "", "Choose the database to perform operations on.")
+	cmd.PersistentFlags().String("db", "", "Choose the database to perform operations on.")
 
 	cmd.AddCommand(
 		db.NewCommand(),

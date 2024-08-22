@@ -54,12 +54,12 @@ func CreateTriggerRaw(databaseName, triggerName, triggerStr, comment string) err
 		"date_created": time.Now().Format(time.RFC3339),
 		"comment":      comment,
 	})
+	util.Log("f9e2708e").Info("Inserting into table using SQL.", "Database name", databaseName, "SQL", insertStr, "Args", args)
 	if _, err := db.Exec(insertStr, args...); err != nil {
 		util.Log("465dca8d").Error("Could not create entry in triggers table.", "Database name", databaseName, "Trigger name", triggerName)
 		return errors.Errorf("Could not create entry in triggers table")
 	}
 
-	// TODO: use the rowid returned to create a foreign key in triggers referring to sqlite_master.
 	if _, err := ExecRawSql(databaseName, triggerStr); err != nil {
 		return err
 	}

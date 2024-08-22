@@ -31,22 +31,16 @@ func RemoveDatabaseBackup(databaseName string, rowid int) error {
 	}
 	defer res.Close()
 
-	var backupName string
-
-	if !res.Next() {
+	backups := dbutil.RowsIntoSlice[string](res)
+	if len(backups) == 0 {
 		util.Log("e8f55bfc").Error("Failed remove-database-backup, no matching backup.", "Database name", databaseName)
 		return errors.Errorf("Failed remove-database-backup, no matching backup")
-	}
-
-	if err := res.Scan(&backupName); err != nil {
-		util.Log("c09db96f").Error("Error while reading backup from database.", "Database name", databaseName)
-		return errors.Errorf("Error while reading backup from database")
-	}
-
-	if res.Next() {
-		util.Log("734c3115").Error("Failed remove-database-backup, too many backup field records.", "Backup name retrieved", backupName)
+	} else if len(backups) > 1 {
+		util.Log("734c3115").Error("Failed remove-database-backup, too many backup field records.", "Backups", backups)
 		return errors.Errorf("Failed remove-database-backup, too many backup field records")
 	}
+
+	backupName := backups[0]
 
 	delWhere := sqlbuilder.NewWhereClause()
 	delWhere.AddWhereExpr(cond.Args, cond.Equal("rowid", rowid))

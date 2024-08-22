@@ -3,7 +3,6 @@ package util
 import (
 	"database/sql"
 
-	"github.com/go-errors/errors"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/sam-hobson/internal/util"
 )
@@ -36,15 +35,10 @@ func DefinedTriggers(databaseName string) ([]*Trigger, error) {
 	}
 	defer res.Close()
 
-	triggers := make([]*Trigger, 0)
-
-	for res.Next() {
-		trigger := Trigger{}
-		if err := res.Scan(&trigger.Name, &trigger.Sql); err != nil {
-			util.Log("b9de1e73").Warn("Error while reading triggers from database.", "Database name", databaseName)
-			return nil, errors.Errorf("Error while reading triggers from database")
-		}
-		triggers = append(triggers, &trigger)
+	names, sqls := RowsIntoSlice2[string, string](res)
+	triggers := make([]*Trigger, len(names))
+	for i := range triggers {
+		triggers[i] = &Trigger{Name: names[i], Sql: sqls[i]}
 	}
 
 	util.Log("35fa533b").Info("Defined triggers found.", "Database name", databaseName, "Triggers", triggers)

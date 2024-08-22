@@ -28,7 +28,7 @@ var backupColumns = []*types.Column{
 var triggerColumns = []*types.Column{
 	{
 		Name:       "name",
-		DataType:   types.ColumnIntDataType,
+		DataType:   types.ColumnTextDataType,
 		NotNull:    true,
 		PrimaryKey: true,
 	},

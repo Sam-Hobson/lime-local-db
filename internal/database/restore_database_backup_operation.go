@@ -22,7 +22,7 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 	defer db.Close()
 
 	cond := sqlbuilder.NewCond()
-	selStr, selArgs := dbutil.EntriesInTableWhereSql("backups", []string{"*"}, cond.Args, cond.Equal("rowid", rowid))
+	selStr, selArgs := dbutil.EntriesInTableWhereSql("backups", []string{"name"}, cond.Args, cond.Equal("rowid", rowid))
 
 	util.Log("1005f8f8").Info("restore-from-backup operation with SQL command.", "SQL", selStr, "Args", selArgs)
 
@@ -33,24 +33,16 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 	}
 	defer res.Close()
 
-	var date string
-	var backupName string
-	var comment string
-
-	if !res.Next() {
+	names := dbutil.RowsIntoSlice[string](res)
+	if len(names) == 0 {
 		util.Log("cf85bbc9").Error("Failed restore-from-backup, no matching backup.")
 		return errors.Errorf("Failed restore-from-backup, no matching backup")
-	}
-
-	if err := res.Scan(&date, &backupName, &comment); err != nil {
-		util.Log("4c99a9f6").Error("Error while reading backups.", "Database name", databaseName)
-		return errors.Errorf("Error while reading backups")
-	}
-
-	if res.Next() {
-		util.Log("16fc100d").Error("Failed restore-from-backup, too many backup field records.", "Backup name retrieved", backupName)
+	} else if len(names) > 1 {
+		util.Log("16fc100d").Error("Failed restore-from-backup, too many backup field records.", "Backup names", names)
 		return errors.Errorf("Failed restore-from-backup, too many backup field records")
 	}
+
+	backupName := names[0]
 
 	fileName := databaseName + ".db"
 	relFs := util.NewRelativeFsManager(state.ApplicationState().GetLimedbHome())
