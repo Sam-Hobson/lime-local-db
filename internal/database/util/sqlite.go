@@ -80,42 +80,42 @@ type colType interface {
 	int | float32 | float64 | string
 }
 
-func RowsIntoSlice[T colType](rows *sql.Rows) []T {
-	res := make([]T, 0)
+func RowsIntoSlice[C colType](rows *sql.Rows) []C {
+	res := make([]C, 0)
 	for rows.Next() {
-		t := new(T)
-		rows.Scan(t)
-		res = append(res, *t)
+		c := new(C)
+		rows.Scan(c)
+		res = append(res, *c)
 	}
 	return res
 }
 
-func RowsIntoSlice2[T colType, U colType](rows *sql.Rows) ([]T, []U) {
-	res1, res2 := make([]T, 0), make([]U, 0)
+func RowsIntoSlice2[C1 colType, C2 colType](rows *sql.Rows) ([]C1, []C2) {
+	res1, res2 := make([]C1, 0), make([]C2, 0)
 	for rows.Next() {
-		t, u := new(T), new(U)
-		rows.Scan(t, u)
-		res1, res2 = append(res1, *t), append(res2, *u)
+		c1, c2 := new(C1), new(C2)
+		rows.Scan(c1, c2)
+		res1, res2 = append(res1, *c1), append(res2, *c2)
 	}
 	return res1, res2
 }
 
-func RowsIntoSlice3[T colType, U colType, V colType](rows *sql.Rows) ([]T, []U, []V) {
-	res1, res2, res3 := make([]T, 0), make([]U, 0), make([]V, 0)
+func RowsIntoSlice3[C1 colType, C2 colType, C3 colType](rows *sql.Rows) ([]C1, []C2, []C3) {
+	res1, res2, res3 := make([]C1, 0), make([]C2, 0), make([]C3, 0)
 	for rows.Next() {
-		t, u, v := new(T), new(U), new(V)
-		rows.Scan(t, u, v)
-		res1, res2, res3 = append(res1, *t), append(res2, *u), append(res3, *v)
+		c1, c2, c3 := new(C1), new(C2), new(C3)
+		rows.Scan(c1, c2, c3)
+		res1, res2, res3 = append(res1, *c1), append(res2, *c2), append(res3, *c3)
 	}
 	return res1, res2, res3
 }
 
-func RowsIntoSlice4[T colType, U colType, V colType, X colType](rows *sql.Rows) ([]T, []U, []V, []X) {
-	res1, res2, res3, res4 := make([]T, 0), make([]U, 0), make([]V, 0), make([]X, 0)
+func RowsIntoSlice4[C1 colType, C2 colType, C3 colType, C4 colType](rows *sql.Rows) ([]C1, []C2, []C3, []C4) {
+	res1, res2, res3, res4 := make([]C1, 0), make([]C2, 0), make([]C3, 0), make([]C4, 0)
 	for rows.Next() {
-		t, u, v, x := new(T), new(U), new(V), new(X)
-		rows.Scan(t, u, v)
-		res1, res2, res3, res4 = append(res1, *t), append(res2, *u), append(res3, *v), append(res4, *x)
+		c1, c2, c3, c4 := new(C1), new(C2), new(C3), new(C4)
+		rows.Scan(c1, c2, c3)
+		res1, res2, res3, res4 = append(res1, *c1), append(res2, *c2), append(res3, *c3), append(res4, *c4)
 	}
 	return res1, res2, res3, res4
 }
