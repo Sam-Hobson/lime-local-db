@@ -12,7 +12,7 @@ type Column struct {
 	Name           string
 	DataType       ColumnDataType
 	PrimaryKey     bool
-	ForeignKey     bool
+	ForeignKey     *ForeignKey
 	NotNull        bool
 	AutoIncrememnt bool
 	DefaultVal     string
@@ -24,9 +24,9 @@ func (c *Column) String() string {
 	if c.PrimaryKey {
 		sb.WriteRune('P')
 	}
-	if c.ForeignKey {
-		sb.WriteRune('F')
-	}
+	// if c.ForeignKey {
+	// 	sb.WriteRune('F')
+	// }
 	if c.AutoIncrememnt {
 		sb.WriteRune('A')
 	}
@@ -118,7 +118,6 @@ func parseColumnFlags(flags string, column *Column) error {
 	}
 
 	column.PrimaryKey = primaryKey
-	column.ForeignKey = foreignKey
 	column.NotNull = notNull
 	column.AutoIncrememnt = autoIncrememnt
 

@@ -69,3 +69,8 @@ func ParseInt(data string) (int64, error) {
 func ParseReal(data string) (float64, error) {
 	return strconv.ParseFloat(data, 64)
 }
+
+type ForeignKey struct {
+	Table string
+	Col   string
+}

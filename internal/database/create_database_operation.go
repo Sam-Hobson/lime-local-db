@@ -27,10 +27,14 @@ var backupColumns = []*types.Column{
 
 var triggerColumns = []*types.Column{
 	{
-		Name:       "name",
-		DataType:   types.ColumnTextDataType,
+		Name:       "sqlite_master_rowid",
+		DataType:   types.ColumnIntDataType,
 		NotNull:    true,
 		PrimaryKey: true,
+		ForeignKey: &types.ForeignKey{
+			Table: "sqlite_master",
+			Col:   "rowid",
+		},
 	},
 	{
 		Name:     "date_created",

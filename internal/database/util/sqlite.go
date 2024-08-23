@@ -15,7 +15,7 @@ func CreateTableSql(tableName string, columns []*types.Column) (string, []interf
 	ctb.CreateTable(tableName).IfNotExists()
 
 	for _, col := range columns {
-		opts := make([]string, 10)
+		opts := make([]string, 0, 10)
 		opts = append(opts, col.Name)
 		opts = append(opts, col.DataType.String())
 
@@ -32,9 +32,19 @@ func CreateTableSql(tableName string, columns []*types.Column) (string, []interf
 			opts = append(opts, "AUTOINCREMENT")
 		}
 
-		// if col.ForeignKey {
-		// 	opts = append(opts, "FOREIGN KEY")
-		// }
+		ctb.Define(opts...)
+	}
+	for _, col := range columns {
+		if col.ForeignKey == nil {
+			continue
+		}
+
+		opts := make([]string, 0, 10)
+		opts = append(opts, "FOREIGN KEY")
+		opts = append(opts, "("+col.Name+")")
+		opts = append(opts, "REFERENCES")
+		opts = append(opts, col.ForeignKey.Table)
+		opts = append(opts, "("+col.ForeignKey.Col+")")
 
 		ctb.Define(opts...)
 	}

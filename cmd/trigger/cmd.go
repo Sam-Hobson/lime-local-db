@@ -1,8 +1,6 @@
 package trigger
 
 import (
-	"fmt"
-
 	"github.com/huandu/go-sqlbuilder"
 	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/state"
@@ -13,10 +11,10 @@ import (
 // TODO: Flesh out use/examples documentation.
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                "trigger [Subcommand]",
-		Short:              "Operate on database triggers",
-		Example:            "limedb trigger",
-		PersistentPostRunE: persistentPostRun,
+		Use:               "trigger [Subcommand]",
+		Short:             "Operate on database triggers",
+		Example:           "limedb trigger",
+		PersistentPreRunE: persistentPreRun,
 	}
 
 	cmd.AddCommand(
@@ -28,11 +26,18 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-func persistentPostRun(cmd *cobra.Command, _ []string) error {
+func persistentPreRun(cmd *cobra.Command, _ []string) error {
+	if err := syncTriggersTable(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func syncTriggersTable() error {
 	util.Log("555cc716").Info("Checking sqlite_master for triggers.")
 
 	databaseName := state.ApplicationState().GetSelectedDb()
-
 	if databaseName == "" {
 		return nil
 	}
@@ -52,8 +57,16 @@ func persistentPostRun(cmd *cobra.Command, _ []string) error {
 		util.Log("fed59b67").Error("Could not query sqlite_master table.", "Database name", databaseName)
 		return err
 	}
+	defer rows.Close()
 
-	rowids, names := dbutil.RowsIntoSlice2[int, string](rows)
+	for rows.Next() {
+		var rowid int
+		var name string
+		if err := rows.Scan(&rowid, &name); err != nil {
+			util.Log("44b3ba8d").Error("Error occurred while reading from sqlite_master.", "Database name", databaseName)
+			return err
+		}
+	}
 
 	return nil
 }

@@ -127,7 +127,8 @@ limedb db rm pets --confirm --with-config soft_deletion:false,limedb_home:/etc/l
 
 
 ## Features in progress
-- Proper support for foreign keys
+- Proper support for foreign keys (Partially done)
+    - Add syntax for adding foreign keys
 - Add option in where clauses to input raw sqlite
 - Operations
     - alter
