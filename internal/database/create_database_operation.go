@@ -8,49 +8,6 @@ import (
 	"github.com/sam-hobson/internal/util"
 )
 
-var backupColumns = []*types.Column{
-	{
-		Name:     "date",
-		DataType: types.ColumnTextDataType,
-		NotNull:  true,
-	},
-	{
-		Name:     "backup_name",
-		DataType: types.ColumnTextDataType,
-		NotNull:  true,
-	},
-	{
-		Name:     "comment",
-		DataType: types.ColumnTextDataType,
-	},
-}
-
-var triggerColumns = []*types.Column{
-	{
-		Name:       "sqlite_master_rowid",
-		DataType:   types.ColumnIntDataType,
-		NotNull:    true,
-		PrimaryKey: true,
-		ForeignKey: &types.ForeignKey{
-			Table: "sqlite_master",
-			Col:   "rowid",
-		},
-	},
-	{
-		Name:     "date_created",
-		DataType: types.ColumnTextDataType,
-		NotNull:  true,
-	},
-	{
-		Name:     "trigger_type",
-		DataType: types.ColumnTextDataType,
-	},
-	{
-		Name:     "comment",
-		DataType: types.ColumnTextDataType,
-	},
-}
-
 func CreateDatabase(databaseName string, columns []*types.Column) error {
 	util.Log("26cd37c1").Info("Beginning db new operation.", "Database name", databaseName, "Columns", columns)
 
@@ -115,7 +72,7 @@ func CreatePersistentDatabase(databaseName string) error {
 	}
 	defer db.Close()
 
-	createTableStr, createTableArgs := dbutil.CreateTableSql("backups", backupColumns)
+	createTableStr, createTableArgs := dbutil.CreateTableSql("backups", BackupColumns)
 	util.Log("8bc1e038").Info("Creating backup table with SQL command.", "SQL", createTableStr, "Args", createTableArgs)
 
 	if _, err := db.Exec(createTableStr, createTableArgs...); err != nil {

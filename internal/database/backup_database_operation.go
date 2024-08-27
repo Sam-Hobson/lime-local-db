@@ -28,11 +28,11 @@ func BackupDatabase(databaseName, comment string) (int64, error) {
 
 	relFs.CopyFile(filepath.Join("stores", fileName), filepath.Join("backups", databaseName, newDbName))
 
-	insertStr, insertArgs := dbutil.InsertIntoTableSql("backups", map[string]string{
-		"date":       time.Now().Format(time.RFC3339),
-		"backupName": newDbName,
-		"comment":    comment,
-	})
+	insertStr, insertArgs := BackupStruct.InsertInto("backups", &Backup{
+		Name:    newDbName,
+		Date:    time.Now().Format(time.RFC3339),
+		Comment: comment,
+	}).Build()
 
 	util.Log("83d9e967").Info("Inserting into backup table with SQL command.", "SQL", insertStr, "Args", insertArgs)
 

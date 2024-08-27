@@ -33,7 +33,12 @@ func RestoreFromBackup(databaseName string, rowid int) error {
 	}
 	defer res.Close()
 
-	names := dbutil.RowsIntoSlice[string](res)
+	names, err := dbutil.RowsIntoSlice[string](res)
+	if err != nil {
+		util.Log("a122ca2e").Error("Could not read backup into slice.", "Database name", databaseName, "Backup row id", rowid)
+		return err
+	}
+
 	if len(names) == 0 {
 		util.Log("cf85bbc9").Error("Failed restore-from-backup, no matching backup.")
 		return errors.Errorf("Failed restore-from-backup, no matching backup")

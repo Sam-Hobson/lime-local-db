@@ -90,42 +90,54 @@ type colType interface {
 	int | float32 | float64 | string
 }
 
-func RowsIntoSlice[C colType](rows *sql.Rows) []C {
+func RowsIntoSlice[C colType](rows *sql.Rows) ([]C, error) {
 	res := make([]C, 0)
 	for rows.Next() {
 		c := new(C)
-		rows.Scan(c)
+		if err := rows.Scan(c); err != nil {
+			util.Log("835720e2").Warn("Error while reading rows into slice.")
+			return nil, err
+		}
 		res = append(res, *c)
 	}
-	return res
+	return res, nil
 }
 
-func RowsIntoSlice2[C1 colType, C2 colType](rows *sql.Rows) ([]C1, []C2) {
+func RowsIntoSlice2[C1 colType, C2 colType](rows *sql.Rows) ([]C1, []C2, error) {
 	res1, res2 := make([]C1, 0), make([]C2, 0)
 	for rows.Next() {
 		c1, c2 := new(C1), new(C2)
-		rows.Scan(c1, c2)
+		if err := rows.Scan(c1, c2); err != nil {
+			util.Log("13903e2e").Warn("Error while reading rows into slice.")
+			return nil, nil, err
+		}
 		res1, res2 = append(res1, *c1), append(res2, *c2)
 	}
-	return res1, res2
+	return res1, res2, nil
 }
 
-func RowsIntoSlice3[C1 colType, C2 colType, C3 colType](rows *sql.Rows) ([]C1, []C2, []C3) {
+func RowsIntoSlice3[C1 colType, C2 colType, C3 colType](rows *sql.Rows) ([]C1, []C2, []C3, error) {
 	res1, res2, res3 := make([]C1, 0), make([]C2, 0), make([]C3, 0)
 	for rows.Next() {
 		c1, c2, c3 := new(C1), new(C2), new(C3)
-		rows.Scan(c1, c2, c3)
+		if err := rows.Scan(c1, c2, c3); err != nil {
+			util.Log("73743de3").Warn("Error while reading rows into slice.")
+			return nil, nil, nil, err
+		}
 		res1, res2, res3 = append(res1, *c1), append(res2, *c2), append(res3, *c3)
 	}
-	return res1, res2, res3
+	return res1, res2, res3, nil
 }
 
-func RowsIntoSlice4[C1 colType, C2 colType, C3 colType, C4 colType](rows *sql.Rows) ([]C1, []C2, []C3, []C4) {
+func RowsIntoSlice4[C1 colType, C2 colType, C3 colType, C4 colType](rows *sql.Rows) ([]C1, []C2, []C3, []C4, error) {
 	res1, res2, res3, res4 := make([]C1, 0), make([]C2, 0), make([]C3, 0), make([]C4, 0)
 	for rows.Next() {
 		c1, c2, c3, c4 := new(C1), new(C2), new(C3), new(C4)
-		rows.Scan(c1, c2, c3)
+		if err := rows.Scan(c1, c2, c3, c4); err != nil {
+			util.Log("73743de3").Warn("Error while reading rows into slice.")
+			return nil, nil, nil, nil, err
+		}
 		res1, res2, res3, res4 = append(res1, *c1), append(res2, *c2), append(res3, *c3), append(res4, *c4)
 	}
-	return res1, res2, res3, res4
+	return res1, res2, res3, res4, nil
 }

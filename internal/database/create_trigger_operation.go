@@ -49,16 +49,9 @@ func CreateTriggerRaw(databaseName, triggerName, triggerStr, comment string) err
 		return errors.Errorf("Cannot create trigger as a trigger by provided name already exists")
 	}
 
-	insertStr, args := dbutil.InsertIntoTableSql("triggers", map[string]string{
-		"name":         triggerName,
-		"date_created": time.Now().Format(time.RFC3339),
-		"comment":      comment,
+	// TODO: Fix this function
+	insertStr, args := TriggerStruct.InsertInto("triggers", &Trigger{
 	})
-	util.Log("f9e2708e").Info("Inserting into table using SQL.", "Database name", databaseName, "SQL", insertStr, "Args", args)
-	if _, err := db.Exec(insertStr, args...); err != nil {
-		util.Log("465dca8d").Error("Could not create entry in triggers table.", "Database name", databaseName, "Trigger name", triggerName)
-		return errors.Errorf("Could not create entry in triggers table")
-	}
 
 	if _, err := ExecRawSql(databaseName, triggerStr); err != nil {
 		return err

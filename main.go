@@ -31,6 +31,6 @@ func main() {
 	config.ReadConfigFile()
 
 	if err := cmd.NewCommand(version, commit).Execute(); err != nil {
-		os.Exit(1)
+		panic(err)
 	}
 }

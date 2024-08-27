@@ -1,7 +1,10 @@
 package trigger
 
 import (
+	"time"
+
 	"github.com/huandu/go-sqlbuilder"
+	"github.com/sam-hobson/internal/database"
 	dbutil "github.com/sam-hobson/internal/database/util"
 	"github.com/sam-hobson/internal/state"
 	"github.com/sam-hobson/internal/util"
@@ -42,31 +45,69 @@ func syncTriggersTable() error {
 		return nil
 	}
 
-	cond := sqlbuilder.NewCond()
-	sql, args := dbutil.EntriesInTableWhereSql("sqlite_master", []string{"rowid", "name"}, cond.Args, cond.Equal("type", "trigger"))
-
 	db, err := dbutil.OpenSqliteDatabaseIfExists(databaseName)
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
-	util.Log("161517c1").Info("Querying sqlite master with SQL.", "Database name", databaseName, "SQL", sql, "Args", args)
+	sb := sqlbuilder.NewSelectBuilder()
+	sb.Select("l.rowid")
+	sb.From("sqlite_master l")
+	sb.JoinWithOption(sqlbuilder.LeftJoin, "triggers r", "l.rowid = r.sqlite_master_rowid")
+	sb.Where("l.type = "+sb.Var("trigger"), "r.sqlite_master_rowid IS NULL")
 
-	rows, err := db.Query(sql, args...)
+	sqliteMasterStr, sqliteMasterArgs := sb.Build()
+
+	util.Log("a5363de7").Info("Querying sqlite_master with following SQL.", "Database name", databaseName, "SQL", sqliteMasterStr, "Args", sqliteMasterArgs)
+
+	masterRowidRows, err := db.Query(sqliteMasterStr, sqliteMasterArgs...)
 	if err != nil {
-		util.Log("fed59b67").Error("Could not query sqlite_master table.", "Database name", databaseName)
+		util.Log("fed59b67").Error("Could not query sqlite_master table for rowids.", "Database name", databaseName)
 		return err
 	}
-	defer rows.Close()
+	defer masterRowidRows.Close()
 
-	for rows.Next() {
-		var rowid int
-		var name string
-		if err := rows.Scan(&rowid, &name); err != nil {
-			util.Log("44b3ba8d").Error("Error occurred while reading from sqlite_master.", "Database name", databaseName)
-			return err
+	masterRowIds, err := dbutil.RowsIntoSlice[int](masterRowidRows)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now().Format(time.RFC3339)
+	triggers := make([]interface{}, len(masterRowIds))
+	for i, id := range masterRowIds {
+		triggers[i] = &database.Trigger{
+			SqliteMasterRowid: id,
+			Date:              now,
 		}
 	}
+
+	insertStr, args := database.TriggerStruct.InsertInto("triggers", triggers...).Build()
+	util.Log("2100aa9e").Info("Inserting into triggers with SQL.", "Database name", databaseName, "SQL", insertStr, "Args", args)
+	if _, err := db.Exec(insertStr, args...); err != nil {
+		util.Log("b12b7f7d").Error("Failed ")
+	}
+
+	// sqliteMasterCond := sqlbuilder.NewCond()
+	// selectSqliteMasterStr, sqliteMasterArgs := dbutil.EntriesInTableWhereSql("sqlite_master", []string{"rowid"}, sqliteMasterCond.Args, sqliteMasterCond.Equal("type", "trigger"))
+	//
+	// util.Log("161517c1").Info("Querying sqlite master with SQL.", "Database name", databaseName, "SQL", selectSqliteMasterStr, "Args", sqliteMasterArgs)
+	//
+	// sqliteMasterRows, err := db.Query(selectSqliteMasterStr, sqliteMasterArgs...)
+	// if err != nil {
+	// 	util.Log("fed59b67").Error("Could not query sqlite_master table.", "Database name", databaseName)
+	// 	return err
+	// }
+	// defer sqliteMasterRows.Close()
+	//
+	// rowids, err := dbutil.RowsIntoSlice[int](sqliteMasterRows)
+	// if err != nil {
+	// 	util.Log("f6f64c29").Error("Could not reading sqlite_master rowids into slice.", "Database name", databaseName)
+	// 	return err
+	// }
+	//
+	// triggersCond := sqlbuilder.NewCond()
+	// triggersStr, triggersArgs := dbutil.EntriesInTableWhereSql("triggers", )
 
 	return nil
 }

@@ -31,7 +31,12 @@ func RemoveDatabaseBackup(databaseName string, rowid int) error {
 	}
 	defer res.Close()
 
-	backups := dbutil.RowsIntoSlice[string](res)
+	backups, err := dbutil.RowsIntoSlice[string](res)
+	if err != nil {
+		util.Log("a8ca32be").Error("Could not read queried backup into slice.", "Database name", databaseName, "Backup row id", rowid)
+		return err
+	}
+
 	if len(backups) == 0 {
 		util.Log("e8f55bfc").Error("Failed remove-database-backup, no matching backup.", "Database name", databaseName)
 		return errors.Errorf("Failed remove-database-backup, no matching backup")
